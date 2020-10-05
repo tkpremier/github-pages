@@ -1,10 +1,16 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import showdown from 'showdown';
 import Layout from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 import { getSortedPostsData } from '../libs/posts';
 
+const converter = new showdown.Converter();
+
 export default function Home({ allPostsData }) {
+  const handleClick = (e) => {
+    console.log('click');
+  }
   return (
     <Layout home>
       <Head>
@@ -15,7 +21,7 @@ export default function Home({ allPostsData }) {
         Welcome to <Link href="/posts/first-post"><a>TK Premier!</a></Link>
       </h1>
 
-      <p className="description">
+      <p className="description" onClick={handleClick}>
         Get started by editing <code>pages/index.js</code>
       </p>
 
@@ -53,12 +59,11 @@ export default function Home({ allPostsData }) {
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, title }) => (
+          {allPostsData.map(({ id, body, title }) => (
             <li className={utilStyles.listItem} key={id}>
               {title}
               <br />
-              {id}
-              <br />
+              <span dangerouslySetInnerHTML={{ __html: converter.makeHtml(body) }} />
             </li>
           ))}
         </ul>
@@ -223,8 +228,8 @@ export default function Home({ allPostsData }) {
   )
 }
 
-export async function getStaticProps() {
-  const { allPostsData } = getSortedPostsData();
+export async function getServerSideProps() {
+  const allPostsData = await getSortedPostsData();
   return {
     props: {
       allPostsData
