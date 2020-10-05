@@ -15,4 +15,4 @@ deploy:
   local_dir: out # Directory to push to the gh-pages branch
   fqdn: tkpremier.io # This instructs Travis to create a CNAME file with tkpremier.io as the contents on every deployment to the gh-pages branch
   on:
-    branch: main # Only deploy when the build is on master branch
+    branch: main # Only deploy when the build is on main branch

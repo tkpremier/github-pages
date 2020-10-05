@@ -3,7 +3,7 @@ import Link from 'next/link';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 
-const name = 'Tommy Kim';
+const name = 'TK Premier';
 
 function Layout({ children, home }) {
   return (
@@ -16,7 +16,7 @@ function Layout({ children, home }) {
           ? (
             <>
               <img
-                src="/images/profile.jpg"
+                src="/images/fbprofile.jpg"
                 className={`${styles.headerHomeImage} ${utilStyles.borderCircle}`}
                 alt={name}
               />
@@ -28,7 +28,7 @@ function Layout({ children, home }) {
               <Link href="/">
                 <a>
                   <img
-                    src="/images/profile.jpg"
+                    src="/images/fbprofile.jpg"
                     className={`${styles.headerImage} ${utilStyles.borderCircle}`}
                     alt={name}
                   />
