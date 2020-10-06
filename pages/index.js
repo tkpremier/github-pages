@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import showdown from 'showdown';
@@ -8,6 +9,10 @@ import { getSortedPostsData } from '../libs/posts';
 const converter = new showdown.Converter();
 
 export default function Home({ allPostsData }) {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    getSortedPostsData().then(res => setPosts(res));
+  }, []);
   const handleClick = (e) => {
     console.log('click');
   }
@@ -59,7 +64,7 @@ export default function Home({ allPostsData }) {
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, body, title }) => (
+          {posts.map(({ id, body, title }) => (
             <li className={utilStyles.listItem} key={id}>
               {title}
               <br />
@@ -226,13 +231,4 @@ export default function Home({ allPostsData }) {
       `}</style>
     </Layout>
   )
-}
-
-export async function getServerSideProps() {
-  const allPostsData = await getSortedPostsData();
-  return {
-    props: {
-      allPostsData
-    }
-  }
 }
