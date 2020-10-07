@@ -4,15 +4,14 @@ import Link from 'next/link';
 import showdown from 'showdown';
 import Layout from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
-import { getSortedPostsData } from '../libs/posts';
 
 const converter = new showdown.Converter();
 
 export default function Home({ allPostsData }) {
   const [posts, setPosts] = useState([]);
-  useEffect(() => {
-    getSortedPostsData().then(res => setPosts(res));
-  }, []);
+  // useEffect(() => {
+  //   getSortedPostsData().then(res => setPosts(res));
+  // }, []);
   const handleClick = (e) => {
     console.log('click');
   }
