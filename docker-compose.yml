@@ -16,12 +16,14 @@ services:
     container_name: webserver
     restart: unless-stopped
     ports:
-      - "80:80"
+      - '80:80'
+      - '443:443'
     volumes:
       - web-root:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
     depends_on:
       - nodejs
     networks:
@@ -36,7 +38,7 @@ services:
       - web-root:/var/www/html
     depends_on:
       - webserver
-    command: certonly --webroot --webroot-path=/var/www/html --email kkim31@gmail.com --agree-tos --no-eff-email -d tkpremier.io  -d www.tkpremier.io
+    command: certonly --webroot --webroot-path=/var/www/html --email kkim31@gmail.com --agree-tos --no-eff-email --force-renewal -d tkpremier.io  -d www.tkpremier.io
 
 volumes:
   certbot-etc:
@@ -44,9 +46,15 @@ volumes:
   web-root:
     driver: local
     driver_opts:
-      type: none
-      device: /home/tommy/app/public/
-      o: bind
+    type: none
+    device: /home/tommy/app/public/
+    o: bind
+  dhparam:
+    driver: local
+    driver_opts:
+    type: none
+    device: /home/tommy/app/dhparam/
+    o: bind
 
 networks:
   app-network:
