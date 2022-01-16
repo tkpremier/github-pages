@@ -1,14 +1,26 @@
-FROM node
+FROM node as builder
 
 LABEL author="TK Premier"
 
-ENV PORT=3000
-
-COPY . /var/www
 WORKDIR /var/www
 
-RUN npm run build
+RUN npm install --global pm2
 
-EXPOSE $PORT
 
-ENTRYPOINT [ "npm", "run", "start" ]
+ENV PORT=3000
+ENV NGINX_PORT=80
+
+COPY ./package.json ./
+COPY ./yarn.lock ./
+
+RUN yarn
+
+COPY ./ ./
+
+RUN yarn build
+
+EXPOSE 3000
+
+USER node
+
+CMD [ "npm", "run", "start"]
