@@ -22,7 +22,7 @@ export default function Home({ allPostsData }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1 className="title">
-        TK Premier
+        TK Premie
       </h1>
 
       <p className="description" onClick={handleClick}>
