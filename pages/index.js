@@ -22,7 +22,7 @@ export default function Home({ allPostsData }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1 className="title">
-        Welcome to <Link href="/posts/first-post"><a>TK Premier!</a></Link>
+        Welcome to <Link href="/posts/first-post"><a>T Premier!</a></Link>
       </h1>
 
       <p className="description" onClick={handleClick}>
