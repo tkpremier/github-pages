@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "npm run build",
+    "predev": "yarn build",
     "dev": "next dev",
-    "prebuild": "npm install",
+    "prebuild": "yarn",
     "build": "next build",
-    "prestart": "npm run build",
+    "prestart": "yarn build",
     "start": "next start",
     "export": "next export"
   },
   "dependencies": {
+    "@reach-sh/stdlib": "^0.1.8-rc.3",
     "gray-matter": "^4.0.2",
     "next": "9.5.3",
     "react": "16.13.1",

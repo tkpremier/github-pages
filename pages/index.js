@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import showdown from 'showdown';
 import Head from 'next/head';
 import Link from 'next/link';
-import showdown from 'showdown';
 import Layout from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 
@@ -22,7 +22,7 @@ export default function Home({ allPostsData }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1 className="title">
-        Welcome to Docker <Link href="/posts/first-post"><a>TK Premier!</a></Link>
+        Welcome to <Link href="/posts/first-post"><a>TK Premier!</a></Link>
       </h1>
 
       <p className="description" onClick={handleClick}>
