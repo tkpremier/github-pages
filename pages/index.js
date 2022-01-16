@@ -26,7 +26,7 @@ export default function Home({ allPostsData }) {
       </h1>
 
       <p className="description" onClick={handleClick}>
-        Get started by editing <code>pages/index.js</code>
+        Get started.
       </p>
 
       <div className="grid">
