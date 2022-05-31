@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import showdown from 'showdown';
-import Head from 'next/head';
 import Link from 'next/link';
-import Layout from '../components/layout';
-import utilStyles from '../styles/utils.module.css';
+import Layout from '../../components/layout';
+import utilStyles from '../../styles/utils.module.css';
 
 const converter = new showdown.Converter();
 
-export default function Home({ allPostsData }) {
+export default function About({ allPostsData }) {
   const [posts, setPosts] = useState([]);
   // useEffect(() => {
   //   getSortedPostsData().then(res => setPosts(res));
@@ -16,16 +15,18 @@ export default function Home({ allPostsData }) {
     console.log('click');
   };
   return (
-    <Layout home>
-      <h1 className="title">TK Premier</h1>
+    <Layout about>
+      <h1 className="title">About Me.</h1>
 
-      <p className="description" onClick={handleClick}>
-        Get started.
+      <p className="description">
+        <a href="/resume.pdf" title="Download Resume">
+          Download Resume.
+        </a>
       </p>
 
       <div className="grid">
-        <Link href="/about">
-          <a className="card">
+        <Link href="/about" className="card">
+          <a>
             <h3>About TK the Dev &rarr;</h3>
             <p>Get to know me.</p>
           </a>
