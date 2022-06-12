@@ -1,4 +1,4 @@
-FROM node:latest as builder
+FROM node:16.15.0 as builder
 
 LABEL author="TK Premier"
 
