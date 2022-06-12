@@ -1,20 +1,84 @@
-import Head from "next/head";
+import { useEffect, useState } from "react";
+import showdown from "showdown";
 import Link from "next/link";
-import Layout from "../components/layout";
+import Layout from "../../components/layout";
+import utilStyles from "../../styles/utils.module.scss";
 
-export default function Reach() {
+const converter = new showdown.Converter();
+
+export default function Examples({ allPostsData }) {
+	const [posts, setPosts] = useState([]);
+	const handleClick = (e) => {
+		console.log("click");
+	};
 	return (
-		<Layout home>
-			<Head>
-				<title>Create Tommy's App</title>
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
-			<h1 className="title">
-				Welcome to Docker{" "}
-				<Link href="/posts/first-post">
-					<a>TK Premier!</a>
+		<Layout about>
+			<h1 className="title">My #u+1F4B0</h1>
+
+			<p className="description">
+				<a href="/resume.pdf" title="Download Resume">
+					Resume.
+				</a>
+			</p>
+			<ul className="faq">
+				<li>A good friend recommended me to start coding HTML and CSS.</li>
+				<li>
+					Started following tutorials, had one website, and then yada, yada, yada...eventually landed a role as a{" "}
+					<strong>Salaried Specialist</strong> for Robert Half, International.{" "}
+				</li>
+				<li>
+					<strong>Becton Dickinson</strong>
+				</li>
+			</ul>
+			<div className="grid">
+				<Link href="/about">
+					<a className="card">
+						<h3>About TK the Dev &rarr;</h3>
+						<p>Get to know me.</p>
+					</a>
 				</Link>
-			</h1>
+
+				<a href="https://nextjs.org/learn" className="card">
+					<h3>Learn &rarr;</h3>
+					<p>Learn about Next.js in an interactive course with quizzes!</p>
+				</a>
+
+				<a href="https://github.com/vercel/next.js/tree/master/examples" className="card">
+					<h3>Examples &rarr;</h3>
+					<p>Discover and deploy boilerplate example Next.js projects.</p>
+				</a>
+
+				<a
+					href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+					className="card"
+				>
+					<h3>Deploy &rarr;</h3>
+					<p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
+				</a>
+			</div>
+
+			<section className={utilStyles.headingMd}>…</section>
+			<section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
+				<h2 className={utilStyles.headingLg}>Blog</h2>
+				<ul className={utilStyles.list}>
+					{posts.map(({ id, body, title }) => (
+						<li className={utilStyles.listItem} key={id}>
+							{title}
+							<br />
+							<span dangerouslySetInnerHTML={{ __html: converter.makeHtml(body) }} />
+						</li>
+					))}
+				</ul>
+			</section>
+			<footer>
+				<a
+					href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Powered by <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
+				</a>
+			</footer>
 
 			<style jsx>{`
 				.container {
