@@ -1,8 +1,10 @@
 version: '3'
+networks:
+  mynetwork:
 services:
-  nextjs:
-    build: ./
-  nginx:
-    build: ./nginx
+  myapp:
+    build: ./front-end
     ports:
-      - 80:80
+      - 80:3000
+    networks:
+      - mynetwork
