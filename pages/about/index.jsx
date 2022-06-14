@@ -3,6 +3,7 @@ import showdown from "showdown";
 import Link from "next/link";
 import Drawer from "../../components/Drawer";
 import Layout from "../../components/layout";
+import Slider from "../../components/Slider";
 import utilStyles from "../../styles/utils.module.css";
 
 const converter = new showdown.Converter();
@@ -38,6 +39,17 @@ export default function About({ allPostsData }) {
 							<li>Improve app performance and prevent memory leaks using browser devtools</li>
 						</ul>
 					</Drawer>
+				</li>
+				<li>
+					<Slider
+						carouselTitle="The Economist"
+						carouselDesc="April 2014 - May 2014"
+						data={[
+							"Developed the EIU Public Policy responsive website, creating intuitive UI and UX functionalities",
+							"Collaborated in agile team atmosphere, using SVN for source control, participating in daily scrums, and delivering product via sprint goals in iterative process",
+							"Debug project for cross-browser and multi-device compliance"
+						]}
+					/>
 				</li>
 			</ul>
 			<div className="grid">
@@ -79,16 +91,6 @@ export default function About({ allPostsData }) {
 					))}
 				</ul>
 			</section>
-			<footer>
-				<a
-					href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Powered by <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-				</a>
-			</footer>
-
 			<style jsx>{`
 				.container {
 					min-height: 100vh;
