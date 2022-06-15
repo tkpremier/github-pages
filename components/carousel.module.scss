@@ -21,8 +21,8 @@
 }
 .slider {
 	position: relative;
-	width: 500px;
 	height: 500px;
+	width: 100%;
 	margin: 50px auto;
 	&Track {
 		list-style: none;
@@ -46,6 +46,7 @@
 		list-style: none;
 		padding: 0;
 		flex-flow: row nowrap;
+		position: absolute;
 		&IsAnimating {
 			transition: transform 500ms ease;
 		}

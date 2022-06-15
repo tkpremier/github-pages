@@ -19,7 +19,7 @@ const Slider = (props) => {
 
 	useEffect(() => {
 		if (carouselRef.current !== null) {
-			const newItemWidth = Math.ceil(wrapperRef.current.offsetWidth / state.itemsPerSlide);
+			const newItemWidth = Math.ceil(carouselRef.current.offsetWidth / state.itemsPerSlide);
 			if (newItemWidth !== state.itemWidth) {
 				console.log("itemWidth: ", newItemWidth);
 
