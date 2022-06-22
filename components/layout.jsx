@@ -1,9 +1,9 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import styles from '../styles/layout.module.scss';
-import utilStyles from '../styles/utils.module.scss';
+import Head from "next/head";
+import Link from "next/link";
+import styles from "../styles/layout.module.scss";
+import utilStyles from "../styles/utils.module.scss";
 
-const name = 'TK Premier';
+const name = "TK Premier";
 
 function Layout({ children, home }) {
   return (
@@ -55,21 +55,29 @@ function Layout({ children, home }) {
             <h3>Examples</h3>
             <p>Check out some more standard components.</p>
           </a>
-          <Link href="/examples">
+          <Link href="/add">
             <a className={styles.card}>
-              <h3>Learn &rarr;</h3>
-              <p>Learn about Next.js in an interactive course with quizzes!</p>
+              <h3>Add Data</h3>
+              <p>Learn by adding new data and &#x1F4AA; on them skills.</p>
             </a>
           </Link>
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
+          <Link href="/learn">
+            <a className={styles.card}>
+              <h3>Learn &rarr;</h3>
+              <p>Here's my interview prep for algorithm and data structures.</p>
+            </a>
+          </Link>
         </div>
       </main>
+      <footer>
+        <a
+          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Powered by Vercel
+        </a>
+      </footer>
       {!home && (
         <div className={styles.backToHome}>
           <Link href="/">

@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react';
-import showdown from 'showdown';
-import Link from 'next/link';
-import Drawer from '../../components/Drawer';
-import Layout from '../../components/layout';
-import Slider from '../../components/Slider';
-import { getExp } from '../../services/db';
-import layoutStyles from '../../styles/layout.module.scss';
-import utilStyles from '../../styles/utils.module.css';
+import { useEffect, useState } from "react";
+// import showdown from "showdown";
+import Drawer from "../../components/Drawer";
+import Layout from "../../components/layout";
+import Slider from "../../components/Slider";
+import { getExp } from "../../services/db";
 
-const converter = new showdown.Converter();
+// const converter = new showdown.Converter();
 
 export async function getServerSideProps(context) {
   const props = await getExp();
@@ -23,7 +20,7 @@ export default function About({ data }) {
   //   getSortedPostsData().then(res => setPosts(res));
   // }, []);
   const handleClick = e => {
-    console.log('click');
+    console.log("click");
   };
   return (
     <Layout about>
@@ -37,92 +34,32 @@ export default function About({ data }) {
       <ul className="faq">
         <li>A good friend recommended me to start coding HTML and CSS.</li>
         <li>
-          Started following tutorials, had one website, and then yada, yada, yada...eventually landed a role as a{' '}
-          <strong>Salaried Specialist</strong> for Robert Half, International.{' '}
+          Started following tutorials, had one website, and then yada, yada, yada...eventually landed a role as a{" "}
+          <strong>Salaried Specialist</strong> for Robert Half, International.{" "}
         </li>
-        <li>
+        <Drawer header={posts[2].name}>
           <ul>
-            {posts.map(exp => {
-              return (
-                <Drawer header={exp.name}>
-                  <ul>
-                    {exp.description.split(';').map(d => {
-                      return <li>{d}</li>;
-                    })}
-                  </ul>
-                </Drawer>
-              );
+            {posts[2].description.split(";").map(d => {
+              return <li key={d}>{d}</li>;
             })}
           </ul>
-        </li>
+        </Drawer>
+
         <li>
           <Slider
-            carouselTitle="The Economist"
+            carouselTitle={posts[1].name}
             carouselDesc="April 2014 - May 2014"
-            data={[
-              'Developed the EIU Public Policy responsive website, creating intuitive UI and UX functionalities',
-              'Collaborated in agile team atmosphere, using SVN for source control, participating in daily scrums, and delivering product via sprint goals in iterative process',
-              'Debug project for cross-browser and multi-device compliance'
-            ]}
+            data={posts[1].description.split(";")}
           />
         </li>
         <li>
           <Slider
-            carouselTitle="Phillips"
+            carouselTitle={posts[0].name}
             carouselDesc="June 2014 - June 2022"
-            data={[
-              'Design, develop, test, and maintain front-end architecture for company site, www.phillips.com',
-              'Utilize Modular-Oriented Pattern built on React, Redux, and SCSS to create scalable web  applications composed by modular class and functional components',
-              'Create services, classes, and utility functions while leveraging DRY principles to handle various user actions, CRUD operations, and 3rd-party hooks',
-              'Configure and transpile build with Babel and Webpack to utilize most recent ES features, while  maintaining browser compliance',
-              'Highly experienced with .NET stack, develop and maintain Razor views while using  ReactJS.NET for server side rendering, and controllers using C# for .NET Stack',
-              'Initiated and developed responsive design implementation for www.phillips.com , thereby improving the company’s mobile web presence',
-              'Lead code reviews with junior developers and QA to maintain code readability and adhere to team standards',
-              'Implemented 3rd-party SEO recommendations on HTML architecture and JS data flow',
-              'Collaborated with team to create more intuitive mobile UX, and developed improved UI',
-              'Created basic build functions on top of NodeJS to improve development workflow',
-              'Highly skilled in JIRA, GitFlow, Office 365, and Adobe Suite for open collaboration '
-            ]}
+            data={posts[0].description.split(";")}
           />
         </li>
       </ul>
-      <div className={layoutStyles.grid}>
-        <a className={layoutStyles.card} href="http://localhost:6006" target="_blank">
-          <h3>Check out some more standard components.</h3>
-        </a>
-
-        <a href="https://nextjs.org/learn" className={layoutStyles.card}>
-          <h3>Learn &rarr;</h3>
-          <p>Learn about Next.js in an interactive course with quizzes!</p>
-        </a>
-
-        <a href="https://github.com/vercel/next.js/tree/master/examples" className={layoutStyles.card}>
-          <h3>Examples &rarr;</h3>
-          <p>Discover and deploy boilerplate example Next.js projects.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          className={layoutStyles.card}
-        >
-          <h3>Deploy &rarr;</h3>
-          <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-        </a>
-      </div>
-
-      <section className={utilStyles.headingMd}>…</section>
-      <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
-        <h2 className={utilStyles.headingLg}>Blog</h2>
-        <ul className={utilStyles.list}>
-          {posts.map(({ id, body, title }) => (
-            <li className={utilStyles.listItem} key={id}>
-              {title}
-              <br />
-              <span dangerouslySetInnerHTML={{ __html: converter.makeHtml(body) }} />
-            </li>
-          ))}
-        </ul>
-      </section>
       <style jsx>{`
         .faq {
           max-width: 100%;

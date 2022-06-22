@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import showdown from 'showdown';
-import Head from 'next/head';
-import Link from 'next/link';
-import Layout from '../components/layout';
-import utilStyles from '../styles/utils.module.scss';
+import { useEffect, useState } from "react";
+import showdown from "showdown";
+import Head from "next/head";
+import Link from "next/link";
+import Layout from "../components/layout";
+import utilStyles from "../styles/utils.module.scss";
 
 const converter = new showdown.Converter();
 
@@ -13,7 +13,7 @@ export default function Home({ allPostsData }) {
   //   getSortedPostsData().then(res => setPosts(res));
   // }, []);
   const handleClick = e => {
-    console.log('click');
+    console.log("click");
   };
   return (
     <Layout home>
@@ -22,7 +22,7 @@ export default function Home({ allPostsData }) {
       <p className="description" onClick={handleClick}>
         Get started.
       </p>
-      <section className={utilStyles.headingMd}>…</section>
+      {/* <section className={utilStyles.headingMd}>…</section>
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
@@ -34,17 +34,7 @@ export default function Home({ allPostsData }) {
             </li>
           ))}
         </ul>
-      </section>
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
-
+      </section> */}
       <style jsx>{`
         .container {
           min-height: 100vh;
