@@ -1,9 +1,11 @@
+import { createContext } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../styles/layout.module.scss";
 import utilStyles from "../styles/utils.module.scss";
 
 const name = "TK Premier";
+export const MyContext = createContext({ value: "" });
 
 function Layout({ children, home }) {
   return (
@@ -41,7 +43,9 @@ function Layout({ children, home }) {
           </>
         )}
       </header>
-      <main>{children}</main>
+      <MyContext.Provider value={{ value: "provider" }}>
+        <main>{children}</main>
+      </MyContext.Provider>
       <main>
         <div className={styles.grid}>
           <Link href="/about">
@@ -50,11 +54,12 @@ function Layout({ children, home }) {
               <p>Get to know me.</p>
             </a>
           </Link>
-
-          <a className={styles.card} href="http://localhost:6006" target="_blank">
-            <h3>Examples</h3>
-            <p>Check out some more standard components.</p>
-          </a>
+          <Link href="/examples">
+            <a className={styles.card}>
+              <h3>Examples</h3>
+              <p>Check out some more standard components.</p>
+            </a>
+          </Link>
           <Link href="/add">
             <a className={styles.card}>
               <h3>Add Data</h3>

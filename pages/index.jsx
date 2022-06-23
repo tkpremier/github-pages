@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import showdown from "showdown";
 import Head from "next/head";
 import Link from "next/link";
 import Layout from "../components/layout";
 import utilStyles from "../styles/utils.module.scss";
-
-const converter = new showdown.Converter();
 
 export default function Home({ allPostsData }) {
   const [posts, setPosts] = useState([]);
@@ -22,7 +20,7 @@ export default function Home({ allPostsData }) {
       <p className="description" onClick={handleClick}>
         Get started.
       </p>
-      {/* <section className={utilStyles.headingMd}>…</section>
+      {/* <section className={utilSt yles.headingMd}>…</section>
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
