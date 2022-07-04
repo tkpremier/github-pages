@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 // import showdown from "showdown";
-import Drawer from "../../components/Drawer";
-import Layout from "../../components/layout";
-import Slider from "../../components/Slider";
-import { getExp } from "../../services/db";
+import Drawer from '../../components/Drawer';
+import Layout from '../../components/layout';
+import Slider from '../../components/Slider';
+import { getExp } from '../../services/db';
 
 // const converter = new showdown.Converter();
 
@@ -20,7 +20,7 @@ export default function About({ data }) {
   //   getSortedPostsData().then(res => setPosts(res));
   // }, []);
   const handleClick = e => {
-    console.log("click");
+    console.log('click');
   };
   return (
     <Layout about>
@@ -31,40 +31,35 @@ export default function About({ data }) {
           Resume.
         </a>
       </p>
-      <ul className="faq">
+      <ul className="faq" style={{ maxWidth: '100%' }}>
         <li>A good friend recommended me to start coding HTML and CSS.</li>
         <li>
-          Started following tutorials, had one website, and then yada, yada, yada...eventually landed a role as a{" "}
-          <strong>Salaried Specialist</strong> for Robert Half, International.{" "}
+          Started following tutorials, had one website, and then yada, yada, yada...eventually landed a role as a{' '}
+          <strong>Salaried Specialist</strong> for Robert Half, International.{' '}
         </li>
         <Drawer header={posts[2].name}>
           <ul>
-            {posts[2].description.split(";").map(d => {
+            {posts[2].description.split(';').map(d => {
               return <li key={d}>{d}</li>;
             })}
           </ul>
         </Drawer>
 
         <li>
-          <Slider
-            carouselTitle={posts[1].name}
-            carouselDesc="April 2014 - May 2014"
-            data={posts[1].description.split(";")}
-          />
+          <Slider carouselTitle={posts[1].name} carouselDesc="April 2014 - May 2014">
+            {posts[1].description.split(';').map(desc => (
+              <p>{desc}</p>
+            ))}
+          </Slider>
         </li>
         <li>
-          <Slider
-            carouselTitle={posts[0].name}
-            carouselDesc="June 2014 - June 2022"
-            data={posts[0].description.split(";")}
-          />
+          <Slider carouselTitle={posts[0].name} carouselDesc="June 2014 - June 2022">
+            {posts[0].description.split(';').map(desc => (
+              <p>{desc}</p>
+            ))}
+          </Slider>
         </li>
       </ul>
-      <style jsx>{`
-        .faq {
-          max-width: 100%;
-        }
-      `}</style>
     </Layout>
   );
 }

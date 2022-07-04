@@ -1,0 +1,28 @@
+.grid {
+  list-style: none;
+  padding: 0;
+  margin: 30px auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 20px;
+  flex-flow: row nowrap;
+  @media screen and (min-width: 480px) {
+    grid-template-columns: repeat(2, calc(50% - (20px / 2)));
+    column-gap: 20px;
+  }
+  @media screen and (min-width: 769px) {
+    grid-template-columns: repeat(4, calc(25% - (60px / 4)));
+  }
+  &Controls {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    background: #ccc;
+  }
+  &Item {
+    padding: 0;
+    margin: 0;
+    // width: 50%;
+  }
+}

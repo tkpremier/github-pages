@@ -1,0 +1,340 @@
+@import "vars";
+
+.form {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  text-align: center;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  h3 {
+    text-align: center;
+    font-size: 24px;
+    line-height: 32px;
+    color: #323232;
+    align-self: center;
+  }
+  label {
+    display: flex;
+    flex-flow: column nowrap;
+    text-align: left;
+    width: 100%;
+  }
+  input:not([type="submit"]),
+  textarea {
+    background: #fff;
+    margin: 0 auto 15px auto;
+    padding: 6px 0 6px 20px;
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: 1px;
+    color: #323232;
+    width: 100%;
+    border: 1px solid $ryan-grey;
+    border-radius: 0;
+    display: block;
+    height: 42px;
+    // max-width: 90%;
+    appearance: none;
+    @media screen and (min-width: $md-bp) {
+      max-width: 700px;
+    }
+    &.error,
+    &.val-danger {
+      box-shadow: 0 0 2px 1px rgb(210, 35, 42);
+      border-radius: 1px;
+    }
+    &.last {
+      margin-bottom: 15px * 2;
+    }
+    &[type="checkbox"] {
+      width: 26px;
+      margin: 0 15px 0 0;
+    }
+    &:-webkit-autofill,
+    &:autofill {
+      color: #323232;
+    }
+    &::placeholder {
+      color: $ryan-grey;
+      font-family: $seroItalic;
+      //padding-top: 2.5px;
+      font-size: $tiny-fontsize;
+      line-height: em(18, $tiny-font);
+    }
+    &::-webkit-input-placeholder,
+    &:-moz-placeholder /* Firefox 18- */,
+    &::-moz-placeholder /* Firefox 19+ */,
+    &:-ms-input-placeholder {
+      color: $ryan-grey;
+      font-family: $seroItalic;
+      //padding-top: 2.5px;
+      font-size: $tiny-fontsize;
+      line-height: em(18, $tiny-font);
+    }
+    &:-moz-placeholder {
+      /* Firefox 18- */
+      color: $ryan-grey;
+      font-family: $seroItalic;
+      //padding-top: 2.5px;
+      font-size: $tiny-fontsize;
+      line-height: em(18, $tiny-font);
+      padding-left: calc($marginsize/4);
+    }
+    &::-moz-placeholder {
+      /* Firefox 19+ */
+      color: $ryan-grey;
+      font-family: $seroItalic;
+      //padding-top: 2.5px;
+      font-size: $tiny-fontsize;
+      line-height: em(18, $tiny-font);
+      padding-left: calc($marginsize/4);
+    }
+    &:-ms-input-placeholder {
+      color: $ryan-grey;
+      font-family: $seroItalic;
+      //padding-top: 2.5px;
+      font-size: $tiny-fontsize;
+      line-height: em(18, $tiny-font);
+      padding-left: calc($marginsize/4);
+    }
+    &.user-form--no-mgn-btm {
+      margin-bottom: 0;
+    }
+  }
+  // &__consent {
+  //   width: calc(100% - #{15px});
+  //   max-width: 90%;
+  //   color: #999999;
+  //   font-size: 13px;
+  //   line-height: 18px;
+  //   text-align: left;
+  //   display: block;
+  //   margin: 0 auto 15px auto;
+  //   @media screen and (min-width: $md-bp) {
+  //     max-width: 335px;
+  //     margin-left: 14px;
+  //   }
+  // }
+  //   &__form {
+  //     &__input {
+  //       border: 2px solid #323232;
+  //       margin: 0 auto 15px;
+  //       padding: 15px - 5px;
+  //       // font-size: 1rem;
+  //       border-radius: 0;
+  //       width: 100%;
+  //     }
+
+  //     &__textarea {
+  //       margin: 0 auto 15px;
+  //       padding: 15px - 5px;
+  //       font-size: em($sm-fontsize, $basefontsize);
+  //       font-family: $seroWebPro;
+  //       border-radius: 0;
+  //       display: block;
+  //       line-height: em($extra-large-fontsize - 2px, $tiny-fontsize);
+  //       width: 100%;
+  //       color: #323232;
+  //       //max-height
+  //     }
+  //     &__name-wrapper {
+  //       display: flex;
+  //       flex-flow: column nowrap;
+  //       justify-content: space-between;
+  //       width: 100%;
+  //       @media screen and (min-width: $md-bp) {
+  //         flex-flow: row nowrap;
+  //       }
+  //       &--first-name,
+  //       &--last-name {
+  //         display: flex;
+  //         flex-flow: column nowrap;
+  //         width: 100%;
+  //         @media screen and (min-width: $md-bp) {
+  //           width: 50%;
+  //         }
+  //       }
+  //       &--last-name {
+  //         margin-left: 0;
+  //         @media screen and (min-width: $md-bp) {
+  //           margin-left: 20px;
+  //         }
+  //       }
+  //     }
+
+  //     @include phillips-box {
+  //       align-self: flex-start;
+  //       margin: 0 0 30px 0;
+  //       align-items: flex-start;
+  //       @media screen and (min-width: $md-bp) {
+  //         //max-width: 50%;
+  //         margin: 15px 0 30px 0;
+  //       }
+  //       &__label {
+  //         max-width: 100%;
+  //         font-size: 14px;
+  //         line-height: 20px;
+  //         letter-spacing: 1px;
+  //         color: #323232;
+  //         padding-top: 0;
+  //         &--active {
+  //         }
+  //       }
+  //     }
+  //   }
+  //   &__input-wrapper {
+  //     max-width: calc(100% - 30px);
+  //     display: flex;
+  //     flex-flow: row nowrap;
+  //     justify-content: space-between;
+  //     margin: 0 auto;
+  //     align-items: center;
+  //     @media screen and (min-width: $sm-bp) {
+  //       max-width: 320px;
+  //     }
+  //   }
+  //   &__label {
+  //     @include form__label;
+  //     align-self: flex-start;
+  //     margin-bottom: 5px;
+  //     &--pw-hint {
+  //       display: block;
+  //       font-size: 14px;
+  //       max-width: 100%;
+  //       color: $ryan-grey;
+  //     }
+  //   }
+  //   &__message {
+  //     color: #323232;
+  //     font-size: $medium-fontsize;
+  //     text-transform: none;
+  //     margin-bottom: $marginsize/2;
+  //     &--consent {
+  //       font-size: $basefontsize;
+  //       line-height: 26px;
+  //       text-align: center;
+  //       color: #5b5b5b;
+  //       letter-spacing: 1px;
+  //       max-width: 100%;
+  //       a {
+  //         color: $ryan-cornflower-blue;
+  //         text-decoration: none;
+  //       }
+  //     }
+  //     &--response {
+  //       font-size: em(11);
+  //     }
+  //     &--red {
+  //       color: $error-red;
+  //     }
+  //     &--green {
+  //       color: $success-green;
+  //     }
+  //     &--align-center {
+  //       text-align: center;
+  //     }
+  //     &.lowercase {
+  //       text-transform: none;
+  //       margin-bottom: 0;
+  //     }
+  //     &.required {
+  //       text-align: right;
+  //       font-size: $tiny-fontsize;
+  //     }
+  //   }
+  //   &__button {
+  //     display: flex;
+  //     justify-content: center;
+  //     align-items: center;
+  //     @include phillips-button;
+  //     padding: 10px 0;
+  //     background-color: #323232;
+  //     border: 2px solid #323232;
+  //     color: #fafafa;
+  //     width: 50%;
+  //     max-width: 300px;
+  //     font-family: $seroMedium;
+  //     font-size: 16px;
+  //     line-height: 18px;
+  //     text-align: center;
+  //     &:active,
+  //     &:focus {
+  //       background: linear-gradient(180deg, #000000 0%, #5b5b5b 100%);
+  //       box-shadow: 0px 0px 10px 1px rgba(50, 50, 50, 0.25);
+  //     }
+  //     img {
+  //       margin-right: 10px;
+  //     }
+  //   }
+  //   &__forgot-pw {
+  //     color: $ryan-cornflower-blue;
+  //     font-family: $seroMedium;
+  //     font-size: 16px;
+  //     letter-spacing: 1px;
+  //     line-height: 18px;
+  //     margin: 15px auto 90px;
+  //     background-color: transparent;
+  //     border: none;
+  //   }
+  //   &__loading {
+  //     width: 100%;
+  //     margin: 0 auto;
+  //     position: absolute;
+  //     top: 0;
+  //     right: 0;
+  //     bottom: 0;
+  //     left: 0;
+  //     background: url("https://phillips.vo.llnwd.net/v1/web_prod/images/layout/ajax-loader.gif") 50% 50% no-repeat;
+  //     height: 100%;
+  //     min-height: 50px;
+  //     max-height: none;
+  //     z-index: 5;
+  //   }
+  //   &--link {
+  //     text-decoration: none;
+  //     strong {
+  //       font-family: $seroMedium;
+  //     }
+  //     &:hover {
+  //       color: #000;
+  //     }
+  //   }
+  //   // Modifier classes
+  //   &--grey {
+  //     color: $dark;
+  //   }
+  //   &--no-mgn-btm {
+  //     margin-bottom: 0;
+  //   }
+
+  //   &__input-wrapper {
+  //     max-width: calc(100% - 30px);
+  //     display: flex;
+  //     flex-flow: row nowrap;
+  //     justify-content: space-between;
+  //     margin: 0 auto;
+  //     align-items: center;
+  //     @media screen and (min-width: $md-bp) {
+  //       max-width: 50%;
+  //     }
+  //   }
+
+  //   @include phillips-newsletter-checkbox {
+  //     @media screen and (min-width: $sm-bp) {
+  //       max-width: 320px;
+  //       margin: 0 auto;
+  //     }
+  //   }
+  //   &--loading {
+  //     min-height: 45px;
+  //   }
+  //   &--underline {
+  //     color: $ryan-cornflower-blue;
+  //     text-decoration: none;
+  //     line-height: 20px;
+  //     font-family: $seroBold;
+  //   }
+  //   @content;
+}

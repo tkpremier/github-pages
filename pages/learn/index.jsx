@@ -1,18 +1,235 @@
-import React from "react";
-import Link from "next/link";
-import Code from "../../components/Code";
-import Drawer from "../../components/Drawer";
-import Layout from "../../components/layout";
-import { binaryIterative, binaryRecursive, interpolationSearch } from "../../code-examples";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import serialize from 'form-serialize';
+import Code from '../../components/Code';
+import Drawer from '../../components/Drawer';
+import Layout from '../../components/layout';
+import { binaryIterative, binaryRecursive, interpolationSearch } from '../../code-examples';
+import { selectionSort } from '../../code-examples/sort';
 
 function Learn({ props }) {
+  const [selSort, setSelSort] = useState([]);
+  const handleSelectionSort = e => {
+    e.preventDefault();
+    const { selectionSortArray } = serialize(e.target, { hash: true });
+    const arr = selectionSortArray.split(' ');
+    console.log(arr);
+    setSelSort(selectionSort(arr));
+  };
   return (
     <Layout>
       <ul>
         <li>
+          <a
+            href="https://www.geeksforgeeks.org/analysis-of-algorithms-set-4-analysis-of-loops/"
+            target="_blank"
+            rel="nofollower"
+            title="Geeks for Geeks, Analysis of Loops"
+          >
+            Analysis of Loops
+          </a>
+        </li>
+        <ol>
+          <li>
+            <strong>O(1)</strong>: Time complexity of a function with no loops, recursion, and call to any other
+            non-constant function. A loop or recursion that runs a constant number of times is also considered as{' '}
+            <strong>O(1)</strong>.
+          </li>
+          <li>
+            <strong>O(n)</strong>: Time complexity of a loop is considered as <strong>O(n)</strong> if the loop
+            variables are incremented/decremented by a constant amt. Example:
+            <Code
+              text={`
+              // c is inc/dec constant
+              for (let i = 0; i < n; i += c) {
+                // some O(1) expression
+              }
+              for (let i = n; i > 0; i -= c) {
+                // some O(1) expression
+              }
+              `}
+            />
+          </li>
+          <li>
+            <strong>
+              O(n<sup>c</sup>)
+            </strong>
+            : Time complexity of nested loops is equal to the number of times the innermost statement is executed.
+            Example:
+            <Code
+              text={`
+              // c is inc/dec constant
+              for (let i = 0; i < n; i += c) {
+                for (let j = 0; j < n; j += c) {
+                  // some O(1) expression
+                }
+              }
+              for (let i = n; i > 0; i -= c) {
+                for (let j = n; j > 0; j -= c) {
+                  // some O(1) expression
+                }
+              }
+              `}
+            />
+            <br />
+            <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
+              Selection Sort
+            </a>{' '}
+            and{' '}
+            <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower">
+              Insertion Sort
+            </a>{' '}
+            have O(n<sup>2</sup>) time complexity.
+          </li>
+          <li>
+            <strong>
+              O(Log<sub>n</sub>)
+            </strong>
+            : Time complexity of loop is considered as{' '}
+            <strong>
+              O(Log<sub>n</sub>)
+            </strong>{' '}
+            if the loop variables are <srong>divided/multiplied</srong> by a constant amount. And also for a recursive
+            call in recursive function:
+            <Code
+              text={`
+              // c is inc/dec constant
+              for (let i = 0; i < n; i *= c) {
+                // some O(1) expression
+              }
+              for (let i = n; i > 0; i /= c) {
+                // some O(1) expression
+              }
+              `}
+            />
+            <Code
+              text={`
+              // recursive function
+              const recursive = (n) => {
+                if (n === 0) return;
+                // some O(1) expression
+                recurseive(n-1);
+              }
+              `}
+            />
+            <p>
+              <a href="http://geeksquiz.com/binary-search/" target="_blank" rel="nofollower">
+                Binary Search(iterative implementation)
+              </a>{' '}
+              has{' '}
+              <strong>
+                O(Log<sub>n</sub>)
+              </strong>{' '}
+              time complexity.
+            </p>
+            <p>
+              The series that we get in the first loop is 1, c, c<sup>2</sup>, c<sup>3</sup>, ... c<sup>k</sup>. If we
+              put <em>k</em> equals to{' '}
+              <em>
+                Log<sub>c</sub>n
+              </em>
+              , we get{' '}
+              <em>
+                c
+                <sup>
+                  Log<sub>c</sub>n
+                </sup>
+              </em>
+              , which is <em>n</em>. &#x1F937;&#x200D;&#x2642;
+            </p>
+          </li>
+          <li>
+            <strong>
+              O(Log
+              <sub>
+                Log<sub>n</sub>
+              </sub>
+              )
+            </strong>
+            : Time complexity of loop is considered as{' '}
+            <strong>
+              O(Log
+              <sub>
+                Log<sub>n</sub>
+              </sub>
+              )
+            </strong>{' '}
+            if the loop variables are <srong>reduced/increased exponentially</srong> by a constant amount.
+            <Code
+              text={`
+              // c is constant greater than one
+              for (let i = 2; i <- n; i = Math.pow(i, c)) {
+                // some O(1) expression
+              }
+              for (let i = n; i > 0; i /= c) {
+                // some O(1) expression
+              }
+              `}
+            />
+            <br />
+            <a
+              href="https://www.geeksforgeeks.org/time-complexity-loop-loop-variable-expands-shrinks-exponentially/"
+              target="_blank"
+              rel="nofollower"
+            >
+              More info
+            </a>
+          </li>
+          <li>
+            Time complexities of consecutive loops are calculated as{' '}
+            <strong>sum of time complexities in invidual loops</strong>.
+          </li>
+        </ol>
+        <li>
           Sorting Algorithms
           <ol>
-            <li>Selection Sort</li>
+            <li>
+              Flowchart for{' '}
+              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
+                Selection Sort
+              </a>
+              <br />
+              <Code
+                text={`
+                // sort(arr, n)
+                for (let i = 0; i < n-1; i++) {
+                  let min_index = i;
+                  for (let j = i + 1; j < n; j++) {
+                    // some O(1) expression
+                    if (arr[j] < arr[min_index]) {
+                      min_index = j;
+                    }
+                  }
+                  swap(arr[min_index], arr[i]);
+                }
+                `}
+              />
+              <br />
+              <strong>Complexity Analysis of Selection Sort</strong>:<br />
+              <strong>Time Complexity</strong>: O(N<sup>2</sup>) as there are two nested loops:
+              <ul>
+                <li>One loop to select an element of Array one by one = O(N)</li>
+                <li>Another loop to compare that element with every other Array element = O(N)</li>
+                <li>
+                  Therefore overall complexity = O(N)*O(N) = O(N*N) = O(N<sup>2</sup>)
+                </li>
+              </ul>
+              <strong>Auxillary Space</strong>: O(1) as the only extra memory used is for temp variable while swapping
+              two values in array. The good thing about selection sort is it{' '}
+              <strong>
+                never makes more than O(n) swaps and can be useful when memory write is a costly operation.
+              </strong>
+              <br />
+              <strong>Try it out</strong>:<br />
+              <strong>Output</strong>:&nbsp;{selSort.join(' ')}
+              <form onSubmit={handleSelectionSort}>
+                <label htmlFor="selection-sort-array">
+                  Type in words in random order separated by spaces
+                  <input type="text" name="selectionSortArray" id="selection-sort-array" />
+                </label>
+                <input type="submit" value="Try it out" />
+              </form>
+            </li>
             <li>Bubble Sort</li>
             <li>Insertion Sort</li>
             <li>Merge Sort</li>
@@ -60,10 +277,10 @@ function Learn({ props }) {
                   <ul>
                     <li>
                       <blockquote>
-                        <strong>Binary Search</strong> is a searching algorithm used in a sorted array by{" "}
+                        <strong>Binary Search</strong> is a searching algorithm used in a sorted array by{' '}
                         <strong>
                           repeatedly dividing the search interval in half, hence <em>binary</em>.
-                        </strong>{" "}
+                        </strong>{' '}
                         The idea of binary search is to use the information that the array is sorted and reduce time
                         complexity to O(Log n).
                       </blockquote>
@@ -75,7 +292,7 @@ function Learn({ props }) {
                       If <em>value of the search key (x)</em> matches mid, return <strong>index</strong>
                     </li>
                     <li>
-                      Else If <em>x</em> is <em>lower</em> than mid-el, narrow the interval to{" "}
+                      Else If <em>x</em> is <em>lower</em> than mid-el, narrow the interval to{' '}
                       <strong>lower half</strong> and then <strong>recur</strong> it again.
                     </li>
                     <li>

@@ -2,8 +2,8 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
-    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+    Helvetica Neue, sans-serif;
   line-height: 1.6;
   font-size: 18px;
 }
@@ -30,39 +30,8 @@ img {
   max-width: 100%;
   display: block;
 }
-.expandable {
-  text-indent: 0px;
-  &__button {
-    outline: none;
-    padding: 12px 0 12px 28px;
-    width: 100%;
-    font-size: 0.75rem;
-    font-weight: normal;
-    text-align: left;
-    text-transform: uppercase;
-    border: none;
-    background: #ffffff url('https://phillips.vo.llnwd.net/v1/web_prod/images/layout/aside-icons.png');
-    background-size: 50px 1250px;
-    background-repeat: no-repeat;
-    background-position: -10px -58px;
-    @media (min-resolution: 192dpi) and (-webkit-min-device-pixel-ratio: 2) {
-      background: #ffffff url('https://phillips.vo.llnwd.net/v1/web_prod/images/layout/aside-icons-2x.png');
-      background-size: 50px 1250px;
-      background-position: -9px -59px;
-      background-repeat: no-repeat;
-    }
-    &.filter-header {
-      color: #ffffff;
-      background: #000000 url('https://phillips.vo.llnwd.net/v1/web_prod/images/layout/aside-icons-white.png');
-      background-size: 50px 1250px;
-      background-repeat: no-repeat;
-      background-position: -10px -58px;
-      @media (min-resolution: 192dpi) and (-webkit-min-device-pixel-ratio: 2) {
-        background: #000000 url('https://phillips.vo.llnwd.net/v1/web_prod/images/layout/aside-icons-white-2x.png');
-        background-size: 50px 1250px;
-        background-position: -9px -57px;
-        background-repeat: no-repeat;
-      }
-    }
-  }
+ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
 }

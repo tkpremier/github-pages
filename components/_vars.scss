@@ -1,5 +1,100 @@
+// asset paths
+$asideIcons: "/images/layout/aside-icons.png";
+$asideIcons2x: "/images/layout/aside-icons-2x.png";
+$limelight: "https://phillips.vo.llnwd.net/v1/web_prod/";
+$basefontsize: 16px;
+$seroWebPro: "SeroWebPro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$seroBold: "SeroBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$seroMedium: "SeroMedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$seroMediumItalic: "SeroMediumItalic", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$seroItalic: "SeroItalic", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$seroLight: "SeroLight", "HelVetica Neue", "Helvetica", Arial, sans-serif;
+$seroThin: "SeroThin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$portrait: "Portrait", serif;
+$portraitItalic: "PortraitItalic", serif;
+$jhengHei: "Microsoft JhengHei", "微軟正黑體", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$neueHaasItalic: "NeueHaasItalic";
+$neueHaasMedium: "NeueHaasMedium65", Helvetica, Arial, sans-serif;
+$neueHaasBold: "NeueHaasBold75", Helvetica, Arial, sans-serif;
+$neueHaasMdItalic: "NeueHaasMdItalic", Helvetica, Arial, sans-serif;
+$neueHaasBoldItalic: "NeueHaasBdItalic", $neueHaasMdItalic;
+$neueHaasRoman: "NeueHaasRoman", Helvetica, Arial, sans-serif;
+$garamondItalic: "GaramondItalic";
+$garamondSemiBold: "GaramondSemiBold", "Georgia", serif;
+$pingFangRegular: "PingFangRegular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$pingFangBold: "PingFangBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$pingFangHeavy: "PingFangHeavy", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$pingFangMedium: "PingFangMedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$pingFangLight: "PingFangLight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$pingFangExtraLight: "PingFangExtraLight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$mobileHeader: 60px;
+$saleBanner: 43px;
+$tiny-font: 12;
+$medium-font: 15;
+$lg-font: 18;
+$xlg-font: 25;
+$tiny-fontsize: 12px;
+$sm-fontsize: 13px;
+$medium-fontsize: 15px;
+$basefontsize: 16px;
+$lg-fontsize: 18px;
+$extra-large-fontsize: 25px;
+
+// marginsizes
+$marginsize: 30px;
+$sm-marginsize: 15px;
+$md-marginsize: 30px;
+$mobileMargin: 15px;
+$asidewidth: 225px;
+
+// responsive breakpoints
+$tiny-bp: 321px;
+$sm-bp: 720px;
+$large-phone-bp: 624px;
+$md-bp: 1020px;
+$show-info-bp: 867px;
+$ipad-landscape-bp: 1024px;
+$lg-bp: 1560px;
+$xl-bp: 1900px;
+$mobileHeader: 60px;
+$desktopHeader: 90px;
+$desktopHeaderBP: 1021px;
+$mobileSaleBanner: 65px;
+$desktopSaleBanner: 43px;
+$maxContainer: 1443px;
+
+// colors
+$ryan-grey: #adadad;
+$ryan-dark-grey: #7d7d7d;
+$ryan-light-grey: #f4f4f4;
+$ryan-zambezi: #5b5b5b;
+$ryan-night-black: #323232;
+$ryan-soft-black: #535050;
+$ryan-cornflower-blue: #4a90e2;
+$ryan-white: #fafafa;
+$sold-red: #dc116d;
+$error-red: #ff0000;
+$deep-pink: #ff0086;
+$opaque-grey: rgba(0, 0, 0, 0.9);
+$black: #000;
+$white: #fff;
+$slate-grey: #eaeaea;
+$success-green: rgba(0, 200, 0, 0.5);
+$failure-red: rgba(200, 0, 0, 0.5);
+$borderColor: #ccc;
+$placeholder-grey: rgb(117, 117, 117);
+$borderColor: #ccc; //used as border color and hr
+$borderDark: #000;
+$borderMid: #a4a4a4;
+$greyOfTheBeast: #666;
+$dark: #999;
+$midDark: #a4a4a4;
+$midLight: #dfdfdf;
+$light: #f2f2f2;
+$hairline-grey: #9b9b9b;
+
 @mixin override-button-defaults {
-	background: none;
-	border: none;
-	outline: none;
+  background: none;
+  border: none;
+  outline: none;
 }

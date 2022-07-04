@@ -5,15 +5,16 @@
 }
 
 .grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 47.5%);
+  justify-items: center;
   align-items: center;
-  justify-content: center;
   flex-wrap: wrap;
   max-width: 800px;
   margin-top: 3rem;
-  @media (max-width: 600px) {
+  @media (mm-width: 600px) {
+    column-gap: 5%;
     width: 100%;
-    flex-direction: column;
   }
 }
 

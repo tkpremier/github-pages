@@ -21,7 +21,7 @@
 }
 .slider {
   position: relative;
-  height: 500px;
+  min-height: 500px;
   width: 100%;
   margin: 50px auto;
   &Track {
@@ -74,7 +74,7 @@
   cursor: pointer;
   z-index: 10;
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     display: block;
     width: 28px;
