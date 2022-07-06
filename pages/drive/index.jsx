@@ -1,14 +1,14 @@
-import React, { Fragment } from "react";
-import { format, millisecondsToHours, millisecondsToMinutes } from "date-fns";
-import { isNull } from "lodash";
-import Link from "next/link";
-import Drawer from "../../components/Drawer";
-import styles from "../../components/grid.module.scss";
-import Layout from "../../components/layout";
-import { getDrive } from "../../services/drive";
-import { getDriveFile } from "../../services/db";
+import React, { Fragment } from 'react';
+import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
+import { isNull } from 'lodash';
+import Link from 'next/link';
+import Drawer from '../../components/Drawer';
+import styles from '../../components/grid.module.scss';
+import Layout from '../../components/layout';
+import { getDrive } from '../../services/drive';
+import { getDriveFile } from '../../services/db';
 
-const getImageLink = (link = "", endStr = "s220", split = "s220") => {
+const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
   return `${base}${endStr}`;
 };
@@ -18,7 +18,7 @@ const getDuration = milliseconds => {
   const hours = hour * 60 * 60 * 1000;
   const min = millisecondsToMinutes(parseInt(milliseconds - hours, 10));
   remainder = (remainder - min * 60 * 1000) / 1000;
-  const duration = `${hour > 0 ? `0${hour} hours, ` : ""}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
+  const duration = `${hour > 0 ? `0${hour} hours, ` : ''}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
   return duration;
 };
 const getDriveFromApi = async () => {
@@ -27,7 +27,7 @@ const getDriveFromApi = async () => {
   const files = data.files.map(f => {
     // return f;
     const dbFile = dbData.find(d => d.id === f.id);
-    return typeof dbFile === "undefined"
+    return typeof dbFile === 'undefined'
       ? f
       : {
           ...f,
@@ -48,11 +48,23 @@ export async function getServerSideProps() {
 }
 
 const Drive = props => {
-  const folders = props.data.filter(d => d.mimeType === "application/vnd.google-apps.folder");
+  const folders = props.data.filter(d => d.mimeType === 'application/vnd.google-apps.folder');
   return (
     <Layout drive>
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here's what we've been up to....</p>
+      <fieldset className={styles.gridControls}>
+        <button type="button" onClick={handleGetMoreFromDb}>{`Get More : ${list.slice(0, end).length}`}</button>
+        <select defaultValue={sortBy} onChange={handleSort}>
+          <option value="">Choose Sort</option>
+          <option value="createdTime-desc">Created - Latest</option>
+          <option value="createdTime-asc">Created - Earliest</option>
+          <option value="lastViewed-desc">Viewed - Latest</option>
+          <option value="lastViewed-asc">Viewed - Earliest</option>
+          <option value="duration-desc">Duration - Longest</option>
+          <option value="duration-asc">Duration - shortest</option>
+        </select>
+      </fieldset>
       <ul className={styles.grid}>
         {props.data.map(drive => (
           <li className={styles.gridItem} key={drive.id}>
@@ -63,7 +75,7 @@ const Drive = props => {
               <Fragment>
                 <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
                   <img
-                    src={getImageLink(drive.thumbnailLink, "s330", "s220")}
+                    src={getImageLink(drive.thumbnailLink, 's330', 's220')}
                     referrerPolicy="no-referrer"
                     loading="lazy"
                   />
@@ -82,17 +94,17 @@ const Drive = props => {
               <br />
               <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
             </p>
-            {drive.mimeType.startsWith("video") || drive.mimeType.startsWith("image") ? (
+            {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
               <p>
                 <strong>Model</strong>:&nbsp;
                 {!isNull(drive.modelId) ? (
                   drive.modelId.map(n => (
-                    <Link href={`/model/${n}`}>
+                    <Link href={`/model/${n}`} key={drive.modelId}>
                       <a>{n}</a>
                     </Link>
                   ))
                 ) : (
-                  <Link href={`/add?drive=${drive.id}`}>
+                  <Link href={`/add?drive=${drive.id}`} key={`add-model-${drive.id}`}>
                     <a>Add Model</a>
                   </Link>
                 )}
@@ -103,7 +115,7 @@ const Drive = props => {
                 <p>{drive.mimeType}</p>
                 <p>
                   <strong>Last viewed:</strong>&nbsp;
-                  {drive.viewedByMeTime || "Never"}
+                  {drive.viewedByMeTime || 'Never'}
                 </p>
                 {drive.videoMediaMetadata ? (
                   <p>

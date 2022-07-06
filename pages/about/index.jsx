@@ -32,16 +32,11 @@ export default function About({ data }) {
         </a>
       </p>
       <ul className="faq" style={{ maxWidth: '100%' }}>
-        <li>A good friend recommended me to start coding HTML and CSS.</li>
-        <li>
-          Started following tutorials, had one website, and then yada, yada, yada...eventually landed a role as a{' '}
-          <strong>Salaried Specialist</strong> for Robert Half, International.{' '}
-        </li>
-        <Drawer header={posts[2].name}>
+        <Drawer header={posts[2].name} closed>
           <ul>
-            {posts[2].description.split(';').map(d => {
-              return <li key={d}>{d}</li>;
-            })}
+            {posts[2].description.split(';').map(d => (
+              <li key={d}>{d}</li>
+            ))}
           </ul>
         </Drawer>
 

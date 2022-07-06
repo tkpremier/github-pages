@@ -1,19 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
-import PropTypes from "prop-types";
-import classNames from "classnames";
-import styles from "./drawer.module.css";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import styles from './drawer.module.css';
 
 const Drawer = props => {
   const [closed, toggleEl] = useState(props.closed);
-  const [maxHeight, setMaxHeight] = useState(props.closed ? "none" : "auto");
+  const [maxHeight, setMaxHeight] = useState(props.closed ? 'none' : 'auto');
   const content = useRef(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       setMaxHeight(`${content.current.scrollHeight}px`);
     }
   }, []);
-  const handleToggle = () => toggleEl(!closed);
+  const handleToggle = useCallback(() => {
+    toggleEl(!closed);
+  }, [closed]);
+
   return (
     <li className={classNames(styles.expandable, { closed })}>
       <button
@@ -43,7 +46,7 @@ const Drawer = props => {
 };
 
 Drawer.defaultProps = {
-  className: "",
+  className: '',
   closed: false,
   isRoot: false
 };

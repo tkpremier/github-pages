@@ -1,32 +1,25 @@
 {
-	"extends": ["prettier"],
-	"plugins": ["react", "react-hooks", "prettier"],
-	"env": {
-		"browser": true,
-		"node": true,
-		"es6": true
-	},
-	"rules": {
-		"quote-props": ["error", "as-needed", { "unnecessary": false }],
-		"comma-dangle": ["error", "never"],
-		"func-names": ["off"],
-		"react/destructuring-assignment": ["off"],
-		"react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
-		"react-hooks/exhaustive-deps": "warn", // Checks effect dependencies,
-		"no-confusing-arrow": ["warn"],
-		"no-console": ["warn", { "allow": ["warn", "error"] }],
-		"object-shorthand": ["error", "methods"],
-		"prettier/prettier": ["off"],
-		"arrow-body-style": ["error", "as-needed", { "requireReturnForObjectLiteral": false }],
-		"linebreak-style": 0,
-		"no-nested-ternary": ["off"]
-	},
-	"parserOptions": {
-		"ecmaVersion": 2016,
-		"sourceType": "module",
-		"ecmaFeatures": {
-			"experimentalObjectRestSpread": true,
-			"experimentalDecorators": true
-		}
-	}
+  "extends": ["prettier"],
+  "plugins": ["react", "react-hooks", "prettier"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "quote-props": ["error", "as-needed", { "unnecessary": false }],
+    "comma-dangle": ["error", "never"],
+    "func-names": ["off"],
+    "react/destructuring-assignment": ["off"],
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies,
+    "no-confusing-arrow": ["warn"],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "object-shorthand": ["error", "methods"],
+    "prettier/prettier": ["off"],
+    "arrow-body-style": ["error", "as-needed", { "requireReturnForObjectLiteral": false }],
+    "linebreak-style": 0,
+    "no-nested-ternary": ["off"]
+  },
+  "parser": "@babel/eslint-parser"
 }

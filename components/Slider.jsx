@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState, Fragment } from "react";
-import PropTypes from "prop-types";
-import classNames from "classnames";
-import styles from "./carousel.module.scss";
+import React, { useRef, useCallback, useEffect, useState, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import styles from './carousel.module.scss';
 
 const Slider = props => {
   const carouselRef = useRef(null);
@@ -21,9 +21,6 @@ const Slider = props => {
     if (carouselRef.current !== null) {
       const newItemWidth = Math.ceil(carouselRef.current.offsetWidth / state.itemsPerSlide);
       if (newItemWidth !== state.itemWidth) {
-        console.log("itemWidth: ", newItemWidth);
-
-        console.log("wrapperWidth: ", newItemWidth * (props.children.length + 2));
         setState({
           ...state,
           itemWidth: newItemWidth,
@@ -59,33 +56,31 @@ const Slider = props => {
       }
     };
   }, []);
-  const changeIndex = int => {
-    let { curIndex } = state;
-    if ((int === 1 && curIndex === props.children.length) || (int === -1 && curIndex === -1)) {
-      return null;
+  const handleClick = useCallback(
+    e => {
+      const int = parseInt(e.target.value, 10);
+      if ((int === 1 && state.curIndex === props.children.length) || (int === -1 && state.curIndex === -1)) {
+        return null;
+      }
+      setState(curr => ({
+        ...curr,
+        curIndex: (curr.curIndex += int),
+        animating: true
+      }));
+    },
+    [state.curIndex]
+  );
+  const handleTransitionEnd = useCallback(() => {
+    if (state.curIndex !== -1 && state.curIndex !== props.children.length) {
+      return;
     }
-    setState({
-      ...state,
-      curIndex: (curIndex += int),
-      animating: true
-    });
-  };
-  const handleClick = e => {
-    changeIndex(parseInt(e.target.value, 10));
-  };
-  const handleTransitionEnd = e => {
-    setState({
-      ...state,
+    setState(curr => ({
+      ...curr,
       animating: false,
       curIndex:
-        state.curIndex === -1
-          ? props.children.length - 1
-          : state.curIndex === props.children.length
-          ? 0
-          : state.curIndex
-    });
-  };
-  const carouselData = [props.children[props.children.length - 1], ...props.children, props.children[0]];
+        curr.curIndex === -1 ? props.children.length - 1 : curr.curIndex === props.children.length ? 0 : curr.curIndex
+    }));
+  }, [state.curIndex]);
   return (
     <div className={classNames(styles.slider, props.classNames)} ref={carouselRef}>
       {props.carouselTitle.length > 0 ? (
@@ -111,27 +106,29 @@ const Slider = props => {
             />
           </Fragment>
         ) : null}
-        {carouselData ? (
-          <ul
-            className={classNames(styles.carouselTrack, { [styles.carouselTrackIsAnimating]: state.animating })}
-            style={{
-              width: `${state.wrapperWidth}px`,
-              transform: `translateX(-${state.itemWidth * (state.curIndex + 1)}px)`
-            }}
-            onTransitionEnd={handleTransitionEnd}
-          >
-            {carouselData.map(child => (
-              <li
-                style={{
-                  width: `${state.itemWidth}px`
-                }}
-                key={child.props.driveId}
-              >
-                {child}
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        <ul
+          className={classNames(styles.carouselTrack, { [styles.carouselTrackIsAnimating]: state.animating })}
+          style={{
+            width: `${state.wrapperWidth}px`,
+            transform: `translateX(-${state.itemWidth * (state.curIndex + 1)}px)`
+          }}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {[props.children[props.children.length - 1], ...props.children, props.children[0]].map((child, i) => (
+            <li
+              style={{
+                width: `${state.itemWidth}px`
+              }}
+              key={
+                i === 0 || i === props.children.length + 1
+                  ? `${child.props.children.key}-clone`
+                  : child.props.children.key
+              }
+            >
+              {child}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -139,8 +136,8 @@ const Slider = props => {
 
 Slider.defaultProps = {
   autoplay: false,
-  carouselTitle: "Slider",
-  carouselDesc: "Enter description",
+  carouselTitle: 'Slider',
+  carouselDesc: 'Enter description',
   interval: 5000,
   loop: false,
   pagination: false
@@ -154,7 +151,7 @@ Slider.propTypes = {
   interval: PropTypes.number,
   loop: PropTypes.bool,
   pagination: PropTypes.bool,
-  data: PropTypes.arrayOf(PropTypes.string).isRequired
+  children: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.element, PropTypes.node])).isRequired
 };
 
 export default Slider;

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import serialize from "form-serialize";
-import Link from "next/link";
-import Form from "../../components/Form";
-import Layout from "../../components/layout";
-import layoutStyles from "../../styles/layout.module.scss";
-import handleResponse from "../../utils/handleResponse";
+import React, { useCallback, useState } from 'react';
+import serialize from 'form-serialize';
+import Link from 'next/link';
+import Form from '../../components/Form';
+import Layout from '../../components/layout';
+import layoutStyles from '../../styles/layout.module.scss';
+import handleResponse from '../../utils/handleResponse';
 
 export async function getServerSideProps(context) {
   const query = context.query || {};
@@ -17,40 +17,60 @@ export async function getServerSideProps(context) {
 
 const AddPage = props => {
   const [response, setStatus] = useState({
-    status: "",
+    status: '',
     data: {}
   });
-  const handleSubmit = e => {
+  const handleSubmit = useCallback(e => {
     e.preventDefault();
     const form = e.target;
     const data = serialize(form, { hash: true });
     const options = {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json;charset=utf-8"
+        'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify(data)
     };
-    fetch("http://localhost:9000/api/experience", options)
+    fetch('http://localhost:9000/api/experience', options)
       .then(handleResponse)
       .then(res => setStatus(res))
-      .catch(err => console.log("err: ", err));
-  };
-  const handleSubmitModel = e => {
+      .catch(err => console.log('err: ', err));
+  }, []);
+  const handleSubmitModel = useCallback(e => {
     e.preventDefault();
     const form = e.target;
     const data = serialize(form, { hash: true });
-    fetch("/api/model", {
-      method: "POST",
+    fetch('/api/model', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json;charset=utf-8"
+        'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify(data)
     })
       .then(handleResponse)
       .then(res => setStatus(res))
-      .catch(err => console.log("err: ", err));
-  };
+      .catch(err => console.log('err: ', err));
+  }, []);
+  const handleInterview = useCallback(e => {
+    e.preventDefault();
+    const form = e.target;
+    const data = serialize(form, { hash: true });
+    const date = new Date(data.date);
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({ ...data, date })
+    };
+    fetch('http://localhost:9000/api/interview', options)
+      .then(handleResponse)
+      .then(res => {
+        console.log('res: ', res);
+        setStatus(res);
+      })
+      .catch(err => console.log('err: ', err));
+  }, []);
   return (
     <Layout>
       <h1>Add something about yourself.</h1>
@@ -88,7 +108,27 @@ const AddPage = props => {
             </label>
             <label htmlFor="exp-desc">
               Drive Ids
-              <input type="text" name="driveIds" placeholder="Drive Ids" defaultValue={props.query.drive || ""} />
+              <input type="text" name="driveIds" placeholder="Drive Ids" defaultValue={props.query.drive || ''} />
+            </label>
+            <input type="submit" value="Update" />
+          </Form>
+        </div>
+        <div className={layoutStyles.card}>
+          <Form onSubmit={handleInterview}>
+            <h3>About TK's interviews &#x1F935;</h3>
+            <p>Add about your chariable donations, when, where, who, how long were these donations?</p>
+
+            <label htmlFor="interview-company">
+              Company
+              <input type="text" name="company" required placeholder="Name" id="interview-company" />
+            </label>
+            <label htmlFor="interview-date">
+              Date
+              <input type="text" name="date" placeholder="Date" />
+            </label>
+            <label htmlFor="interview-retro">
+              Platform
+              <textarea name="retro" id="interview-retro" placeholder="Retrospective" rows={30} />
             </label>
             <input type="submit" value="Update" />
           </Form>

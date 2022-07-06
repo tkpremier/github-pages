@@ -1,10 +1,8 @@
-import format from "date-fns/format";
-import { isNull, camelCase, snakeCase } from "lodash";
-const { google } = require("googleapis");
-import { authorize } from "./drive";
-import dbQuery from "../db/dev/dbQuery";
-import { isValidEmail, validatePassword, isEmpty } from "../utils/validations";
-import { errorMessage, successMessage, status } from "../utils/status";
+import format from 'date-fns/format';
+import { isNull, camelCase, snakeCase } from 'lodash';
+import dbQuery from '../db/dev/dbQuery';
+import { isValidEmail, validatePassword, isEmpty } from '../utils/validations';
+import { errorMessage, successMessage, status } from '../utils/status';
 
 export const getExp = async () => {
   const getModelQuery = `SELECT * FROM
@@ -13,20 +11,19 @@ export const getExp = async () => {
     const { rows } = await dbQuery.query(getModelQuery);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
-      console.log("There are no models");
+      console.log('There are no models');
       return { data: [] };
       // errorMessage.error = 'There are no models';
       // return res.status(status.notfound).send(errorMessage);
     }
     return { data: dbResponse };
   } catch (error) {
-    console.log("An error occurred", error);
+    console.log('An error occurred', error);
     // errorMessage.error = 'An error Occured';
     // return res.status(status.error).send(errorMessage);
     return { data: [] };
   }
 };
-
 export const addExp = async (req, res) => {
   const { name, description } = req.body;
   const createExpQuery = `INSERT INTO exp(name, description) VALUES($1, $2, $3) returning *`;
@@ -35,23 +32,62 @@ export const addExp = async (req, res) => {
     const { rows } = await dbQuery.query(createExpQuery, values);
     const dbResponse = rows[0];
     successMessage.data = dbResponse;
-    console.log("added");
+    console.log('added');
     return res.status(status.success).json(successMessage);
   } catch (error) {
-    console.log("db error: ", error);
-    errorMessage.error = "Operation was not successful";
+    console.log('db error: ', error);
+    errorMessage.error = 'Operation was not successful';
     return res.status(status.error).send(errorMessage);
   }
 };
-
+export const addInterview = async (req, res) => {
+  const { company, date, retro } = req.body;
+  const createExpQuery = `INSERT INTO interview(company, retro, date) VALUES($1, $2, $3) returning *`;
+  const values = [company, retro, date];
+  try {
+    const { rows } = await dbQuery.query(createExpQuery, values);
+    const dbResponse = rows[0];
+    successMessage.data = dbResponse;
+    return res.status(status.success).json(successMessage);
+  } catch (error) {
+    console.log('db error: ', error);
+    errorMessage.error = 'Operation was not successful';
+    return res.status(status.error).send(errorMessage);
+  }
+};
+export const getInterview = async () => {
+  const getModelQuery = `SELECT * FROM
+  interview ORDER BY id DESC`;
+  try {
+    const { rows } = await dbQuery.query(getModelQuery);
+    const dbResponse = rows;
+    if (dbResponse[0] === undefined) {
+      console.log('There are no interviews');
+      return { data: [] };
+      // errorMessage.error = 'There are no models';
+      // return res.status(status.notfound).send(errorMessage);
+    }
+    return {
+      data: dbResponse.map(r => ({
+        ...r,
+        date: format(r.date, 'MM/dd/yyyy')
+      }))
+    };
+  } catch (error) {
+    console.log('An error occurred fetching interviews', error);
+    // errorMessage.error = 'An error Occured';
+    // return res.status(status.error).send(errorMessage);
+    return { data: [] };
+  }
+};
 export const createModel = async (req, res) => {
   const { driveIds, modelName, platform } = req.body;
   const createdOn = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
   if (isEmpty(modelName) || isEmpty(platform)) {
-    errorMessage.error = "Name or platform cannot be empty";
+    errorMessage.error = 'Name or platform cannot be empty';
     return res.status(status.bad).send(errorMessage);
   }
-  const ids = driveIds.length > 0 ? driveIds.split(";").map(id => id.trim()) : [];
+  const ids = driveIds.length > 0 ? driveIds.split(';').map(id => id.trim()) : [];
   const hasIds = ids.length > 0;
   const createModelQuery = hasIds
     ? `INSERT INTO model(name, platform, created_on, drive_ids) VALUES($1, $2, $3, $4) returning *`
@@ -64,11 +100,11 @@ export const createModel = async (req, res) => {
     const { rows } = await dbQuery.query(createModelQuery, values);
     const dbResponse = rows[0];
     successMessage.data = dbResponse;
-    console.log("createModel success: ", successMessage);
+    console.log('createModel success: ', successMessage);
     return res.status(status.success).json(successMessage);
   } catch (error) {
-    console.log("db error: ", error);
-    errorMessage.error = "Operation was not successful";
+    console.log('db error: ', error);
+    errorMessage.error = 'Operation was not successful';
     return res.status(status.error).send(errorMessage);
   }
 };
@@ -105,17 +141,17 @@ export const createNewDriveFile = async (req, res) => {
     webViewLink,
     webContentLink,
     thumbnailLink,
-    mimeType = "",
+    mimeType = '',
     videoMediaMetadata
   } = req.body;
   let viewedDate = req.body.viewedByMeTime || null;
   const duration = videoMediaMetadata ? parseInt(videoMediaMetadata.durationMillis, 10) : null;
-  let type = "folder";
-  if (mimeType.indexOf("image") > -1) {
-    type = "image";
+  let type = 'folder';
+  if (mimeType.indexOf('image') > -1) {
+    type = 'image';
   }
-  if (mimeType.indexOf("video") > -1) {
-    type = "video";
+  if (mimeType.indexOf('video') > -1) {
+    type = 'video';
   }
   const values = [
     id,
@@ -134,8 +170,8 @@ export const createNewDriveFile = async (req, res) => {
     successMessage.data = dbResponse;
     return res.status(status.created).send(successMessage);
   } catch (error) {
-    console.log("error?: ", error);
-    errorMessage.error = "Operation was not successful";
+    console.log('error?: ', error);
+    errorMessage.error = 'Operation was not successful';
     return res.status(status.error).send(error);
   }
 };
@@ -147,7 +183,7 @@ export const getDriveFile = async () => {
     const { rows } = await dbQuery.query(getDriveFileQuery);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
-      console.log("There are no drive files");
+      console.log('There are no drive files');
       return { data: [] };
       // errorMessage.error = 'There are no models';
       // return res.status(status.notfound).send(errorMessage);
@@ -155,7 +191,7 @@ export const getDriveFile = async () => {
     return {
       data: dbResponse.map(f => {
         return Object.keys(f).reduce((o, k) => {
-          const dateKeys = ["createdOn", "createdTime", "lastViewed"];
+          const dateKeys = ['createdOn', 'createdTime', 'lastViewed'];
           o[camelCase(k)] =
             dateKeys.indexOf(camelCase(k)) > -1
               ? !isNull(f[k])
@@ -167,7 +203,7 @@ export const getDriveFile = async () => {
       })
     };
   } catch (error) {
-    console.log("An error occurred", error);
+    console.log('An error occurred', error);
     // errorMessage.error = 'An error Occured';
     // return res.status(status.error).send(errorMessage);
     return { data: [] };
@@ -181,18 +217,18 @@ export const getDriveFileApi = async (req, res) => {
     const { rows } = await dbQuery.query(getDriveFileQuery);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
-      errorMessage.error = "There are no drive files";
+      errorMessage.error = 'There are no drive files';
       return res.status(status.notfound).send(errorMessage);
     }
     return res.status(status.success).send({ data: dbResponse });
   } catch (error) {
-    console.log("An error occurred", error);
-    errorMessage.error = "An error Occured";
+    console.log('An error occurred', error);
+    errorMessage.error = 'An error Occured';
     return res.status(status.error).send(errorMessage);
   }
 };
 const updateModel = async data => {
-  console.log("updateModel data: ", data);
+  console.log('updateModel data: ', data);
   const query = `UPDATE drive
   SET ${data.shift()} = $1
   WHERE id = $2`;
@@ -209,7 +245,7 @@ const updateModel = async data => {
       data: dbResponse
     };
   } catch (error) {
-    console.log("An error occurred", error);
+    console.log('An error occurred', error);
     // errorMessage.error = 'An error Occured';
     // return res.status(status.error).send(errorMessage);
     return { data: [] };
@@ -229,8 +265,8 @@ export const updateModelApi = async (req, res) => {
     );
     return res.status(status.success).send(successMessage);
   } catch (error) {
-    errorMessage.error = "An error Occured";
-    console.log("error: ", error);
+    errorMessage.error = 'An error Occured';
+    console.log('error: ', error);
     return res.status(status.error).send(errorMessage);
   }
 };
@@ -244,7 +280,7 @@ export const getModel = async id => {
     const { rows } = await dbQuery.query(getModelQuery, value);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
-      console.log("There are no models");
+      console.log('There are no models');
       return { data: [] };
       // errorMessage.error = 'There are no models';
       // return res.status(status.notfound).send(errorMessage);
@@ -259,7 +295,7 @@ export const getModel = async id => {
       })
     };
   } catch (error) {
-    console.log("An error occurred", error);
+    console.log('An error occurred', error);
     // errorMessage.error = 'An error Occured';
     // return res.status(status.error).send(errorMessage);
     return { data: [] };
@@ -271,7 +307,7 @@ export const getModelApi = async (req, res) => {
     const { data } = await getModel(req.query.id);
     const dbResponse = data;
     if (dbResponse[0] === undefined) {
-      errorMessage.error = "That model does not exist";
+      errorMessage.error = 'That model does not exist';
       return res.status(status.notfound).send(errorMessage);
     }
     successMessage.data = dbResponse.map(f =>
@@ -283,8 +319,8 @@ export const getModelApi = async (req, res) => {
     );
     return res.status(status.success).send(successMessage);
   } catch (error) {
-    errorMessage.error = "An error Occured";
-    console.log("error: ", error);
+    errorMessage.error = 'An error Occured';
+    console.log('error: ', error);
     return res.status(status.error).send(errorMessage);
   }
 };
@@ -295,7 +331,7 @@ export const getModelList = async () => {
     const { rows } = await dbQuery.query(getModelQuery);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
-      console.log("There are no models");
+      console.log('There are no models');
       return { data: [] };
       // errorMessage.error = 'There are no models';
       // return res.status(status.notfound).send(errorMessage);
@@ -310,7 +346,7 @@ export const getModelList = async () => {
       )
     };
   } catch (error) {
-    console.log("An error occurred");
+    console.log('An error occurred');
     // errorMessage.error = 'An error Occured';
     // return res.status(status.error).send(errorMessage);
     return { data: [] };

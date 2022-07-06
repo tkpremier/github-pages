@@ -1,17 +1,15 @@
-import React from "react";
-import PropTypes from "prop-types";
-import styles from "./form.module.scss";
+import React from 'react';
+import PropTypes from 'prop-types';
+import styles from './form.module.scss';
 
-const Form = props => {
-  return (
-    <form className={styles.form} onSubmit={props.onSubmit}>
-      {props.children}
-    </form>
-  );
-};
+const Form = props => (
+  <form className={styles.form} onSubmit={props.onSubmit}>
+    {props.children}
+  </form>
+);
 
 Form.propTypes = {
-  children: PropTypes.oneOf([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]).isRequired,
   onSubmit: PropTypes.func.isRequired
 };
 export default Form;

@@ -1,11 +1,12 @@
-import { Component, createContext, useState } from "react";
-import Head from "next/head";
-import Link from "next/link";
-import styles from "../styles/layout.module.scss";
-import utilStyles from "../styles/utils.module.scss";
-import EventsEmitter from "../events";
+import { Component, createContext, useState } from 'react';
+import PropTypes from 'prop-types';
+import Head from 'next/head';
+import Link from 'next/link';
+import styles from '../styles/layout.module.scss';
+import utilStyles from '../styles/utils.module.scss';
+import EventsEmitter from '../events';
 
-const name = "TK Premier";
+const name = 'TK Premier';
 export const MyContext = createContext({
   addComment: () => {},
   comments: []
@@ -16,17 +17,16 @@ class Layout extends Component {
     this.state = {
       comments: []
     };
-    this.addComment = this.addComment.bind(this);
     this.eventsEmitter = new EventsEmitter();
-    this.eventsEmitter.on("addComment", e => this.addComment(e));
+    this.eventsEmitter.on('addComment', e => this.addComment(e));
   }
-  addComment(comment) {
+  addComment = comment => {
     this.setState({
       comments: [...this.state.comments, comment]
     });
-  }
+  };
   render() {
-    const { children, home } = this.props;
+    const { children, home, title } = this.props;
     const provider = {
       comments: this.state.comments,
       addComment: this.addComment
@@ -34,7 +34,7 @@ class Layout extends Component {
     return (
       <div className={styles.container}>
         <Head>
-          <title>TKPremier</title>
+          <title>{title}</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <header className={styles.header}>
@@ -71,34 +71,40 @@ class Layout extends Component {
         </MyContext.Provider>
         <main>
           <div className={styles.grid}>
-            <Link href="/about">
+            <Link href="/about" key="about">
               <a className={styles.card}>
                 <h3>About TK the Dev &rarr;</h3>
                 <p>Get to know me.</p>
               </a>
             </Link>
-            <Link href="/examples">
+            <Link href="/examples" key="examples">
               <a className={styles.card}>
                 <h3>Examples</h3>
                 <p>Check out some more standard components.</p>
               </a>
             </Link>
-            <Link href="/add">
+            <Link href="/add" key="add">
               <a className={styles.card}>
                 <h3>Add Data</h3>
                 <p>Learn by adding new data and &#x1F4AA; on them skills.</p>
               </a>
             </Link>
-            <Link href="/model">
+            <Link href="/interview" key="interview">
               <a className={styles.card}>
-                <h3>Models &rarr;</h3>
-                <p>My contacts.</p>
+                <h3>My Interview Experience</h3>
+                <p>Companies, dates, and feedback notes.</p>
               </a>
             </Link>
-            <Link href="/drive">
+            <Link href="/drive" key="drive">
               <a className={styles.card}>
                 <h3>Put that data to work, Tommy</h3>
                 <p>Show them how data can get sorted.</p>
+              </a>
+            </Link>
+            <Link href="/model" key="model">
+              <a className={styles.card}>
+                <h3>Models &rarr;</h3>
+                <p>My contacts.</p>
               </a>
             </Link>
           </div>
@@ -211,5 +217,13 @@ class Layout extends Component {
     );
   }
 }
+
+Layout.defaultProps = {
+  title: 'TK Premier'
+};
+
+Layout.propTypes = {
+  title: PropTypes.string
+};
 
 export default Layout;

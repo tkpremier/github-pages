@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
@@ -7,15 +7,14 @@ import Layout from '../../components/layout';
 import { binaryIterative, binaryRecursive, interpolationSearch } from '../../code-examples';
 import { selectionSort } from '../../code-examples/sort';
 
-function Learn({ props }) {
+function Learn() {
   const [selSort, setSelSort] = useState([]);
-  const handleSelectionSort = e => {
+  const handleSelectionSort = useCallback(e => {
     e.preventDefault();
     const { selectionSortArray } = serialize(e.target, { hash: true });
     const arr = selectionSortArray.split(' ');
-    console.log(arr);
     setSelSort(selectionSort(arr));
-  };
+  }, []);
   return (
     <Layout>
       <ul>
