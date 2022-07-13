@@ -1,7 +1,5 @@
 import pool from './pool';
 
-const fs = require('fs');
-
 pool.on('connect', () => {
   console.log('connected to the db');
 });
