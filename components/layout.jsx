@@ -67,9 +67,9 @@ class Layout extends Component {
           )}
         </header>
         <MyContext.Provider value={provider}>
-          <main>{children}</main>
+          <main className={styles.mainRoot}>{children}</main>
         </MyContext.Provider>
-        <main>
+        <main className={styles.mainRoot}>
           <div className={styles.grid}>
             <Link href="/about" key="about">
               <a className={styles.card}>
@@ -126,15 +126,6 @@ class Layout extends Component {
           </div>
         )}
         <style jsx>{`
-          main {
-            padding: 5rem 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-          }
-
           footer {
             width: 100%;
             height: 100px;

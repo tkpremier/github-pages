@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Profiler, Fragment, useCallback } from 'react';
 import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
 import { isNull } from 'lodash';
 import Link from 'next/link';
@@ -49,13 +49,15 @@ export async function getServerSideProps() {
 
 const Drive = props => {
   const folders = props.data.filter(d => d.mimeType === 'application/vnd.google-apps.folder');
+  const handleGetMore = null;
+  const handleSort = null;
   return (
     <Layout drive>
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here's what we've been up to....</p>
       <fieldset className={styles.gridControls}>
-        <button type="button" onClick={handleGetMoreFromDb}>{`Get More : ${list.slice(0, end).length}`}</button>
-        <select defaultValue={sortBy} onChange={handleSort}>
+        <button type="button" onClick={handleGetMore}>{`Get More`}</button>
+        <select onChange={handleSort}>
           <option value="">Choose Sort</option>
           <option value="createdTime-desc">Created - Latest</option>
           <option value="createdTime-asc">Created - Earliest</option>

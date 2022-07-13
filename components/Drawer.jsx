@@ -7,7 +7,6 @@ const Drawer = props => {
   const [closed, toggleEl] = useState(props.closed);
   const [maxHeight, setMaxHeight] = useState(props.closed ? 'none' : 'auto');
   const content = useRef(null);
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setMaxHeight(`${content.current.scrollHeight}px`);
@@ -16,7 +15,11 @@ const Drawer = props => {
   const handleToggle = useCallback(() => {
     toggleEl(!closed);
   }, [closed]);
-
+  useEffect(() => {
+    if (content.current.scrollHeight !== parseInt(maxHeight, 10)) {
+      setMaxHeight(`${content.current.scrollHeight}px`);
+    }
+  });
   return (
     <li className={classNames(styles.expandable, { closed })}>
       <button

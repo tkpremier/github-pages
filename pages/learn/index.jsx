@@ -4,20 +4,28 @@ import serialize from 'form-serialize';
 import Code from '../../components/Code';
 import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
-import { binaryIterative, binaryRecursive, interpolationSearch } from '../../code-examples';
-import { selectionSort } from '../../code-examples/sort';
+import {
+  binaryIterative,
+  binaryRecursive,
+  bubbleSortCode,
+  insertionSortCode,
+  selectionSortCode
+} from '../../code-examples';
+import { mergeSort } from '../../code-examples/sort';
 
 function Learn() {
-  const [selSort, setSelSort] = useState([]);
-  const handleSelectionSort = useCallback(e => {
+  const [sortedList, sortList] = useState([]);
+  const handleSort = useCallback(e => {
     e.preventDefault();
     const { selectionSortArray } = serialize(e.target, { hash: true });
-    const arr = selectionSortArray.split(' ');
-    setSelSort(selectionSort(arr));
+    const arr = selectionSortArray.split(' ').map(s => parseInt(s, 10));
+    if (arr.length > 0) {
+      sortList(mergeSort(arr, 0, arr.length - 1));
+    }
   }, []);
   return (
     <Layout>
-      <ul>
+      <ul className="root">
         <li>
           <a
             href="https://www.geeksforgeeks.org/analysis-of-algorithms-set-4-analysis-of-loops/"
@@ -27,18 +35,17 @@ function Learn() {
           >
             Analysis of Loops
           </a>
-        </li>
-        <ol>
-          <li>
-            <strong>O(1)</strong>: Time complexity of a function with no loops, recursion, and call to any other
-            non-constant function. A loop or recursion that runs a constant number of times is also considered as{' '}
-            <strong>O(1)</strong>.
-          </li>
-          <li>
-            <strong>O(n)</strong>: Time complexity of a loop is considered as <strong>O(n)</strong> if the loop
-            variables are incremented/decremented by a constant amt. Example:
-            <Code
-              text={`
+          <ol>
+            <li>
+              <strong>O(1)</strong>: Time complexity of a function with no loops, recursion, and call to any other
+              non-constant function. A loop or recursion that runs a constant number of times is also considered as{' '}
+              <strong>O(1)</strong>.
+            </li>
+            <li>
+              <strong>O(n)</strong>: Time complexity of a loop is considered as <strong>O(n)</strong> if the loop
+              variables are incremented/decremented by a constant amt. Example:
+              <Code
+                text={`
               // c is inc/dec constant
               for (let i = 0; i < n; i += c) {
                 // some O(1) expression
@@ -47,16 +54,16 @@ function Learn() {
                 // some O(1) expression
               }
               `}
-            />
-          </li>
-          <li>
-            <strong>
-              O(n<sup>c</sup>)
-            </strong>
-            : Time complexity of nested loops is equal to the number of times the innermost statement is executed.
-            Example:
-            <Code
-              text={`
+              />
+            </li>
+            <li>
+              <strong>
+                O(n<sup>c</sup>)
+              </strong>
+              : Time complexity of nested loops is equal to the number of times the innermost statement is executed.
+              Example:
+              <Code
+                text={`
               // c is inc/dec constant
               for (let i = 0; i < n; i += c) {
                 for (let j = 0; j < n; j += c) {
@@ -69,29 +76,29 @@ function Learn() {
                 }
               }
               `}
-            />
-            <br />
-            <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
-              Selection Sort
-            </a>{' '}
-            and{' '}
-            <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower">
-              Insertion Sort
-            </a>{' '}
-            have O(n<sup>2</sup>) time complexity.
-          </li>
-          <li>
-            <strong>
-              O(Log<sub>n</sub>)
-            </strong>
-            : Time complexity of loop is considered as{' '}
-            <strong>
-              O(Log<sub>n</sub>)
-            </strong>{' '}
-            if the loop variables are <srong>divided/multiplied</srong> by a constant amount. And also for a recursive
-            call in recursive function:
-            <Code
-              text={`
+              />
+              <br />
+              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
+                Selection Sort
+              </a>{' '}
+              and{' '}
+              <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower">
+                Insertion Sort
+              </a>{' '}
+              have O(n<sup>2</sup>) time complexity.
+            </li>
+            <li>
+              <strong>
+                O(Log<sub>n</sub>)
+              </strong>
+              : Time complexity of loop is considered as{' '}
+              <strong>
+                O(Log<sub>n</sub>)
+              </strong>{' '}
+              if the loop variables are <strong>divided/multiplied</strong> by a constant amount. And also for a
+              recursive call in recursive function:
+              <Code
+                text={`
               // c is inc/dec constant
               for (let i = 0; i < n; i *= c) {
                 // some O(1) expression
@@ -100,9 +107,9 @@ function Learn() {
                 // some O(1) expression
               }
               `}
-            />
-            <Code
-              text={`
+              />
+              <Code
+                text={`
               // recursive function
               const recursive = (n) => {
                 if (n === 0) return;
@@ -110,52 +117,52 @@ function Learn() {
                 recurseive(n-1);
               }
               `}
-            />
-            <p>
-              <a href="http://geeksquiz.com/binary-search/" target="_blank" rel="nofollower">
-                Binary Search(iterative implementation)
-              </a>{' '}
-              has{' '}
-              <strong>
-                O(Log<sub>n</sub>)
-              </strong>{' '}
-              time complexity.
-            </p>
-            <p>
-              The series that we get in the first loop is 1, c, c<sup>2</sup>, c<sup>3</sup>, ... c<sup>k</sup>. If we
-              put <em>k</em> equals to{' '}
-              <em>
-                Log<sub>c</sub>n
-              </em>
-              , we get{' '}
-              <em>
-                c
-                <sup>
+              />
+              <p>
+                <a href="http://geeksquiz.com/binary-search/" target="_blank" rel="nofollower">
+                  Binary Search(iterative implementation)
+                </a>{' '}
+                has{' '}
+                <strong>
+                  O(Log<sub>n</sub>)
+                </strong>{' '}
+                time complexity.
+              </p>
+              <p>
+                The series that we get in the first loop is 1, c, c<sup>2</sup>, c<sup>3</sup>, ... c<sup>k</sup>. If we
+                put <em>k</em> equals to{' '}
+                <em>
                   Log<sub>c</sub>n
-                </sup>
-              </em>
-              , which is <em>n</em>. &#x1F937;&#x200D;&#x2642;
-            </p>
-          </li>
-          <li>
-            <strong>
-              O(Log
-              <sub>
-                Log<sub>n</sub>
-              </sub>
-              )
-            </strong>
-            : Time complexity of loop is considered as{' '}
-            <strong>
-              O(Log
-              <sub>
-                Log<sub>n</sub>
-              </sub>
-              )
-            </strong>{' '}
-            if the loop variables are <srong>reduced/increased exponentially</srong> by a constant amount.
-            <Code
-              text={`
+                </em>
+                , we get{' '}
+                <em>
+                  c
+                  <sup>
+                    Log<sub>c</sub>n
+                  </sup>
+                </em>
+                , which is <em>n</em>. &#x1F937;&#x200D;&#x2642;
+              </p>
+            </li>
+            <li>
+              <strong>
+                O(Log
+                <sub>
+                  Log<sub>n</sub>
+                </sub>
+                )
+              </strong>
+              : Time complexity of loop is considered as{' '}
+              <strong>
+                O(Log
+                <sub>
+                  Log<sub>n</sub>
+                </sub>
+                )
+              </strong>{' '}
+              if the loop variables are <strong>reduced/increased exponentially</strong> by a constant amount.
+              <Code
+                text={`
               // c is constant greater than one
               for (let i = 2; i <- n; i = Math.pow(i, c)) {
                 // some O(1) expression
@@ -164,45 +171,33 @@ function Learn() {
                 // some O(1) expression
               }
               `}
-            />
-            <br />
-            <a
-              href="https://www.geeksforgeeks.org/time-complexity-loop-loop-variable-expands-shrinks-exponentially/"
-              target="_blank"
-              rel="nofollower"
-            >
-              More info
-            </a>
-          </li>
-          <li>
-            Time complexities of consecutive loops are calculated as{' '}
-            <strong>sum of time complexities in invidual loops</strong>.
-          </li>
-        </ol>
+              />
+              <br />
+              <a
+                href="https://www.geeksforgeeks.org/time-complexity-loop-loop-variable-expands-shrinks-exponentially/"
+                target="_blank"
+                rel="nofollower"
+              >
+                More info
+              </a>
+            </li>
+            <li>
+              Time complexities of consecutive loops are calculated as{' '}
+              <strong>sum of time complexities in invidual loops</strong>.
+            </li>
+          </ol>
+        </li>
         <li>
           Sorting Algorithms
           <ol>
             <li>
-              Flowchart for{' '}
-              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
-                Selection Sort
-              </a>
+              <Link href="/learn/sort/selection">
+                <a>
+                  <h3>Selection Sort</h3>
+                </a>
+              </Link>
               <br />
-              <Code
-                text={`
-                // sort(arr, n)
-                for (let i = 0; i < n-1; i++) {
-                  let min_index = i;
-                  for (let j = i + 1; j < n; j++) {
-                    // some O(1) expression
-                    if (arr[j] < arr[min_index]) {
-                      min_index = j;
-                    }
-                  }
-                  swap(arr[min_index], arr[i]);
-                }
-                `}
-              />
+              <Code text={selectionSortCode} />
               <br />
               <strong>Complexity Analysis of Selection Sort</strong>:<br />
               <strong>Time Complexity</strong>: O(N<sup>2</sup>) as there are two nested loops:
@@ -219,19 +214,104 @@ function Learn() {
                 never makes more than O(n) swaps and can be useful when memory write is a costly operation.
               </strong>
               <br />
-              <strong>Try it out</strong>:<br />
-              <strong>Output</strong>:&nbsp;{selSort.join(' ')}
-              <form onSubmit={handleSelectionSort}>
+              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
+                <em>Source</em>
+              </a>
+            </li>
+            <li>
+              <h3>Bubble Sort</h3>
+              <Code text={bubbleSortCode} />
+              <a href="https://www.geeksforgeeks.org/bubble-sort/" target="_blank" rel="nofollower">
+                <em>Source</em>
+              </a>
+            </li>
+            <li>
+              <Link href="/learn/sort/insertion">
+                <a>
+                  <h3>Insertion Sort</h3>
+                </a>
+              </Link>
+              <Code text={insertionSortCode} />
+              <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower">
+                <em>Source</em>
+              </a>
+            </li>
+            <li>
+              <h3>
+                Merge Sort (
+                <a href="https://www.geeksforgeeks.org/merge-sort/" target="_blank" rel="nofollower">
+                  <em>Source</em>
+                </a>
+                )
+              </h3>
+              <p>
+                The array is initially divided into two equal halves and then they are combined in a sorted manner.
+                <br />
+                We can think of it as a recursive algorithm that continuously splits the array in half until it cannot
+                be further divided. This means that if the array becomes empty or has only one element left, the
+                dividing will stop, i.e. it is the base case to stop the recursion.
+                <br />
+                If the array has multiple elements, we split the array into <em>halves</em> and recursively invoke the
+                merge sort on each of the halves. Finally, when both the halves are sorted, the merge operation is
+                applied.
+                <br />
+                Merge operation is the process of taking two smaller sorted arrays and combining them to eventually make
+                a larger one.
+              </p>
+              <h4>Pseudocode</h4>
+              <ul>
+                <li>
+                  Declare <pre>left</pre> variable to 0 and <pre>right</pre> variable to n-1
+                </li>
+                <li>
+                  Find mid by medium formula. <pre>mid = (left + right)/2</pre>
+                </li>
+                <li>
+                  Call <pre>merge sort</pre> on <pre>(left,mid)</pre>
+                </li>
+                <li>
+                  Call <pre>merge sort</pre> on <pre>(mid+1,right)</pre>
+                </li>
+                <li>
+                  Continue until{' '}
+                  <pre>
+                    <strong>left &lt; right</strong>
+                  </pre>
+                </li>
+                <li>Then call merge function to perform merge sort.</li>
+              </ul>
+              <h4>Algorithm</h4>
+              <ol>
+                <li>start</li>
+                <li>declare array and left, right, mid variable</li>
+                <li>
+                  perform merge function
+                  <br />
+                  mergesort(array, left, right)
+                  <br />
+                  if left &gt; right
+                  <br />
+                  return
+                  <br />
+                  mid= (left+right)/2
+                  <br />
+                  mergesort(array, left, mid)
+                  <br />
+                  mergesort(array, mid+1, right)
+                  <br />
+                  merge(array, left, mid, right)
+                </li>
+                <li>Stop</li>
+              </ol>
+              <strong>Results</strong>: {sortedList.length > 0 ? sortedList.join(' ') : null}
+              <form onSubmit={handleSort}>
                 <label htmlFor="selection-sort-array">
-                  Type in words in random order separated by spaces
+                  Type in numbers in random order separated by spaces
                   <input type="text" name="selectionSortArray" id="selection-sort-array" />
                 </label>
                 <input type="submit" value="Try it out" />
               </form>
             </li>
-            <li>Bubble Sort</li>
-            <li>Insertion Sort</li>
-            <li>Merge Sort</li>
             <li>QuickSort</li>
             <li>HeapSort</li>
           </ol>

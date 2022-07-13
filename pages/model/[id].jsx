@@ -1,13 +1,13 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { isNull } from "lodash";
-import { format, millisecondsToHours, millisecondsToMinutes } from "date-fns";
-import serialize from "form-serialize";
-import Drawer from "../../components/Drawer";
-import Layout from "../../components/layout";
-import Slider from "../../components/Slider";
+import React, { Fragment, useEffect, useState } from 'react';
+import { isNull } from 'lodash';
+import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
+import serialize from 'form-serialize';
+import Drawer from '../../components/Drawer';
+import Layout from '../../components/layout';
+import Slider from '../../components/Slider';
 // import { getDriveFile } from "../../services/drive";
-import { getModel } from "../../services/db";
-import handleResponse from "../../utils/handleResponse";
+import { getModel } from '../../services/db';
+import handleResponse from '../../utils/handleResponse';
 
 export async function getServerSideProps(context) {
   // const drive = getDriveFile();
@@ -26,17 +26,17 @@ const getDuration = milliseconds => {
   const hours = hour * 60 * 60 * 1000;
   const min = millisecondsToMinutes(parseInt(milliseconds - hours, 10));
   remainder = (remainder - min * 60 * 1000) / 1000;
-  const duration = `${hour > 0 ? `0${hour} hours, ` : ""}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
+  const duration = `${hour > 0 ? `0${hour} hours, ` : ''}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
   return duration;
 };
-const getImageLink = (link = "", endStr = "s220", split = "s220") => {
+const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
   return `${base}${endStr}`;
 };
 
 const Card = props => {
   const [contact, updateCard] = useState({
-    status: "",
+    status: '',
     data: props
   });
   // const [contact, updateCard] = useState({
@@ -47,7 +47,7 @@ const Card = props => {
     fetch(`/api/drive/${props.driveId}`)
       .then(handleResponse)
       .then(res => {
-        console.log("res: ", res);
+        console.log('res: ', res);
         if (res.data.thumbnailLink !== props.thumbnailLink) {
         }
         updateCard({
@@ -61,11 +61,11 @@ const Card = props => {
       .catch(err => console.log(err));
   }, []);
   const handleAdd = e => {
-    const data = ["model_id", [parseInt(e.target.value, 10)], e.target.dataset.drive];
+    const data = ['model_id', [parseInt(e.target.value, 10)], e.target.dataset.drive];
     const opt = {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json;charset=utf-8"
+        'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify(data)
     };
@@ -79,16 +79,16 @@ const Card = props => {
             modelId: contact.data.id
           }
         });
-        console.log("success updating!: ", r);
+        console.log('success updating!: ', r);
       })
-      .catch(err => console.log("error updating", err));
+      .catch(err => console.log('error updating', err));
   };
   return (
-    <div>
+    <div key={contact.data.driveId}>
       <a href={contact.data.webViewLink} target="_blank" rel="noreferrer nofollower">
-        {typeof contact.data.thumbnailLink !== "undefined" && !isNull(contact.data.thumbnailLink) ? (
+        {typeof contact.data.thumbnailLink !== 'undefined' && !isNull(contact.data.thumbnailLink) ? (
           <img
-            src={getImageLink(contact.data.thumbnailLink, "s1260", "s220")}
+            src={getImageLink(contact.data.thumbnailLink, 's1260', 's220')}
             referrerPolicy="no-referrer"
             loading="lazy"
           />
@@ -114,40 +114,40 @@ const Card = props => {
 
 const Model = props => {
   const [data, setData] = useState(props.data);
-  console.log("props: ", props);
+  console.log('props: ', props);
   const handleAddDrive = e => {
     e.preventDefault();
     const form = e.target;
     const data = serialize(form, { hash: true });
-    fetch("/api/model", {
-      method: "POST",
+    fetch('/api/model', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json;charset=utf-8"
+        'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify(data)
     })
       .then(handleResponse)
       .then(res => setStatus(res))
-      .catch(err => console.log("err: ", err));
+      .catch(err => console.log('err: ', err));
   };
   console.log(data);
   const images =
-    data.filter(d => d.type === "image").length > 0 ? (
+    data.filter(d => d.type === 'image').length > 0 ? (
       <Slider carouselTitle="Images">
         {data
-          .filter(d => d.type === "image")
+          .filter(d => d.type === 'image')
           .map((d, i) => (
-            <Card {...d} />
+            <Card {...d} key={d.driveId} />
           ))}
       </Slider>
     ) : null;
   const videos =
-    data.filter(d => d.type === "video").length > 0 ? (
+    data.filter(d => d.type === 'video').length > 0 ? (
       <Slider carouselTitle="Video">
         {data
-          .filter(d => d.type === "video")
+          .filter(d => d.type === 'video')
           .map((d, i) => (
-            <Card {...d} />
+            <Card {...d} key={d.driveId} />
           ))}
       </Slider>
     ) : null;

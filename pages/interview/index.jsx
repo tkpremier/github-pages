@@ -2,10 +2,10 @@ import React, { Fragment, useCallback } from 'react';
 import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
-import { getInterview } from '../../services/db';
 
 export async function getServerSideProps(context) {
-  const props = await getInterview();
+  const response = await fetch('http://localhost:9000/api/interview');
+  const props = await response.json();
   return {
     props
   };

@@ -30,8 +30,23 @@ img {
   max-width: 100%;
   display: block;
 }
-ul {
+// ul.root
+.root {
   list-style: none;
   padding: 0;
   width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+pre {
+  display: inline;
+  background-color: #fafafa;
+}
+.root > li {
+  margin-top: 15px;
+  max-width: 100%;
+}
+.root > li:first-child {
+  margin-top: 0;
 }

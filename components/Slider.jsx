@@ -119,11 +119,7 @@ const Slider = props => {
               style={{
                 width: `${state.itemWidth}px`
               }}
-              key={
-                i === 0 || i === props.children.length + 1
-                  ? `${child.props.children.key}-clone`
-                  : child.props.children.key
-              }
+              key={i === 0 || i === props.children.length + 1 ? `${child.key}-clone` : child.key}
             >
               {child}
             </li>
@@ -136,8 +132,8 @@ const Slider = props => {
 
 Slider.defaultProps = {
   autoplay: false,
-  carouselTitle: 'Slider',
-  carouselDesc: 'Enter description',
+  carouselTitle: '',
+  carouselDesc: '',
   interval: 5000,
   loop: false,
   pagination: false
