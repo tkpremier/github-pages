@@ -1,8 +1,8 @@
-import { createNewDriveFile } from "../../../services/db";
-import { getDrive } from "../../../services/drive";
+import { createNewDriveFile } from '../../../services/db';
+import { getDrive } from '../../../services/drive';
 
 export default async function handler(req, res) {
-  if (req.method === "POST") {
+  if (req.method === 'POST') {
     const response = await createNewDriveFile(req, res);
     return response;
   }

@@ -1,0 +1,11 @@
+{
+  "prettier.prettierPath": "./node_modules/prettier",
+  "prettier.printWidth": 120,
+  "prettier.configPath": ".prettierrc",
+  "eslint.format.enable": true,
+  "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html", "vue", "markdown", "scss"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.run": "onSave"
+}

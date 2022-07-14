@@ -3,9 +3,10 @@ import Code from '../../components/Code';
 import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
-import * as codeString from '../../code-strings/react';
+import * as codeString from '../../code-strings/react/';
+import * as codeHooks from '../../code-strings/react/hooks';
 
-const LearnReact = props => (
+const LearnReact = () => (
   <Layout title="Time to Learn React">
     <h1>Learn React Guide</h1>
     <ul className="root">
@@ -15,9 +16,42 @@ const LearnReact = props => (
             <pre>useCallback</pre> is used when callback handlers are created as <pre>var</pre> but you don't want to
             create a new variable every time it renders
           </li>
+          <Drawer header="Custom Hooks" closed>
+            <Slider
+              carouselDesc="Let's walk through creating a custom hook and then using it"
+              carouselTitle="useFriendStatus &amp; useReducer"
+            >
+              <div key="hooks-custom-one">
+                <h5>Create hook</h5>
+                <Code text={codeHooks.customHook} />
+              </div>
+              <div key="hooks-custom-two">
+                <h5>Use hook in component</h5>
+                <Code text={codeHooks.customHookInUse} />
+              </div>
+              <div key="hooks-custom-three">
+                <h5>useReducer example</h5>
+                <Code text={codeHooks.useReducer} />
+              </div>
+            </Slider>
+          </Drawer>
+          <Drawer header="useTransition">
+            <Slider>
+              <Code text={codeHooks.useTransitionWrong} key="wrong" />
+              <div key="heavy-updates">
+                <h3>Heavy UI updates as transitions</h3>
+                <p>
+                  As already mentioned, you can use useTransition() hook to let know React which UI updates are urgent
+                  (like updating the input field value), and which are non-urgent transitions (like updating the names
+                  list to highlight the query).
+                </p>
+              </div>
+              <Code text={codeHooks.useTransition} key="right" />
+            </Slider>
+          </Drawer>
         </ul>
       </Drawer>
-      <Drawer key="react-profiler" header="Profiler">
+      <Drawer closed key="react-profiler" header="Profiler">
         <Profiler id="slider" onRender={param => param}>
           <Slider
             carouselDesc="Shows developer CPU usage, re-rendering activity, such as unnecessary re-renders and memoization (
@@ -110,7 +144,7 @@ const LearnReact = props => (
           <Code text={codeString.callBackRefs} />
         </div>
       </Drawer>
-      <Drawer header="Render Props" key="react-render-props">
+      <Drawer closed header="Render Props" key="react-render-props">
         <p>
           A component with a render prop takes a func that returns a React element and calls it instead of implementing
           its own render logic.

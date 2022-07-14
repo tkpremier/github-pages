@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
-import Link from "next/link";
-import { isNull } from "lodash";
-import { format, millisecondsToHours, millisecondsToMinutes, endOfSecond } from "date-fns";
-import Drawer from "./Drawer";
-import styles from "./grid.module.scss";
+import React, { Fragment, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { isNull } from 'lodash';
+import { format, millisecondsToHours, millisecondsToMinutes, endOfSecond } from 'date-fns';
+import Drawer from './Drawer';
+import styles from './grid.module.scss';
 
-const getImageLink = (link = "", endStr = "s220", split = "s220") => {
+const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
   return `${base}${endStr}`;
 };
@@ -16,7 +16,7 @@ const getDuration = milliseconds => {
   const hours = hour * 60 * 60 * 1000;
   const min = millisecondsToMinutes(parseInt(milliseconds - hours, 10));
   remainder = (remainder - min * 60 * 1000) / 1000;
-  const duration = `${hour > 0 ? `0${hour} hours, ` : ""}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
+  const duration = `${hour > 0 ? `0${hour} hours, ` : ''}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
   return duration;
 };
 
@@ -25,7 +25,7 @@ const Grid = props => {
   const [{ list, nextPage, sortBy, end }, setState] = useState({
     list: props.data,
     nextPage: props.nextPage,
-    sortBy: "createdTime-desc",
+    sortBy: 'createdTime-desc',
     end: increment - 1
   });
   const handleSort = e => {
@@ -38,13 +38,7 @@ const Grid = props => {
       });
     }
   };
-  list.sort((a, b) => {
-    const [key, dir] = sortBy.split("-");
-    if (dir === "desc") {
-      return new Date(b[key]) - new Date(a[key]);
-    }
-    return new Date(a[key]) - new Date(b[key]);
-  });
+
   const handleGetMoreFromDb = () => {
     setState({
       list,
@@ -77,7 +71,7 @@ const Grid = props => {
               <Fragment>
                 <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
                   <img
-                    src={getImageLink(drive.thumbnailLink, "s330", "s220")}
+                    src={getImageLink(drive.thumbnailLink, 's330', 's220')}
                     referrerPolicy="no-referrer"
                     loading="lazy"
                   />
@@ -104,7 +98,7 @@ const Grid = props => {
                 <p>{drive.mimeType}</p>
                 <p>
                   <strong>Last viewed:</strong>&nbsp;
-                  {drive.lastViewed || "Never"}
+                  {drive.lastViewed || 'Never'}
                 </p>
                 {drive.duration ? (
                   <p>

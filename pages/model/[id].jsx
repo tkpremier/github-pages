@@ -1,23 +1,20 @@
 import React, { Fragment, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { isNull } from 'lodash';
 import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
 import serialize from 'form-serialize';
 import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
-// import { getDriveFile } from "../../services/drive";
 import { getModel } from '../../services/db';
 import handleResponse from '../../utils/handleResponse';
 
 export async function getServerSideProps(context) {
-  // const drive = getDriveFile();
-  const { data } = await getModel(context.params.id);
+  // { data, id, driveIds }
+  const props = await getModel(context.params.id);
   return {
-    props: {
-      data
-    }
+    props
   };
-  // const props = await getDriveFromApi();
 }
 
 const getDuration = milliseconds => {
@@ -47,16 +44,15 @@ const Card = props => {
     fetch(`/api/drive/${props.driveId}`)
       .then(handleResponse)
       .then(res => {
-        console.log('res: ', res);
         if (res.data.thumbnailLink !== props.thumbnailLink) {
+          updateCard({
+            status: contact.status,
+            data: {
+              ...contact.data,
+              thumbnailLink: res.data.thumbnailLink
+            }
+          });
         }
-        updateCard({
-          status: contact.status,
-          data: {
-            ...contact.data,
-            thumbnailLink: res.data.thumbnailLink
-          }
-        });
       })
       .catch(err => console.log(err));
   }, []);
@@ -69,17 +65,25 @@ const Card = props => {
       },
       body: JSON.stringify(data)
     };
-    fetch(`/api/model/${props.id}`, opt)
-      .then(handleResponse)
+    fetch(`/api/drive/${props.driveId}`, opt)
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(error => {
+            console.error('API ERROR: ', error);
+            throw new Error(error.message);
+          });
+        }
+        return response.text();
+      })
       .then(r => {
+        console.log('success updating!: ', r);
         updateCard({
-          status: r.status,
+          status: r,
           data: {
             ...contact.data,
             modelId: contact.data.id
           }
         });
-        console.log('success updating!: ', r);
       })
       .catch(err => console.log('error updating', err));
   };
@@ -114,23 +118,23 @@ const Card = props => {
 
 const Model = props => {
   const [data, setData] = useState(props.data);
-  console.log('props: ', props);
   const handleAddDrive = e => {
     e.preventDefault();
     const form = e.target;
-    const data = serialize(form, { hash: true });
-    fetch('/api/model', {
-      method: 'POST',
+
+    const formData = serialize(form, { hash: true });
+    const data = ['drive_ids', [...props.driveIds, formData.driveIds], props.id];
+    fetch(`/api/model/${props.id}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify(data)
     })
       .then(handleResponse)
-      .then(res => setStatus(res))
+      .then(res => console.log('res: ', res))
       .catch(err => console.log('err: ', err));
   };
-  console.log(data);
   const images =
     data.filter(d => d.type === 'image').length > 0 ? (
       <Slider carouselTitle="Images">
@@ -151,16 +155,37 @@ const Model = props => {
           ))}
       </Slider>
     ) : null;
+  useEffect(() => {
+    setData(props.data);
+  }, [props.data]);
   return (
     <Layout>
       {data[0] ? (
         <Fragment>
-          <h2>{data[0].name}</h2>
+          <header
+            style={{ display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-betweeen', alignItems: 'center' }}
+          >
+            {props.id - 1 > 1 ? (
+              <Link href={`/model/${props.id - 1}`}>
+                <a>Previous Model</a>
+              </Link>
+            ) : null}
+
+            <h2>{data[0].name}</h2>
+            <Link href={`/model/${props.id + 1}`}>
+              <a>Next Model</a>
+            </Link>
+          </header>
           {images}
           {videos}
         </Fragment>
       ) : (
-        <p>No Model</p>
+        <>
+          <p>No Model</p>
+          <Link href={`/model/1}`}>
+            <a>First Model</a>
+          </Link>
+        </>
       )}
       <form onSubmit={handleAddDrive}>
         <label htmlFor="exp-desc">

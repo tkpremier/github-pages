@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect, useState, Fragment } from 'react';
+import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './carousel.module.scss';
@@ -81,6 +81,49 @@ const Slider = props => {
         curr.curIndex === -1 ? props.children.length - 1 : curr.curIndex === props.children.length ? 0 : curr.curIndex
     }));
   }, [state.curIndex]);
+  const carousel = useMemo(
+    () =>
+      props.children.length > 1 ? (
+        <ul
+          className={classNames(styles.carouselTrack, { [styles.carouselTrackIsAnimating]: state.animating })}
+          style={{
+            width: `${state.wrapperWidth}px`,
+            transform: `translateX(-${state.itemWidth * (state.curIndex + 1)}px)`
+          }}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          )
+          {[props.children[props.children.length - 1], ...props.children, props.children[0]].map((child, i) => (
+            <li
+              style={{
+                width: `${state.itemWidth}px`
+              }}
+              key={i === 0 || i === props.children.length + 1 ? `${child.key}-clone` : child.key}
+            >
+              {child}
+            </li>
+          ))}
+        </ul>
+      ) : props.children ? (
+        <ul
+          className={classNames(styles.carouselTrack, { [styles.carouselTrackIsAnimating]: state.animating })}
+          style={{
+            width: `${state.wrapperWidth}px`
+          }}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          <li
+            style={{
+              width: `${state.itemWidth}px`
+            }}
+            key={props.children.key}
+          >
+            {props.children}
+          </li>
+        </ul>
+      ) : null,
+    [props.children, state]
+  );
   return (
     <div className={classNames(styles.slider, props.classNames)} ref={carouselRef}>
       {props.carouselTitle.length > 0 ? (
@@ -106,25 +149,7 @@ const Slider = props => {
             />
           </Fragment>
         ) : null}
-        <ul
-          className={classNames(styles.carouselTrack, { [styles.carouselTrackIsAnimating]: state.animating })}
-          style={{
-            width: `${state.wrapperWidth}px`,
-            transform: `translateX(-${state.itemWidth * (state.curIndex + 1)}px)`
-          }}
-          onTransitionEnd={handleTransitionEnd}
-        >
-          {[props.children[props.children.length - 1], ...props.children, props.children[0]].map((child, i) => (
-            <li
-              style={{
-                width: `${state.itemWidth}px`
-              }}
-              key={i === 0 || i === props.children.length + 1 ? `${child.key}-clone` : child.key}
-            >
-              {child}
-            </li>
-          ))}
-        </ul>
+        {carousel}
       </div>
     </div>
   );

@@ -17,7 +17,7 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "object-shorthand": ["error", "methods"],
     "prettier/prettier": ["off"],
-    "arrow-body-style": ["error", "as-needed", { "requireReturnForObjectLiteral": false }],
+    "arrow-body-style": ["error", "as-needed"],
     "linebreak-style": 0,
     "no-nested-ternary": ["off"]
   },

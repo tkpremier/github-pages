@@ -1,4 +1,4 @@
-import React, { Profiler, Fragment, useCallback } from 'react';
+import React, { Profiler, Fragment, useCallback, useState, useMemo } from 'react';
 import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
 import { isNull } from 'lodash';
 import Link from 'next/link';
@@ -35,6 +35,7 @@ const getDriveFromApi = async () => {
         };
   });
   return {
+    dbData,
     data: files,
     nextPage: data.nextPageToken
   };
@@ -48,87 +49,204 @@ export async function getServerSideProps() {
 }
 
 const Drive = props => {
-  const folders = props.data.filter(d => d.mimeType === 'application/vnd.google-apps.folder');
-  const handleGetMore = null;
-  const handleSort = null;
+  const [data, setData] = useState(props.data);
+  const [nextPage, updateToken] = useState(props.nextPage);
+  const [sortDir, sortBy] = useState('createdTime-desc');
+  const folders = data.filter(d => d.mimeType === 'application/vnd.google-apps.folder');
+  const handleGetMore = useCallback(async () => {
+    const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
+    const { files, nextPageToken } = await response.json();
+    setData(curr =>
+      curr.concat(
+        files.map(f => {
+          // return f;
+          const dbFile = props.dbData.find(d => d.id === f.id);
+          return typeof dbFile === 'undefined'
+            ? f
+            : {
+                ...f,
+                modelId: dbFile.modelId
+              };
+        })
+      )
+    );
+    updateToken(nextPageToken);
+  });
+  const handleSort = useCallback(e => (e.target.value !== sortDir ? sortBy(e.target.value) : null));
+  const sortedData = useMemo(() => {
+    data.sort((a, b) => {
+      const [key, dir] = sortDir.split('-');
+      if (key === 'duration') {
+        if (a.videoMediaMetadata && b.videoMediaMetadata) {
+          return dir === 'desc'
+            ? parseInt(b.videoMediaMetadata.durationMillis) - parseInt(a.videoMediaMetadata.durationMillis)
+            : parseInt(a.videoMediaMetadata.durationMillis) - parseInt(b.videoMediaMetadata.durationMillis);
+        }
+        if (a.videoMediaMetadata && !b.videoMediaMetadata) {
+          return -1;
+        }
+        if (b.videoMediaMetadata && !a.videoMediaMetadata) {
+          return 1;
+        }
+        return 0;
+      }
+      if (dir === 'desc') {
+        return new Date(b[key]) - new Date(a[key]);
+      }
+      return new Date(a[key]) - new Date(b[key]);
+    });
+    return data.filter(d => d.mimeType.startsWith('video') || d.mimeType.startsWith('image'));
+  }, [data, sortDir]);
   return (
     <Layout drive>
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here's what we've been up to....</p>
       <fieldset className={styles.gridControls}>
-        <button type="button" onClick={handleGetMore}>{`Get More`}</button>
-        <select onChange={handleSort}>
+        <button type="button" onClick={handleGetMore}>{`Get More ${data.length}`}</button>
+        <select onChange={handleSort} defaultValue={sortDir}>
           <option value="">Choose Sort</option>
           <option value="createdTime-desc">Created - Latest</option>
           <option value="createdTime-asc">Created - Earliest</option>
-          <option value="lastViewed-desc">Viewed - Latest</option>
-          <option value="lastViewed-asc">Viewed - Earliest</option>
+          <option value="viewedByMeTime-desc">Viewed - Latest</option>
+          <option value="viewedByMeTime-asc">Viewed - Earliest</option>
           <option value="duration-desc">Duration - Longest</option>
           <option value="duration-asc">Duration - shortest</option>
         </select>
       </fieldset>
+      <ul className="root">
+        <Drawer header="Catalogued" closed>
+          <h3>Catalogued</h3>
+          <ul className={styles.grid}>
+            {sortedData
+              .filter(drive => !isNull(drive.modelId))
+              .map(drive => (
+                <li className={styles.gridItem} key={drive.id}>
+                  {/**
+                   * https://stackoverflow.com/questions/30851685/google-drive-thumbnails-getting-403-rate-limit-exceeded
+                   */}
+                  {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
+                    <Fragment>
+                      <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+                        <img
+                          src={getImageLink(drive.thumbnailLink, 's330', 's220')}
+                          referrerPolicy="no-referrer"
+                          loading="lazy"
+                        />
+                      </a>
+                      <p>
+                        <strong>Id:</strong>&nbsp; {drive.id}
+                      </p>
+                    </Fragment>
+                  ) : (
+                    <p>
+                      <strong>Id:</strong>&nbsp; {drive.id}
+                    </p>
+                  )}
+                  <p>
+                    <strong>{drive.name}</strong>
+                    <br />
+                    <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
+                  </p>
+                  {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
+                    <p>
+                      <strong>Model</strong>:&nbsp;
+                      {!isNull(drive.modelId) ? (
+                        drive.modelId.map(n => (
+                          <Link href={`/model/${n}`} key={drive.modelId}>
+                            <a>{n}</a>
+                          </Link>
+                        ))
+                      ) : (
+                        <Link href={`/add?drive=${drive.id}`} key={`add-model-${drive.id}`}>
+                          <a>Add Model</a>
+                        </Link>
+                      )}
+                    </p>
+                  ) : null}
+                  <ul>
+                    <Drawer header={drive.name} key={`${drive.id}-drawer`}>
+                      <p>{drive.mimeType}</p>
+                      <p>
+                        <strong>Last viewed:</strong>&nbsp;
+                        {drive.viewedByMeTime || 'Never'}
+                      </p>
+                      {drive.videoMediaMetadata ? (
+                        <p>
+                          <strong>Duration: </strong>
+                          {getDuration(drive.videoMediaMetadata.durationMillis)}
+                        </p>
+                      ) : null}
+                    </Drawer>
+                  </ul>
+                </li>
+              ))}
+          </ul>
+        </Drawer>
+      </ul>
       <ul className={styles.grid}>
-        {props.data.map(drive => (
-          <li className={styles.gridItem} key={drive.id}>
-            {/**
-             * https://stackoverflow.com/questions/30851685/google-drive-thumbnails-getting-403-rate-limit-exceeded
-             */}
-            {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
-              <Fragment>
-                <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                  <img
-                    src={getImageLink(drive.thumbnailLink, 's330', 's220')}
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                  />
-                </a>
+        {sortedData
+          .filter(drive => isNull(drive.modelId))
+          .map(drive => (
+            <li className={styles.gridItem} key={drive.id}>
+              {/**
+               * https://stackoverflow.com/questions/30851685/google-drive-thumbnails-getting-403-rate-limit-exceeded
+               */}
+              {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
+                <Fragment>
+                  <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+                    <img
+                      src={getImageLink(drive.thumbnailLink, 's330', 's220')}
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                    />
+                  </a>
+                  <p>
+                    <strong>Id:</strong>&nbsp; {drive.id}
+                  </p>
+                </Fragment>
+              ) : (
                 <p>
                   <strong>Id:</strong>&nbsp; {drive.id}
                 </p>
-              </Fragment>
-            ) : (
+              )}
               <p>
-                <strong>Id:</strong>&nbsp; {drive.id}
+                <strong>{drive.name}</strong>
+                <br />
+                <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
               </p>
-            )}
-            <p>
-              <strong>{drive.name}</strong>
-              <br />
-              <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
-            </p>
-            {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
-              <p>
-                <strong>Model</strong>:&nbsp;
-                {!isNull(drive.modelId) ? (
-                  drive.modelId.map(n => (
-                    <Link href={`/model/${n}`} key={drive.modelId}>
-                      <a>{n}</a>
-                    </Link>
-                  ))
-                ) : (
-                  <Link href={`/add?drive=${drive.id}`} key={`add-model-${drive.id}`}>
-                    <a>Add Model</a>
-                  </Link>
-                )}
-              </p>
-            ) : null}
-            <ul>
-              <Drawer header={drive.name} key={`${drive.id}-drawer`}>
-                <p>{drive.mimeType}</p>
+              {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
                 <p>
-                  <strong>Last viewed:</strong>&nbsp;
-                  {drive.viewedByMeTime || 'Never'}
+                  <strong>Model</strong>:&nbsp;
+                  {!isNull(drive.modelId) ? (
+                    drive.modelId.map(n => (
+                      <Link href={`/model/${n}`} key={drive.modelId}>
+                        <a>{n}</a>
+                      </Link>
+                    ))
+                  ) : (
+                    <Link href={`/add?drive=${drive.id}`} key={`add-model-${drive.id}`}>
+                      <a>Add Model</a>
+                    </Link>
+                  )}
                 </p>
-                {drive.videoMediaMetadata ? (
+              ) : null}
+              <ul>
+                <Drawer header={drive.name} key={`${drive.id}-drawer`}>
+                  <p>{drive.mimeType}</p>
                   <p>
-                    <strong>Duration: </strong>
-                    {getDuration(drive.videoMediaMetadata.durationMillis)}
+                    <strong>Last viewed:</strong>&nbsp;
+                    {drive.viewedByMeTime || 'Never'}
                   </p>
-                ) : null}
-              </Drawer>
-            </ul>
-          </li>
-        ))}
+                  {drive.videoMediaMetadata ? (
+                    <p>
+                      <strong>Duration: </strong>
+                      {getDuration(drive.videoMediaMetadata.durationMillis)}
+                    </p>
+                  ) : null}
+                </Drawer>
+              </ul>
+            </li>
+          ))}
       </ul>
     </Layout>
   );
