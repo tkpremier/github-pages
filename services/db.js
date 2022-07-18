@@ -100,7 +100,7 @@ export const createModel = async (req, res) => {
     const { rows } = await dbQuery.query(createModelQuery, values);
     const dbResponse = rows[0];
     successMessage.data = dbResponse;
-    console.log('createModel success: ', successMessage);
+    console.log('createModel success: ', successMessage, rows);
     return res.status(status.success).json(successMessage);
   } catch (error) {
     console.log('db error: ', error);
@@ -229,9 +229,9 @@ export const getDriveFileApi = async (req, res) => {
 };
 
 export const getModel = async id => {
-  const getModelQuery = `SELECT model.name, drive.model_id, model.id, model.drive_ids, drive.drive_id, drive.type, drive.duration, drive.last_viewed, drive.web_view_link, drive.thumbnail_link
-  FROM drive
-  INNER JOIN model on drive.drive_id = any(model.drive_ids)
+  const getModelQuery = `SELECT model.name as model_name, drive.name, drive.model_id, model.id, model.drive_ids, drive.drive_id, drive.type, drive.duration, drive.last_viewed, drive.web_view_link, drive.thumbnail_link
+  FROM model
+  INNER JOIN drive on drive.drive_id = any(model.drive_ids)
   WHERE model.id = $1`;
   const value = [parseInt(id, 10)];
   try {
@@ -239,12 +239,11 @@ export const getModel = async id => {
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       console.log('There are no models');
-      return { data: [] };
+      return { data: [], driveIds: [] };
       // errorMessage.error = 'There are no models';
       // return res.status(status.notfound).send(errorMessage);
     }
     return {
-      id: parseInt(id, 10),
       driveIds: dbResponse[0].drive_ids || [],
       data: dbResponse.map(f =>
         Object.keys(f).reduce((o, k) => {
@@ -258,7 +257,7 @@ export const getModel = async id => {
     console.log('An error occurred', error);
     // errorMessage.error = 'An error Occured';
     // return res.status(status.error).send(errorMessage);
-    return { data: [] };
+    return { data: [], driveIds: [] };
   }
 };
 
@@ -355,7 +354,6 @@ export const updateDriveApi = async (req, res) => {
 };
 
 const updateModel = async data => {
-  console.log('updateModel data: ', data);
   const query = `UPDATE model
   SET ${data.shift()} = $1
   WHERE id = $2`;

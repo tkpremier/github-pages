@@ -48,7 +48,9 @@ const AddPage = props => {
       body: JSON.stringify(data)
     })
       .then(handleResponse)
-      .then(res => setStatus(res))
+      .then(res => {
+        setStatus(res);
+      })
       .catch(err => console.log('err: ', err));
   }, []);
   const handleInterview = useCallback(e => {
@@ -74,7 +76,16 @@ const AddPage = props => {
   return (
     <Layout>
       <h1>Add something about yourself.</h1>
-      {response.status.length > 0 ? <h2>{response.status}</h2> : null}
+      {response.status.length > 0 ? (
+        <h2>
+          {response.status}&nbsp;
+          {response.data.id ? (
+            <Link href={`/model/${response.data.id}`}>
+              <a>Go to model</a>
+            </Link>
+          ) : null}
+        </h2>
+      ) : null}
       <main className={layoutStyles.grid}>
         <div className={layoutStyles.card}>
           <Form onSubmit={handleSubmit}>

@@ -1,4 +1,4 @@
-@import "vars";
+@import 'vars';
 
 .form {
   display: flex;
@@ -21,7 +21,7 @@
     text-align: left;
     width: 100%;
   }
-  input:not([type="submit"]),
+  input:not([type='submit']),
   textarea {
     background: #fff;
     margin: 0 auto 15px auto;
@@ -34,7 +34,7 @@
     border: 1px solid $ryan-grey;
     border-radius: 0;
     display: block;
-    height: 42px;
+    min-height: 42px;
     // max-width: 90%;
     appearance: none;
     @media screen and (min-width: $md-bp) {
@@ -48,7 +48,7 @@
     &.last {
       margin-bottom: 15px * 2;
     }
-    &[type="checkbox"] {
+    &[type='checkbox'] {
       width: 26px;
       margin: 0 15px 0 0;
     }

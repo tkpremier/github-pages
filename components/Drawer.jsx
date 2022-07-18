@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import styles from './drawer.module.css';
+import styles from './drawer.module.scss';
 
 const Drawer = props => {
   const [closed, toggleEl] = useState(props.closed);
@@ -22,6 +22,7 @@ const Drawer = props => {
   });
   return (
     <li className={classNames(styles.expandable, { closed })}>
+      <p>{props.header}</p>
       <button
         className={classNames(
           styles.expandable__button,

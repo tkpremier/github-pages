@@ -3,17 +3,19 @@ import Link from 'next/link';
 import { isNull } from 'lodash';
 import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
 import serialize from 'form-serialize';
-import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
 import { getModel } from '../../services/db';
 import handleResponse from '../../utils/handleResponse';
 
 export async function getServerSideProps(context) {
-  // { data, id, driveIds }
-  const props = await getModel(context.params.id);
+  const { data, driveIds } = await getModel(context.params.id);
   return {
-    props
+    props: {
+      data,
+      driveIds,
+      id: parseInt(context.params.id)
+    }
   };
 }
 
@@ -111,7 +113,9 @@ const Card = props => {
           <strong>Duration</strong>:&nbsp;{getDuration(contact.data.duration)}
         </p>
       ) : null}
-      <p>{contact.data.type}</p>
+      <p>
+        <strong>Name</strong>: {contact.data.name}
+      </p>
     </div>
   );
 };
@@ -171,7 +175,7 @@ const Model = props => {
               </Link>
             ) : null}
 
-            <h2>{data[0].name}</h2>
+            <h2>{data[0].modelName}</h2>
             <Link href={`/model/${props.id + 1}`}>
               <a>Next Model</a>
             </Link>
@@ -182,6 +186,7 @@ const Model = props => {
       ) : (
         <>
           <p>No Model</p>
+          <p>{props.id}</p>
           <Link href={`/model/1}`}>
             <a>First Model</a>
           </Link>
