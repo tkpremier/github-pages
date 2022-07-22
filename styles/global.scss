@@ -37,7 +37,7 @@ img {
   width: 100%;
   display: flex;
   flex-flow: column nowrap;
-  align-items: center;
+  align-items: flex-start;
 }
 pre {
   display: inline;

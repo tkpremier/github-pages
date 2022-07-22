@@ -172,7 +172,10 @@ Slider.propTypes = {
   interval: PropTypes.number,
   loop: PropTypes.bool,
   pagination: PropTypes.bool,
-  children: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.element, PropTypes.node])).isRequired
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.element, PropTypes.node])),
+    PropTypes.oneOfType([PropTypes.element, PropTypes.node])
+  ]).isRequired
 };
 
 export default Slider;

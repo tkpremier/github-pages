@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import serialize from 'form-serialize';
+import DatePicker from 'react-datepicker';
 import Link from 'next/link';
 import Form from '../../components/Form';
 import Layout from '../../components/layout';
 import layoutStyles from '../../styles/layout.module.scss';
 import handleResponse from '../../utils/handleResponse';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export async function getServerSideProps(context) {
   const query = context.query || {};
@@ -20,6 +22,7 @@ const AddPage = props => {
     status: '',
     data: {}
   });
+  const [interviewDate, setDate] = useState(new Date());
   const handleSubmit = useCallback(e => {
     e.preventDefault();
     const form = e.target;
@@ -57,6 +60,7 @@ const AddPage = props => {
     e.preventDefault();
     const form = e.target;
     const data = serialize(form, { hash: true });
+    console.log(data.date);
     const date = new Date(data.date);
     const options = {
       method: 'POST',
@@ -68,7 +72,6 @@ const AddPage = props => {
     fetch('http://localhost:9000/api/interview', options)
       .then(handleResponse)
       .then(res => {
-        console.log('res: ', res);
         setStatus(res);
       })
       .catch(err => console.log('err: ', err));
@@ -135,7 +138,7 @@ const AddPage = props => {
             </label>
             <label htmlFor="interview-date">
               Date
-              <input type="text" name="date" placeholder="Date" />
+              <DatePicker selected={interviewDate} onChange={date => setDate(date)} name="date" />
             </label>
             <label htmlFor="interview-retro">
               Platform

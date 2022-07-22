@@ -22,7 +22,6 @@ const Drawer = props => {
   });
   return (
     <li className={classNames(styles.expandable, { closed })}>
-      <p>{props.header}</p>
       <button
         className={classNames(
           styles.expandable__button,

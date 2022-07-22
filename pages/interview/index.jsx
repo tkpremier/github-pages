@@ -1,4 +1,6 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState, useMemo, useRef } from 'react';
+import dynamic from 'next/dynamic';
+
 import format from 'date-fns/format';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
@@ -19,38 +21,48 @@ export async function getServerSideProps(context) {
 
 const InterviewItem = props => {
   const [i, updateItem] = useState(props);
-  const handleSubmit = useCallback(e => {
-    e.preventDefault();
-    const form = e.target;
-    const data = serialize(form, { hash: true });
-    const date = new Date(data.date);
-    const options = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify({ ...data, date, interviewId: i.id })
-    };
-    fetch('http://localhost:9000/api/interview', options)
-      .then(handleResponse)
-      .then(res => {
-        updateItem(res.data[0]);
-      })
-      .catch(err => console.log('err: ', err));
-  }, []);
+  const [updatedRetro, updateRetro] = useState(i.retro);
+  const [interviewDate, setDate] = useState(new Date(i.date));
+  const Editor = useMemo(() => dynamic(() => import('../../components/Editor', { ssr: false })));
+  const handleSubmit = useCallback(
+    e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = serialize(form, { hash: true });
+      const date = new Date(data.date);
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({ ...data, date, interviewId: i.id, retro: updatedRetro })
+      };
+      fetch('http://localhost:9000/api/interview', options)
+        .then(handleResponse)
+        .then(res => {
+          updateItem(res.data[0]);
+        })
+        .catch(err => console.log('err: ', err));
+    },
+    [updatedRetro]
+  );
+  const handleUpdateRetro = useCallback(
+    (eventInfo, editor) => {
+      if (updatedRetro !== editor.getData()) {
+        updateRetro(editor.getData());
+      }
+    },
+    [updatedRetro]
+  );
   return (
     <ul className="root" key={i.id}>
       <Drawer key={`${i.id}-data`} header={`${i.company} - ${format(new Date(i.date), 'EEEE, MMM do, y')}`}>
-        <Fragment>
-          {i.retro.split('\n').map(l => (
-            <p key={l}>{l}</p>
-          ))}
-        </Fragment>
+        <div dangerouslySetInnerHTML={{ __html: updatedRetro }} />
       </Drawer>
       <Drawer header="Update" key={`${i.id}-form`}>
         <Form onSubmit={handleSubmit}>
           <h3>About TK's interviews with {i.company}</h3>
-          <label htmlFor="interview-company">
+          <label key="interview-company" htmlFor="interview-company">
             Company
             <input
               type="text"
@@ -61,18 +73,17 @@ const InterviewItem = props => {
               defaultValue={i.company}
             />
           </label>
-          <label htmlFor="interview-date">
+          <label htmlFor="interview-date" key="interview-date">
             Date
-            <DatePicker selected={new Date(i.date)} name="date" />
+            <DatePicker selected={interviewDate} name="date" onChange={date => setDate(date)} />
           </label>
-          <label htmlFor="interview-retro">
-            Platform
-            <textarea name="retro" id="interview-retro" placeholder="Retrospective" rows="15" defaultValue={i.retro} />
+          <label htmlFor="interview-retro" key="interview-retro">
+            Retrospective
+            <Editor data={updatedRetro} onChange={handleUpdateRetro} name="retro" />
           </label>
           <input type="submit" value="Update" />
         </Form>
       </Drawer>
-      <li></li>
     </ul>
   );
 };
