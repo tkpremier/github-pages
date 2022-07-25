@@ -6,12 +6,13 @@ import * as jsThis from '../../../code-strings/js/this';
 import * as jsClass from '../../../code-strings/js/class';
 import * as jsExCon from '../../../code-strings/js/execution-context';
 import * as jsEnv from '../../../code-strings/js/environment';
+import * as jsCon from '../../../code-strings/js/context';
 
 const LearnJavascript = () => (
   <Layout title="Learn Javascript">
     <h1>Learn Javascript</h1>
     <ul className="root">
-      <Drawer key="js-object-methods" header="Object Methods">
+      <Drawer key="js-object-methods" header="Object Methods" closed>
         <ul>
           <li>Functions that are stored in object properties are called &ldquo;methods&rdquo;.</li>
           <li>
@@ -180,6 +181,17 @@ const LearnJavascript = () => (
           <strong>First-class function</strong>: a function which can participate as a normal data: be stored in a
           variable, passed as an argument, or returned as a value from another function.
         </blockquote>
+        <p>
+          With the concept of first-class functions so called <strong>Funarg problem</strong> is related (or &ldquo;
+          <em>A problem of a functional argument</em>&rdquo;). The problem arises when a function has to deal with{' '}
+          <em>free variables</em>.
+        </p>
+        <blockquote>
+          <strong>Free variable</strong>: a variable which is <em>neither a parameter, nor a local variable</em> of this
+          function.
+        </blockquote>
+        Funarg problem example:
+        <Code text={jsCon.freeVariable} />
       </Drawer>
     </ul>
     <style>{`img { margin: 0 auto; display: block;}`}</style>

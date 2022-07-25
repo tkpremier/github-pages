@@ -7,6 +7,7 @@ import styles from '../../components/grid.module.scss';
 import Layout from '../../components/layout';
 import { getDrive } from '../../services/drive';
 import { getDriveFile } from '../../services/db';
+import handleResponse from '../../utils/handleResponse';
 
 const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
@@ -22,7 +23,8 @@ const getDuration = milliseconds => {
   return duration;
 };
 const getDriveFromApi = async () => {
-  const data = await getDrive();
+  const response = await getDrive();
+  const data = await handleResponse(response);
   const { data: dbData } = await getDriveFile();
   const files = data.files.map(f => {
     // return f;
