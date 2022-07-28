@@ -325,7 +325,7 @@ const LearnJavascript = () => (
         <em>dynamically scoped</em> in ECMAScript. It&rsquo;s the value of <code>this</code>.
       </Drawer>
     </ul>
-    <style>{`img { margin: 15px auto; display: block;}; pre `}</style>
+    <style>{`img { margin: 15px auto; display: block;}; `}</style>
   </Layout>
 );
 

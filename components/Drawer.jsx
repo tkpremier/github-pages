@@ -32,9 +32,10 @@ const Drawer = props => {
         )}
         onClick={handleToggle}
         type="button"
-      >
-        {props.header}
-      </button>
+        dangerouslySetInnerHTML={{
+          __html: props.header
+        }}
+      />
       <section
         ref={content}
         className={classNames(styles.panel, { [styles.panel__closed]: closed })}

@@ -6,7 +6,7 @@
     "create-all": "babel-node ./db/dev/dbConnection createAllTables",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start ",
     "export": "next export",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
