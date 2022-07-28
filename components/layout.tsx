@@ -11,9 +11,10 @@ export const MyContext = createContext({
   addComment: () => {},
   comments: []
 });
-class Layout extends Component {
-  constructor() {
-    super();
+class Layout extends Component<any> {
+  eventsEmitter: any;
+  constructor(props) {
+    super(props);
     this.state = {
       comments: []
     };
@@ -66,9 +67,7 @@ class Layout extends Component {
             </>
           )}
         </header>
-        <MyContext.Provider value={provider}>
-          <main className={styles.mainRoot}>{children}</main>
-        </MyContext.Provider>
+        <main className={styles.mainRoot}>{children}</main>  
         <main className={styles.mainRoot}>
           <div className={styles.grid}>
             <Link href="/about" key="about">
