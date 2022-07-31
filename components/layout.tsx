@@ -1,37 +1,33 @@
 import { Component, createContext, useState } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { func } from 'prop-types';
 import Head from 'next/head';
 import Link from 'next/link';
 import styles from '../styles/layout.module.scss';
 import utilStyles from '../styles/utils.module.scss';
-import EventsEmitter from '../events';
 
 const name = 'TK Premier';
-export const MyContext = createContext({
-  addComment: () => {},
-  comments: []
-});
-class Layout extends Component<any> {
+const initState = {
+  name: 'Tommy',
+  message: 'Typescript is cool'
+}
+export const MyContext = createContext(initState);
+
+
+type State = Readonly<typeof initState>;
+
+class Layout extends Component<any, State> {
+  readonly state: State = initState;
   eventsEmitter: any;
   constructor(props) {
     super(props);
-    this.state = {
-      comments: []
-    };
-    this.eventsEmitter = new EventsEmitter();
-    this.eventsEmitter.on('addComment', e => this.addComment(e));
   }
-  addComment = comment => {
-    this.setState({
-      comments: [...this.state.comments, comment]
-    });
-  };
+  // addComment = comment => {
+  //   this.setState({
+  //     comments: [...this.state.comments, comment]
+  //   });
+  // };
   render() {
     const { children, home, title } = this.props;
-    const provider = {
-      comments: this.state.comments,
-      addComment: this.addComment
-    };
     return (
       <div className={styles.container}>
         <Head>
@@ -67,7 +63,9 @@ class Layout extends Component<any> {
             </>
           )}
         </header>
+        <MyContext.Provider value={this.state}>
         <main className={styles.mainRoot}>{children}</main>  
+        </MyContext.Provider>
         <main className={styles.mainRoot}>
           <div className={styles.grid}>
             <Link href="/about" key="about">
@@ -207,13 +205,5 @@ class Layout extends Component<any> {
     );
   }
 }
-
-Layout.defaultProps = {
-  title: 'TK Premier'
-};
-
-Layout.propTypes = {
-  title: PropTypes.string
-};
 
 export default Layout;

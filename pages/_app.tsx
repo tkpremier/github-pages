@@ -17,26 +17,22 @@ import "../styles/global.scss";
     // return <Component {...pageProps} />;
   }
  */
-const Message = (prop: {message: string}): any => {
-  return (
-    <p>{prop.message}</p>
-  );
+
+interface Props {
+  Component: any,
+  pageProps: any
 }
-export default function App({ Component, pageProps }) {
+export default function App(props: { Component: any, pageProps: any}) {
+  const { Component, pageProps} = props;
   // tuple
-  let testValue:[string, string, number] = ["Manny", "Tommy", 3];
+  const testValue:[string, string, number] = ["Manny", "Tommy", 3];
   // enum 
-  enum Codes {first, second};
+  enum Codes {first, second}
   // any
-  let firstName: any = 4;
+  const firstName: any = 4;
   // void
   const warning = (): void => {
     console.log('Warning');
   }
-      return <Component {...pageProps} />;
-  // return (
-  //   <div className="app">
-  //     <Message message="This is a simple message" name="Tommy" /> 
-  //   </div>
-  // );
-};
+  return <Component {...pageProps} />;
+}
