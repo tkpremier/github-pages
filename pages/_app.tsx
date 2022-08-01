@@ -1,4 +1,5 @@
-import "../styles/global.scss";
+import React from 'react';
+import '../styles/global.scss';
 /**
  * https://www.linkedin.com/learning/react-using-typescript/basic-types?autoSkip=true&autoplay=true&resume=false
  * React: Using Typescript Ch2Session2
@@ -19,20 +20,23 @@ import "../styles/global.scss";
  */
 
 interface Props {
-  Component: any,
-  pageProps: any
+  Component: React.ComponentType<any>;
+  pageProps: any;
 }
-export default function App(props: { Component: any, pageProps: any}) {
-  const { Component, pageProps} = props;
+export default function App(props: Props) {
+  const { Component, pageProps } = props;
   // tuple
-  const testValue:[string, string, number] = ["Manny", "Tommy", 3];
-  // enum 
-  enum Codes {first, second}
+  const testValue: [string, string, number] = ['Manny', 'Tommy', 3];
+  // enum
+  enum Codes {
+    first,
+    second
+  }
   // any
   const firstName: any = 4;
   // void
   const warning = (): void => {
     console.log('Warning');
-  }
+  };
   return <Component {...pageProps} />;
 }

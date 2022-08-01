@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import Form from '../../components/Form';
 import Layout from '../../components/layout';
@@ -8,7 +9,12 @@ import layoutStyles from '../../styles/layout.module.scss';
 import handleResponse from '../../utils/handleResponse';
 import 'react-datepicker/dist/react-datepicker.css';
 
-export async function getServerSideProps(context) {
+type AddProps = {
+  query: {
+    drive?: string;
+  };
+};
+export function getServerSideProps(context: GetServerSidePropsContext): { props: AddProps } {
   const query = context.query || {};
   return {
     props: {
@@ -17,11 +23,26 @@ export async function getServerSideProps(context) {
   };
 }
 
-const AddPage = props => {
-  const [response, setStatus] = useState({
-    status: '',
-    data: {}
-  });
+interface ApiResponse {
+  status: string;
+  data: {
+    id?: number;
+  };
+}
+
+type State = {
+  status: string;
+  data: {
+    id?: number;
+  };
+};
+const state: State = {
+  status: '',
+  data: {}
+};
+
+const AddPage = (props: AddProps) => {
+  const [response, setStatus] = useState(state);
   const [interviewDate, setDate] = useState(new Date());
   const handleSubmit = useCallback(e => {
     e.preventDefault();
@@ -36,7 +57,7 @@ const AddPage = props => {
     };
     fetch('http://localhost:9000/api/experience', options)
       .then(handleResponse)
-      .then(res => setStatus(res))
+      .then((res: ApiResponse) => setStatus(res))
       .catch(err => console.log('err: ', err));
   }, []);
   const handleSubmitModel = useCallback(e => {
@@ -59,8 +80,7 @@ const AddPage = props => {
   const handleInterview = useCallback(e => {
     e.preventDefault();
     const form = e.target;
-    const data = serialize(form, { hash: true });
-    console.log(data.date);
+    const data = serialize(form, { hash: true }) as any;
     const date = new Date(data.date);
     const options = {
       method: 'POST',
@@ -77,7 +97,7 @@ const AddPage = props => {
       .catch(err => console.log('err: ', err));
   }, []);
   return (
-    <Layout>
+    <Layout title="Add something about yourself | TK Premier">
       <h1>Add something about yourself.</h1>
       {response.status.length > 0 ? (
         <h2>
@@ -94,8 +114,8 @@ const AddPage = props => {
           <Form onSubmit={handleSubmit}>
             <h3>About TK the Dev &rarr;</h3>
             <p>
-              Talk about your experience, what you've worked on, what you've solved, and what goals and challenges have
-              been brought upon.
+              Talk about your experience, what you&rsquo;lve worked on, what you&rsquo;ve solved, and what goals and
+              challenges have been brought upon.
             </p>
             <label htmlFor="exp-name">
               Name
@@ -129,7 +149,7 @@ const AddPage = props => {
         </div>
         <div className={layoutStyles.card}>
           <Form onSubmit={handleInterview}>
-            <h3>About TK's interviews &#x1F935;</h3>
+            <h3>About TK&lsquo;s interviews &#x1F935;</h3>
             <p>Add about your chariable donations, when, where, who, how long were these donations?</p>
 
             <label htmlFor="interview-company">

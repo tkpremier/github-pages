@@ -13,8 +13,8 @@ const LearnReact = () => (
       <Drawer key="react-hooks" header="Hooks">
         <ul>
           <li>
-            <pre>useCallback</pre> is used when callback handlers are created as <pre>var</pre> but you don't want to
-            create a new variable every time it renders
+            <pre>useCallback</pre> is used when callback handlers are created as <pre>var</pre> but you don&rsquo;t want
+            to create a new variable every time it renders
           </li>
           <Drawer header="Custom Hooks" closed>
             <Slider

@@ -1,4 +1,4 @@
-import { Component, createRef, useEffect, useState } from 'react';
+import React, { Component, createRef, FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
@@ -8,11 +8,16 @@ import utilStyles from '../../styles/utils.module.scss';
 import * as sampleString from '../../code-strings/search/anagram'; // { countAnagrams, sherlockAndAnagram }
 import * as sample from '../../code-examples/search/anagram';
 
-const Sample = ({ func, header, closed }) => {
+interface ISample {
+  func: string;
+  header: string;
+  closed?: boolean;
+}
+const Sample = ({ func, header, closed }: ISample) => {
   const [count, setCount] = useState(0);
-  const handleSubmit = e => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const data = serialize(e.target, { hash: true });
+    const data = serialize(e.target as HTMLFormElement, { hash: true });
     setCount(sample[func](...Object.keys(data).map(key => data[key])));
   };
   return (
@@ -28,7 +33,7 @@ const Sample = ({ func, header, closed }) => {
       <a
         href="https://www.geeksforgeeks.org/count-occurrences-of-anagrams/?ref=gcse"
         target="_blank"
-        rel="norefferer nofollower"
+        rel="norefferer nofollower noreferrer"
       >
         Source : GeeksforGeeks
       </a>

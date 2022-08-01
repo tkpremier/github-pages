@@ -1,9 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './drawer.module.scss';
 
-const Drawer = props => {
+interface DrawerProps {
+  children: React.ReactNode;
+  className?: string;
+  closed?: boolean;
+  header: string;
+}
+
+const Drawer = (props: DrawerProps) => {
   const [closed, toggleEl] = useState(props.closed);
   const [maxHeight, setMaxHeight] = useState(props.closed ? 'none' : 'auto');
   const content = useRef(null);
@@ -47,19 +53,6 @@ const Drawer = props => {
       </section>
     </li>
   );
-};
-
-Drawer.defaultProps = {
-  className: '',
-  closed: false,
-  isRoot: false
-};
-
-Drawer.propTypes = {
-  className: PropTypes.string,
-  closed: PropTypes.bool,
-  header: PropTypes.string.isRequired,
-  isRoot: PropTypes.bool
 };
 
 export default Drawer;

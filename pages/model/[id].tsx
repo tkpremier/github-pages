@@ -1,39 +1,43 @@
 import React, { Fragment, useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { isNull } from 'lodash';
-import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
 import serialize from 'form-serialize';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
 import { getModel } from '../../services/db';
+import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
 
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async context => {
   const { data, driveIds } = await getModel(context.params.id);
   return {
     props: {
       data,
       driveIds,
-      id: parseInt(context.params.id)
+      id: parseInt(context.params.id.toString())
     }
   };
-}
-
-const getDuration = milliseconds => {
-  let remainder = new Number(milliseconds);
-  const hour = millisecondsToHours(parseInt(milliseconds, 10));
-  const hours = hour * 60 * 60 * 1000;
-  const min = millisecondsToMinutes(parseInt(milliseconds - hours, 10));
-  remainder = (remainder - min * 60 * 1000) / 1000;
-  const duration = `${hour > 0 ? `0${hour} hours, ` : ''}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
-  return duration;
 };
-const getImageLink = (link = '', endStr = 's220', split = 's220') => {
+const getImageLink = (link = '', endStr = 's220', split = 's220'): string => {
   const [base] = link.split(split);
   return `${base}${endStr}`;
 };
 
-const Card = props => {
+interface CardProps {
+  driveId: string;
+  duration: number;
+  id: number;
+  modelId: Array<number>;
+  modelName: string;
+  name: string;
+  thumbnailLink: string;
+  type: string;
+  lastViewed: string;
+  webViewLink: string;
+}
+
+const Card = (props: CardProps) => {
   const [contact, updateCard] = useState({
     status: '',
     data: props
@@ -43,14 +47,17 @@ const Card = props => {
   //   data: {}
   // });
   useEffect(() => {
-    fetch(`/api/drive/${props.driveId}`)
+    fetch(`/api/drive/${contact.data.driveId}`)
       .then(handleResponse)
       .then(res => {
-        if (res.data.thumbnailLink !== props.thumbnailLink) {
+        if (res.data.thumbnailLink !== contact.data.thumbnailLink) {
           updateCard({
             status: contact.status,
             data: {
               ...contact.data,
+              ...(res.data.videoMediaMetadata && {
+                duration: parseInt(res.data.videoMediaMetadata.durationMillis, 10)
+              }),
               thumbnailLink: res.data.thumbnailLink
             }
           });
@@ -58,8 +65,8 @@ const Card = props => {
       })
       .catch(err => console.log(err));
   }, []);
-  const handleAdd = e => {
-    const data = ['model_id', [parseInt(e.target.value, 10)], e.target.dataset.drive];
+  const handleAdd = () => {
+    const data = ['model_id', [contact.data.id], contact.data.driveId];
     const opt = {
       method: 'PUT',
       headers: {
@@ -78,12 +85,11 @@ const Card = props => {
         return response.text();
       })
       .then(r => {
-        console.log('success updating!: ', r);
         updateCard({
           status: r,
           data: {
             ...contact.data,
-            modelId: contact.data.id
+            modelId: [contact.data.id]
           }
         });
       })
@@ -103,7 +109,7 @@ const Card = props => {
         )}
       </a>
       {isNull(contact.data.modelId) ? (
-        <button onClick={handleAdd} name="model_id" data-drive={contact.data.driveId} value={contact.data.id}>
+        <button onClick={handleAdd} name="model_id" value={contact.data.id}>
           Add to file
         </button>
       ) : null}
@@ -120,7 +126,21 @@ const Card = props => {
   );
 };
 
-const Model = props => {
+interface Data {
+  driveId: string;
+  driveIds: Array<string>;
+  duration: number;
+  id: number;
+  lastViewed: string;
+  modelId: Array<number>;
+  modelName: string;
+  name: string;
+  thumbnailLink: string;
+  type: string;
+  webViewLink: string;
+}
+
+const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }) => {
   const [data, setData] = useState(props.data);
   const handleAddDrive = e => {
     e.preventDefault();
@@ -163,7 +183,7 @@ const Model = props => {
     setData(props.data);
   }, [props.data]);
   return (
-    <Layout>
+    <Layout title={`${data[0] ? data[0].modelName : 'No Model'} | TK Premier`}>
       {data[0] ? (
         <Fragment>
           <header

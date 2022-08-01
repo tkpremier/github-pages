@@ -3,12 +3,22 @@ import { isNull, camelCase, snakeCase } from 'lodash';
 import dbQuery from '../db/dev/dbQuery';
 import { isValidEmail, validatePassword, isEmpty } from '../utils/validations';
 import { errorMessage, successMessage, status } from '../utils/status';
+type DbResponse = {
+  rows: Array<any>;
+};
 
+type ErrorResponse = {
+  error: string;
+};
+
+type SuccessResponse = {
+  data: Array<any>;
+};
 export const getExp = async () => {
   const getModelQuery = `SELECT * FROM
   exp ORDER BY id DESC`;
   try {
-    const { rows } = await dbQuery.query(getModelQuery);
+    const { rows } = (await dbQuery.query(getModelQuery, [])) as DbResponse;
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       console.log('There are no models');
@@ -29,13 +39,14 @@ export const addExp = async (req, res) => {
   const createExpQuery = `INSERT INTO exp(name, description) VALUES($1, $2, $3) returning *`;
   const values = [name, description];
   try {
-    const { rows } = await dbQuery.query(createExpQuery, values);
+    const { rows } = (await dbQuery.query(createExpQuery, values)) as DbResponse;
     const dbResponse = rows[0];
+    let successMessage: SuccessResponse;
     successMessage.data = dbResponse;
-    console.log('added');
     return res.status(status.success).json(successMessage);
   } catch (error) {
     console.log('db error: ', error);
+    let errorMessage: ErrorResponse;
     errorMessage.error = 'Operation was not successful';
     return res.status(status.error).send(errorMessage);
   }
@@ -44,9 +55,11 @@ export const addInterview = async (req, res) => {
   const { company, date, retro } = req.body;
   const createExpQuery = `INSERT INTO interview(company, retro, date) VALUES($1, $2, $3) returning *`;
   const values = [company, retro, date];
+  let errorMessage: ErrorResponse;
   try {
-    const { rows } = await dbQuery.query(createExpQuery, values);
+    const { rows } = (await dbQuery.query(createExpQuery, values)) as DbResponse;
     const dbResponse = rows[0];
+    let successMessage: SuccessResponse;
     successMessage.data = dbResponse;
     return res.status(status.success).json(successMessage);
   } catch (error) {
@@ -59,7 +72,7 @@ export const getInterview = async () => {
   const getModelQuery = `SELECT * FROM
   interview ORDER BY id DESC`;
   try {
-    const { rows } = await dbQuery.query(getModelQuery);
+    const { rows } = (await dbQuery.query(getModelQuery, [])) as DbResponse;
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       console.log('There are no interviews');
@@ -81,6 +94,7 @@ export const getInterview = async () => {
   }
 };
 export const createModel = async (req, res) => {
+  let errorMessage: ErrorResponse;
   const { driveIds, modelName, platform } = req.body;
   const createdOn = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
   if (isEmpty(modelName) || isEmpty(platform)) {
@@ -97,8 +111,9 @@ export const createModel = async (req, res) => {
     values.push(ids);
   }
   try {
-    const { rows } = await dbQuery.query(createModelQuery, values);
+    const { rows } = (await dbQuery.query(createModelQuery, values)) as DbResponse;
     const dbResponse = rows[0];
+    let successMessage: SuccessResponse;
     successMessage.data = dbResponse;
     console.log('createModel success: ', successMessage, rows);
     return res.status(status.success).json(successMessage);
@@ -128,11 +143,12 @@ const createDriveFile = async values => {
   returning *`;
   const createdOn = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
   values.push(createdOn);
-  const { rows } = await dbQuery.query(createDriveFileQuery, values);
+  const { rows } = (await dbQuery.query(createDriveFileQuery, values)) as DbResponse;
   return rows;
 };
 
 export const createNewDriveFile = async (req, res) => {
+  let errorMessage: ErrorResponse;
   const {
     id,
     createdTime,
@@ -144,7 +160,7 @@ export const createNewDriveFile = async (req, res) => {
     mimeType = '',
     videoMediaMetadata
   } = req.body;
-  let viewedDate = req.body.viewedByMeTime || null;
+  const viewedDate = req.body.viewedByMeTime || null;
   const duration = videoMediaMetadata ? parseInt(videoMediaMetadata.durationMillis, 10) : null;
   let type = 'folder';
   if (mimeType.indexOf('image') > -1) {
@@ -167,6 +183,7 @@ export const createNewDriveFile = async (req, res) => {
   try {
     const rows = await createDriveFile(values);
     const dbResponse = rows[0];
+    let successMessage: SuccessResponse;
     successMessage.data = dbResponse;
     return res.status(status.created).send(successMessage);
   } catch (error) {
@@ -180,7 +197,7 @@ export const getDriveFile = async () => {
   const getDriveFileQuery = `SELECT * FROM
   drive ORDER BY created_time DESC`;
   try {
-    const { rows } = await dbQuery.query(getDriveFileQuery);
+    const { rows } = (await dbQuery.query(getDriveFileQuery, [])) as DbResponse;
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       console.log('There are no drive files');
@@ -213,8 +230,9 @@ export const getDriveFile = async () => {
 export const getDriveFileApi = async (req, res) => {
   const getDriveFileQuery = `SELECT * FROM
   drive ORDER BY created_time DESC`;
+  let errorMessage: ErrorResponse;
   try {
-    const { rows } = await dbQuery.query(getDriveFileQuery);
+    const { rows } = (await dbQuery.query(getDriveFileQuery, [])) as DbResponse;
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       errorMessage.error = 'There are no drive files';
@@ -235,7 +253,7 @@ export const getModel = async id => {
   WHERE model.id = $1`;
   const value = [parseInt(id, 10)];
   try {
-    const { rows } = await dbQuery.query(getModelQuery, value);
+    const { rows } = (await dbQuery.query(getModelQuery, value)) as DbResponse;
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       console.log('There are no models');
@@ -262,6 +280,7 @@ export const getModel = async id => {
 };
 
 export const getModelApi = async (req, res) => {
+  let errorMessage: ErrorResponse;
   try {
     const { data } = await getModel(req.query.id);
     const dbResponse = data;
@@ -269,6 +288,7 @@ export const getModelApi = async (req, res) => {
       errorMessage.error = 'That model does not exist';
       return res.status(status.notfound).send(errorMessage);
     }
+    let successMessage: SuccessResponse;
     successMessage.data = dbResponse.map(f =>
       Object.keys(f).reduce((o, k) => {
         o[camelCase(k)] =
@@ -288,7 +308,7 @@ export const getModelList = async () => {
   const getModelQuery = `SELECT * FROM
   model ORDER BY id DESC`;
   try {
-    const { rows } = await dbQuery.query(getModelQuery);
+    const { rows } = (await dbQuery.query(getModelQuery, [])) as DbResponse;
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       console.log('There are no models');
@@ -318,7 +338,7 @@ const updateDrive = async data => {
   SET ${data.shift()} = $1
   WHERE id = $2`;
   try {
-    const { rows } = await dbQuery.query(query, data);
+    const { rows } = (await dbQuery.query(query, data)) as DbResponse;
     const dbResponse = rows;
     // if (dbResponse[0] === undefined) {
     //   console.log("No updates");
@@ -348,6 +368,7 @@ export const updateDriveApi = async (req, res) => {
     return res.status(status.success).send(successMessage);
   } catch (error) {
     console.log('An error occurred', error);
+    let errorMessage: ErrorResponse;
     errorMessage.error = 'An error Occured';
     return res.status(status.error).send(errorMessage);
   }
@@ -358,7 +379,7 @@ const updateModel = async data => {
   SET ${data.shift()} = $1
   WHERE id = $2`;
   try {
-    const { rows } = await dbQuery.query(query, data);
+    const { rows } = (await dbQuery.query(query, data)) as DbResponse;
     const dbResponse = rows;
     // if (dbResponse[0] === undefined) {
     //   console.log("No updates");
@@ -381,6 +402,7 @@ export const updateModelApi = async (req, res) => {
   try {
     const { data } = await updateModel(req.body);
     const dbResponse = data;
+    let successMessage: SuccessResponse;
     successMessage.data = dbResponse.map(f =>
       Object.keys(f).reduce((o, k) => {
         o[camelCase(k)] =
@@ -390,6 +412,7 @@ export const updateModelApi = async (req, res) => {
     );
     return res.status(status.success).send(successMessage);
   } catch (error) {
+    let errorMessage: ErrorResponse;
     errorMessage.error = 'An error Occured';
     console.log('error: ', error);
     return res.status(status.error).send(errorMessage);

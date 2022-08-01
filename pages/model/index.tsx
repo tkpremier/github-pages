@@ -19,8 +19,16 @@ export async function getServerSideProps() {
   };
 }
 
-const Contacts = props => (
-  <Layout drive>
+interface Contact {
+  createdOn: string;
+  driveIds: Array<string>;
+  id: number;
+  name: string;
+  platform: string;
+}
+
+const Contacts = (props: { data: Array<Contact> }): any => (
+  <Layout title="My Contacts">
     <h2>Contacts</h2>
     <ul>
       {props.data.map(m => (

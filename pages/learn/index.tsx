@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { FormEvent, useCallback, useState } from 'react';
 import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
@@ -15,22 +15,22 @@ import { mergeSort } from '../../code-examples/sort';
 
 function Learn() {
   const [sortedList, sortList] = useState([]);
-  const handleSort = useCallback(e => {
+  const handleSort = useCallback((e: FormEvent) => {
     e.preventDefault();
-    const { selectionSortArray } = serialize(e.target, { hash: true });
+    const { selectionSortArray } = serialize(e.target as HTMLFormElement, { hash: true }) as any;
     const arr = selectionSortArray.split(' ').map(s => parseInt(s, 10));
     if (arr.length > 0) {
       sortList(mergeSort(arr, 0, arr.length - 1));
     }
   }, []);
   return (
-    <Layout>
+    <Layout title="Learn | TK Premier">
       <ul className="root">
         <li>
           <a
             href="https://www.geeksforgeeks.org/analysis-of-algorithms-set-4-analysis-of-loops/"
             target="_blank"
-            rel="nofollower"
+            rel="nofollower noreferrer"
             title="Geeks for Geeks, Analysis of Loops"
           >
             Analysis of Loops
@@ -78,11 +78,11 @@ function Learn() {
               `}
               />
               <br />
-              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
+              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower noreferrer">
                 Selection Sort
               </a>{' '}
               and{' '}
-              <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower">
+              <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower noreferrer">
                 Insertion Sort
               </a>{' '}
               have O(n<sup>2</sup>) time complexity.
@@ -119,7 +119,7 @@ function Learn() {
               `}
               />
               <p>
-                <a href="http://geeksquiz.com/binary-search/" target="_blank" rel="nofollower">
+                <a href="http://geeksquiz.com/binary-search/" target="_blank" rel="nofollower noreferrer">
                   Binary Search(iterative implementation)
                 </a>{' '}
                 has{' '}
@@ -176,7 +176,7 @@ function Learn() {
               <a
                 href="https://www.geeksforgeeks.org/time-complexity-loop-loop-variable-expands-shrinks-exponentially/"
                 target="_blank"
-                rel="nofollower"
+                rel="nofollower noreferrer"
               >
                 More info
               </a>
@@ -214,14 +214,14 @@ function Learn() {
                 never makes more than O(n) swaps and can be useful when memory write is a costly operation.
               </strong>
               <br />
-              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower">
+              <a href="https://www.geeksforgeeks.org/selection-sort/" target="_blank" rel="nofollower noreferrer">
                 <em>Source</em>
               </a>
             </li>
             <li>
               <h3>Bubble Sort</h3>
               <Code text={bubbleSortCode} />
-              <a href="https://www.geeksforgeeks.org/bubble-sort/" target="_blank" rel="nofollower">
+              <a href="https://www.geeksforgeeks.org/bubble-sort/" target="_blank" rel="nofollower noreferrer">
                 <em>Source</em>
               </a>
             </li>
@@ -232,14 +232,14 @@ function Learn() {
                 </a>
               </Link>
               <Code text={insertionSortCode} />
-              <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower">
+              <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower noreferrer">
                 <em>Source</em>
               </a>
             </li>
             <li>
               <h3>
                 Merge Sort (
-                <a href="https://www.geeksforgeeks.org/merge-sort/" target="_blank" rel="nofollower">
+                <a href="https://www.geeksforgeeks.org/merge-sort/" target="_blank" rel="nofollower noreferrer">
                   <em>Source</em>
                 </a>
                 )
@@ -332,7 +332,7 @@ function Learn() {
                       If <em>x</em> matches, return index
                     </li>
                     <li>
-                      If <em>x</em> doesn't exist, return <strong>-1</strong>
+                      If <em>x</em> doesn&rsquo;t exist, return <strong>-1</strong>
                     </li>
                     <li>
                       <strong>Time Complexity</strong>: O(n)

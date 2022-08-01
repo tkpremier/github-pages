@@ -1,6 +1,5 @@
-import { Component, createRef, useEffect, useState } from 'react';
+import React, { Component, createRef, useEffect, useState } from 'react';
 import Link from 'next/link';
-import serialize from 'form-serialize';
 import Code from '../../components/Code';
 import Layout from '../../components/layout';
 import utilStyles from '../../styles/utils.module.scss';
@@ -13,14 +12,14 @@ class PubSub extends Component {
 
   render() {
     return (
-      <Layout title="Example Questions">
+      <Layout title="Pub Sub Implementation | TKPremier">
         <ul className="root">
           <li>
             <pre>
               <a
                 href="https://lolahef.medium.com/react-event-emitter-9a3bb0c719"
                 target="_blank"
-                rel="norefferer nofollower"
+                rel="norefferer nofollower noreferrer"
               >
                 Source
               </a>

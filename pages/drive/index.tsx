@@ -1,5 +1,6 @@
-import React, { Profiler, Fragment, useCallback, useState, useMemo } from 'react';
-import { format, millisecondsToHours, millisecondsToMinutes } from 'date-fns';
+import React, { Fragment, useCallback, useState, useMemo } from 'react';
+import { format } from 'date-fns';
+import { GetServerSideProps } from 'next';
 import { isNull } from 'lodash';
 import Link from 'next/link';
 import Drawer from '../../components/Drawer';
@@ -7,35 +8,53 @@ import styles from '../../components/grid.module.scss';
 import Layout from '../../components/layout';
 import { getDrive } from '../../services/drive';
 import { getDriveFile } from '../../services/db';
+import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
+
+type VideoMediaMetadata = {
+  durationMillis: string;
+};
+
+interface GoogleDriveData {
+  id: string;
+  driveId: string;
+  type: string;
+  name: string;
+  webViewLink: string;
+  webContentLink: string;
+  thumbnailLink: string | null;
+  mimeType: string;
+  viewedByMeTime: string;
+  videoMediaMetadata?: VideoMediaMetadata;
+}
+
+interface DBData extends GoogleDriveData {
+  modelId: Array<number>;
+  createdOn: string;
+  duration: number;
+  lastViewed: string;
+  createdTime: string;
+}
 
 const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
   return `${base}${endStr}`;
 };
-const getDuration = milliseconds => {
-  let remainder = new Number(milliseconds);
-  const hour = millisecondsToHours(parseInt(milliseconds, 10));
-  const hours = hour * 60 * 60 * 1000;
-  const min = millisecondsToMinutes(parseInt(milliseconds - hours, 10));
-  remainder = (remainder - min * 60 * 1000) / 1000;
-  const duration = `${hour > 0 ? `0${hour} hours, ` : ''}${min} minutes,${Math.ceil(remainder / 100)} seconds`;
-  return duration;
-};
+
 const getDriveFromApi = async () => {
   const response = await getDrive();
-  const data = await handleResponse(response);
+  const data = (await handleResponse(response)) as { files: Array<GoogleDriveData>; nextPageToken: string };
   const { data: dbData } = await getDriveFile();
-  const files = data.files.map(f => {
+  const files = data.files.map((f: GoogleDriveData) => {
     // return f;
-    const dbFile = dbData.find(d => d.id === f.id);
+    const dbFile = dbData.find((d: DBData) => d.id === f.id) as DBData;
     return typeof dbFile === 'undefined'
       ? f
       : {
           ...f,
           modelId: dbFile.modelId
         };
-  });
+  }) as Array<DBData>;
   return {
     dbData,
     data: files,
@@ -43,14 +62,14 @@ const getDriveFromApi = async () => {
   };
 };
 
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps = async () => {
   const props = await getDriveFromApi();
   return {
     props
   };
-}
+};
 
-const Drive = props => {
+const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: string }) => {
   const [data, setData] = useState(props.data);
   const [nextPage, updateToken] = useState(props.nextPage);
   const [sortDir, sortBy] = useState('createdTime-desc');
@@ -73,10 +92,10 @@ const Drive = props => {
       )
     );
     updateToken(nextPageToken);
-  });
-  const handleSort = useCallback(e => (e.target.value !== sortDir ? sortBy(e.target.value) : null));
+  }, []);
+  const handleSort = useCallback(e => (e.target.value !== sortDir ? sortBy(e.target.value) : null), []);
   const sortedData = useMemo(() => {
-    data.sort((a, b) => {
+    data.sort((a, b): number => {
       const [key, dir] = sortDir.split('-');
       if (key === 'duration') {
         if (a.videoMediaMetadata && b.videoMediaMetadata) {
@@ -93,16 +112,16 @@ const Drive = props => {
         return 0;
       }
       if (dir === 'desc') {
-        return new Date(b[key]) - new Date(a[key]);
+        return new Date(b[key]).getTime() - new Date(a[key]).getTime();
       }
-      return new Date(a[key]) - new Date(b[key]);
+      return new Date(a[key]).getTime() - new Date(b[key]).getTime();
     });
     return data.filter(d => d.mimeType.startsWith('video') || d.mimeType.startsWith('image'));
   }, [data, sortDir]);
   return (
-    <Layout drive>
+    <Layout title="Driver | TKPremier">
       <h2>Welcome to the &#x1F608;</h2>
-      <p>Here's what we've been up to....</p>
+      <p>Here&apos;s what we&apos;ve been up to....</p>
       <fieldset className={styles.gridControls}>
         <button type="button" onClick={handleGetMore}>{`Get More ${data.length}`}</button>
         <select onChange={handleSort} defaultValue={sortDir}>
@@ -154,7 +173,7 @@ const Drive = props => {
                       <strong>Model</strong>:&nbsp;
                       {!isNull(drive.modelId) ? (
                         drive.modelId.map(n => (
-                          <Link href={`/model/${n}`} key={drive.modelId}>
+                          <Link href={`/model/${n}`} key={drive.modelId[0]}>
                             <a>{n}</a>
                           </Link>
                         ))
@@ -175,7 +194,7 @@ const Drive = props => {
                       {drive.videoMediaMetadata ? (
                         <p>
                           <strong>Duration: </strong>
-                          {getDuration(drive.videoMediaMetadata.durationMillis)}
+                          {getDuration(parseInt(drive.videoMediaMetadata.durationMillis))}
                         </p>
                       ) : null}
                     </Drawer>
@@ -221,7 +240,7 @@ const Drive = props => {
                   <strong>Model</strong>:&nbsp;
                   {!isNull(drive.modelId) ? (
                     drive.modelId.map(n => (
-                      <Link href={`/model/${n}`} key={drive.modelId}>
+                      <Link href={`/model/${n}`} key={drive.modelId[0]}>
                         <a>{n}</a>
                       </Link>
                     ))
@@ -242,7 +261,7 @@ const Drive = props => {
                   {drive.videoMediaMetadata ? (
                     <p>
                       <strong>Duration: </strong>
-                      {getDuration(drive.videoMediaMetadata.durationMillis)}
+                      {getDuration(parseInt(drive.videoMediaMetadata.durationMillis))}
                     </p>
                   ) : null}
                 </Drawer>

@@ -1,26 +1,33 @@
-import React, { useState } from "react";
-import serialize from "form-serialize";
-import Code from "../../components/Code";
-import Layout from "../../components/layout";
-import { interpolationSearch } from "../../code-examples";
-import { interpolationSearch as interFunction } from "../../code-examples/search/iterativeSearch";
-import styles from "../../components/code.module.scss";
+import React, { FormEventHandler, FormEvent, useState, MouseEventHandler, MouseEvent } from 'react';
+import serialize from 'form-serialize';
+import Code from '../../components/Code';
+import Layout from '../../components/layout';
+import { interpolationSearch } from '../../code-examples';
+import { interpolationSearch as interFunction } from '../../code-examples/search/iterativeSearch';
+import styles from '../../components/code.module.scss';
 
+interface ExtendedTarget extends EventTarget {
+  value: string;
+}
+
+interface ExtendedFormEvent extends FormEvent {
+  target: HTMLFormElement;
+}
 export default function Interpolation() {
   const [exampleArray, runAndSet] = useState([]);
   const [target, setTarget] = useState(-1);
-  const handleNumbers = e => {
+  const handleNumbers = (e: { target: ExtendedTarget }) => {
     const string = e.target.value;
     const preppedNumbers = string
-      .split(",")
+      .split(',')
       .map(s => parseInt(s.trim(), 10))
       .filter(n => !Number.isNaN(n))
       .sort((a, b) => a - b);
     runAndSet(preppedNumbers);
   };
-  const handleSubmit = e => {
+  const handleSubmit: FormEventHandler = (e: ExtendedFormEvent) => {
     e.preventDefault();
-    const { search, numbers } = serialize(e.target, { hash: true });
+    const { search } = serialize(e.target, { hash: true }) as { search: string };
     if (!Number.isNaN(parseInt(search, 10))) {
       setTarget(parseInt(search, 10));
     }
@@ -32,7 +39,7 @@ export default function Interpolation() {
     target
   );
   return (
-    <Layout learnBinary>
+    <Layout title="Learn Binary | TKPremier">
       <h1 className="title">Interpolation &#x26A1; &#x1F7f0;</h1>
 
       <p className="description">
@@ -46,7 +53,7 @@ export default function Interpolation() {
           <a
             href="https://www.geeksforgeeks.org/interpolation-search/?ref=lbp"
             target="_blank"
-            rel="nofollower norefferer"
+            rel="nofollower norefferer noreferrer"
           >
             Source
           </a>

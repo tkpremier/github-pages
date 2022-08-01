@@ -1,6 +1,7 @@
-import React, { Fragment, useCallback, useState, useMemo, useRef } from 'react';
+import React, { FormEvent, useCallback, useState, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
-
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import { IEventInfo } from '../../components/Editor';
 import format from 'date-fns/format';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
@@ -11,7 +12,18 @@ import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
 import handleResponse from '../../utils/handleResponse';
 
-export async function getServerSideProps(context) {
+type Interview = {
+  id: number;
+  company: string;
+  date: string;
+  retro: string;
+};
+
+interface IInterviewProps {
+  data: Array<Interview>;
+}
+
+export async function getServerSideProps(): Promise<{ props: IInterviewProps }> {
   const response = await fetch('http://localhost:9000/api/interview');
   const props = await response.json();
   return {
@@ -19,16 +31,19 @@ export async function getServerSideProps(context) {
   };
 }
 
-const InterviewItem = props => {
+const InterviewItem = (props: Interview) => {
   const [i, updateItem] = useState(props);
   const [updatedRetro, updateRetro] = useState(i.retro);
   const [interviewDate, setDate] = useState(new Date(i.date));
-  const Editor = useMemo(() => dynamic(() => import('../../components/Editor', { ssr: false })));
+  const Editor = useMemo(
+    () => dynamic(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
+    []
+  );
   const handleSubmit = useCallback(
-    e => {
+    (e: FormEvent) => {
       e.preventDefault();
-      const form = e.target;
-      const data = serialize(form, { hash: true });
+      const form = e.target as HTMLFormElement;
+      const data = serialize(form, { hash: true }) as any;
       const date = new Date(data.date);
       const options = {
         method: 'PUT',
@@ -47,7 +62,7 @@ const InterviewItem = props => {
     [updatedRetro]
   );
   const handleUpdateRetro = useCallback(
-    (eventInfo, editor) => {
+    (_eventInfo: IEventInfo, editor: CKEditor) => {
       if (updatedRetro !== editor.getData()) {
         updateRetro(editor.getData());
       }
@@ -61,7 +76,7 @@ const InterviewItem = props => {
       </Drawer>
       <Drawer header="Update" key={`${i.id}-form`}>
         <Form onSubmit={handleSubmit}>
-          <h3>About TK's interviews with {i.company}</h3>
+          <h3>About TK&rsquo;s interviews with {i.company}</h3>
           <label key="interview-company" htmlFor="interview-company">
             Company
             <input
@@ -88,7 +103,7 @@ const InterviewItem = props => {
   );
 };
 
-const Interview = props => (
+const Interview = (props: IInterviewProps) => (
   <Layout title="Interviews">
     <Slider carouselTitle="Interviews">
       {props.data.map(i => (

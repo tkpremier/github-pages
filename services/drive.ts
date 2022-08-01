@@ -1,4 +1,5 @@
-const { google } = require('googleapis');
+import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 import handleResponse from '../utils/handleResponse';
 
 // // Load client secrets from a local file.
@@ -17,7 +18,7 @@ const gdToken = {
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-async function authorize() {
+function authorize(): OAuth2Client {
   const credentials = {
     installed: {
       client_id: '160250970666-eofi1rkudvcbhf3n3fheaf7acc3mak8c.apps.googleusercontent.com',
@@ -49,19 +50,17 @@ async function authorize() {
 //   const fetch = await drive.files.list(opt);
 //   return fetch;
 // }
-async function getDriveFile(driveId) {
+async function getDriveFile(driveId: string): Promise<any> {
   const data = await fetch(`http://localhost:9000/api/drive-file?driveId=${driveId}`)
     .then(handleResponse)
-    .then(res => {
-      return res;
-    })
+    .then(res => res)
     .catch(err => {
       console.log('server-side error: ', err);
       return [];
     });
   return data;
 }
-async function getDrive(nextPage = '') {
+async function getDrive(nextPage = ''): Promise<any> {
   const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
   return response;
 }
