@@ -55,7 +55,8 @@ const LearnJavascript = () => (
             When several objects share the same initial state and behavior, they form a <em>classification</em>.
           </li>
           <li>
-            Here's a code sample of <em>multiple objects</em> inheriting from the same prototype, explicitly stated:
+            Here&rsquo;s a code sample of <em>multiple objects</em> inheriting from the same prototype, explicitly
+            stated:
             <Code text={jsClass.explicitlyStated} />
           </li>
           <li>
@@ -99,7 +100,7 @@ const LearnJavascript = () => (
       </Drawer>
       <Drawer key="js-execution" header="Execution Context" closed>
         <strong>Execution context stack</strong>: An <em>execution context stack</em> is a LIFO structure used to
-        maintain control flow and order of execution. Let's consider a recursive function call:
+        maintain control flow and order of execution. Let&rsquo;s consider a recursive function call:
         <Code text={jsExCon.recursive} />
         <ul>
           <li>
@@ -325,6 +326,7 @@ const LearnJavascript = () => (
         <em>dynamically scoped</em> in ECMAScript. It&rsquo;s the value of <code>this</code>.
       </Drawer>
     </ul>
+
     <style>{`img { margin: 15px auto; display: block;}; `}</style>
   </Layout>
 );

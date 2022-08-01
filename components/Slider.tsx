@@ -3,7 +3,19 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './carousel.module.scss';
 
-const Slider = props => {
+interface ISlider {
+  arrows?: boolean;
+  autoplay?: boolean;
+  carouselTitle?: string;
+  carouselDesc?: string;
+  classNames?: string;
+  interval?: number;
+  loop?: boolean;
+  pagination?: boolean;
+  children: React.ReactNode;
+}
+
+const Slider = (props: ISlider) => {
   const carouselRef = useRef(null);
   const wrapperRef = useRef(null);
   const intervalRef = useRef(null);
@@ -12,8 +24,8 @@ const Slider = props => {
     curIndex: 0,
     itemWidth: 278,
     itemsPerSlide: 1,
-    nextDisabled: props.children.length < 2,
-    prevDisabled: props.children.length < 2,
+    nextDisabled: React.Children.count(props.children) < 2,
+    prevDisabled: React.Children.count(props.children) < 2,
     wrapperWidth: 1110
   });
 
@@ -24,9 +36,9 @@ const Slider = props => {
         setState({
           ...state,
           itemWidth: newItemWidth,
-          wrapperWidth: newItemWidth * (props.children.length + 2),
+          wrapperWidth: newItemWidth * (React.Children.count(props.children) + 2),
           prevDisabled: state.curIndex === 0,
-          nextDisabled: state.curIndex === props.children.length - 1
+          nextDisabled: state.curIndex === React.Children.count(props.children) - 1
         });
       }
     }
@@ -38,12 +50,12 @@ const Slider = props => {
     // 				let newIndex = (state.curIndex += increment);
     // 				console.log("neIndex: ", newIndex);
 
-    // 				if (newIndex === props.children.length) {
+    // 				if (newIndex === React.Children.count(props.children)) {
     // 					return null;
     // 				}
     // 				setState({
     // 					...state,
-    // 					curIndex: newIndex === props.children.length ? 0 : newIndex,
+    // 					curIndex: newIndex === React.Children.count(props.children) ? 0 : newIndex,
     // 					animating: true
     // 				});
     // 			}, props.interval);
@@ -59,7 +71,10 @@ const Slider = props => {
   const handleClick = useCallback(
     e => {
       const int = parseInt(e.target.value, 10);
-      if ((int === 1 && state.curIndex === props.children.length) || (int === -1 && state.curIndex === -1)) {
+      if (
+        (int === 1 && state.curIndex === React.Children.count(props.children)) ||
+        (int === -1 && state.curIndex === -1)
+      ) {
         return null;
       }
       setState(curr => ({
@@ -71,19 +86,23 @@ const Slider = props => {
     [state.curIndex]
   );
   const handleTransitionEnd = useCallback(() => {
-    if (state.curIndex !== -1 && state.curIndex !== props.children.length) {
+    if (state.curIndex !== -1 && state.curIndex !== React.Children.count(props.children)) {
       return;
     }
     setState(curr => ({
       ...curr,
       animating: false,
       curIndex:
-        curr.curIndex === -1 ? props.children.length - 1 : curr.curIndex === props.children.length ? 0 : curr.curIndex
+        curr.curIndex === -1
+          ? React.Children.count(props.children) - 1
+          : curr.curIndex === React.Children.count(props.children)
+          ? 0
+          : curr.curIndex
     }));
   }, [state.curIndex]);
   const carousel = useMemo(
     () =>
-      props.children.length > 1 ? (
+      React.Children.count(props.children) > 1 ? (
         <ul
           className={classNames(styles.carouselTrack, { [styles.carouselTrackIsAnimating]: state.animating })}
           style={{
@@ -93,12 +112,16 @@ const Slider = props => {
           onTransitionEnd={handleTransitionEnd}
         >
           )
-          {[props.children[props.children.length - 1], ...props.children, props.children[0]].map((child, i) => (
+          {[
+            props.children[React.Children.count(props.children) - 1],
+            ...React.Children.toArray(props.children),
+            props.children[0]
+          ].map((child, i) => (
             <li
               style={{
                 width: `${state.itemWidth}px`
               }}
-              key={i === 0 || i === props.children.length + 1 ? `${child.key}-clone` : child.key}
+              key={i === 0 || i === React.Children.count(props.children) + 1 ? `${child.key}-clone` : child.key}
             >
               {child}
             </li>
@@ -116,7 +139,6 @@ const Slider = props => {
             style={{
               width: `${state.itemWidth}px`
             }}
-            key={props.children.key}
           >
             {props.children}
           </li>
@@ -133,7 +155,7 @@ const Slider = props => {
         <span className="phillips-carousel__description" dangerouslySetInnerHTML={{ __html: props.carouselDesc }} />
       ) : null}
       <div className={styles.sliderWrapper} ref={wrapperRef}>
-        {props.children.length > 1 ? (
+        {React.Children.count(props.children) > 1 ? (
           <Fragment>
             <button
               className={classNames(styles.button, styles.buttonPrevious)}
@@ -162,20 +184,6 @@ Slider.defaultProps = {
   interval: 5000,
   loop: false,
   pagination: false
-};
-
-Slider.propTypes = {
-  arrows: PropTypes.bool,
-  autoplay: PropTypes.bool,
-  carouselTitle: PropTypes.string,
-  carouselDesc: PropTypes.string,
-  interval: PropTypes.number,
-  loop: PropTypes.bool,
-  pagination: PropTypes.bool,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.element, PropTypes.node])),
-    PropTypes.oneOfType([PropTypes.element, PropTypes.node])
-  ]).isRequired
 };
 
 export default Slider;

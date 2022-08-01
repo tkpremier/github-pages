@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import serialize from "form-serialize";
-import Code from "../../components/Code";
-import Layout from "../../components/layout";
-import { binaryRecursive } from "../../code-examples";
-import { binaryRecursive as recursiveApproach } from "../../code-examples/search/iterativeSearch";
-import styles from "../../components/code.module.scss";
+import React, { useState } from 'react';
+import serialize from 'form-serialize';
+import Code from '../../components/Code';
+import Layout from '../../components/layout';
+import { binaryRecursive } from '../../code-examples';
+import { binaryRecursive as recursiveApproach } from '../../code-examples/search/iterativeSearch';
+import styles from '../../components/code.module.scss';
 
 export default function Binary() {
   const [exampleArray, runAndSet] = useState([]);
@@ -12,7 +12,7 @@ export default function Binary() {
   const handleNumbers = e => {
     const string = e.target.value;
     const preppedNumbers = string
-      .split(",")
+      .split(',')
       .map(s => parseInt(s.trim(), 10))
       .filter(n => !Number.isNaN(n))
       .sort((a, b) => a - b);
@@ -20,7 +20,7 @@ export default function Binary() {
   };
   const handleSubmit = e => {
     e.preventDefault();
-    const { search, numbers } = serialize(e.target, { hash: true });
+    const { search } = serialize(e.target, { hash: true }) as any;
     if (!Number.isNaN(parseInt(search, 10))) {
       setTarget(parseInt(search, 10));
     }
@@ -32,7 +32,7 @@ export default function Binary() {
     target
   );
   return (
-    <Layout learnBinary>
+    <Layout title="Binary Search| TK Premier">
       <h1 className="title">Binary &#x26A1; &#x1F7f0;</h1>
 
       <p className="description">
@@ -43,7 +43,11 @@ export default function Binary() {
       </p>
       <div className="faq">
         <pre>
-          <a href="https://www.geeksforgeeks.org/binary-search/?ref=lbp" target="_blank" rel="nofollower norefferer">
+          <a
+            href="https://www.geeksforgeeks.org/binary-search/?ref=lbp"
+            target="_blank"
+            rel="nofollower norefferer noreferrer"
+          >
             Source
           </a>
         </pre>

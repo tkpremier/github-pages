@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';

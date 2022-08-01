@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -21,16 +17,7 @@
   },
   "allowSyntheticDefaultImports": true,
   "esModuleInerop": true,
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "typeRoots": [
-    "src/@types",
-    "node_modules/@types"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "runSass.js"],
+  "exclude": ["node_modules"],
+  "typeRoots": ["src/@types", "node_modules/@types"]
 }
