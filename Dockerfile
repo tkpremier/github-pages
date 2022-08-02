@@ -7,7 +7,7 @@ COPY package*.json ./
 
 # Install npm production packages 
 RUN npm install --production
-COPY . /opt/app-root/src
+COPY . .
 RUN npm run build
 
 ENV NODE_ENV production

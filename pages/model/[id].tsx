@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import { isNull } from 'lodash';
 import serialize from 'form-serialize';
@@ -9,7 +9,13 @@ import { getModel } from '../../services/db';
 import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
 
-export const getServerSideProps: GetServerSideProps = async context => {
+interface IContext extends GetServerSidePropsContext {
+  params: {
+    id: string;
+  };
+}
+
+export const getServerSideProps: GetServerSideProps = async (context: IContext) => {
   const { data, driveIds } = await getModel(context.params.id);
   return {
     props: {

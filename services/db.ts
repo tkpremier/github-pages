@@ -3,6 +3,7 @@ import { isNull, camelCase, snakeCase } from 'lodash';
 import dbQuery from '../db/dev/dbQuery';
 import { isValidEmail, validatePassword, isEmpty } from '../utils/validations';
 import { errorMessage, successMessage, status } from '../utils/status';
+import { NextApiRequest, NextApiResponse } from 'next';
 type DbResponse = {
   rows: Array<any>;
 };
@@ -34,7 +35,7 @@ export const getExp = async () => {
     return { data: [] };
   }
 };
-export const addExp = async (req, res) => {
+export const addExp = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, description } = req.body;
   const createExpQuery = `INSERT INTO exp(name, description) VALUES($1, $2, $3) returning *`;
   const values = [name, description];
@@ -51,7 +52,7 @@ export const addExp = async (req, res) => {
     return res.status(status.error).send(errorMessage);
   }
 };
-export const addInterview = async (req, res) => {
+export const addInterview = async (req: NextApiRequest, res: NextApiResponse) => {
   const { company, date, retro } = req.body;
   const createExpQuery = `INSERT INTO interview(company, retro, date) VALUES($1, $2, $3) returning *`;
   const values = [company, retro, date];
@@ -227,7 +228,7 @@ export const getDriveFile = async () => {
   }
 };
 
-export const getDriveFileApi = async (req, res) => {
+export const getDriveFileApi = async (_req: NextApiRequest, res: NextApiResponse) => {
   const getDriveFileQuery = `SELECT * FROM
   drive ORDER BY created_time DESC`;
   let errorMessage: ErrorResponse;
@@ -246,7 +247,7 @@ export const getDriveFileApi = async (req, res) => {
   }
 };
 
-export const getModel = async id => {
+export const getModel = async (id: string) => {
   const getModelQuery = `SELECT model.name as model_name, drive.name, drive.model_id, model.id, model.drive_ids, drive.drive_id, drive.type, drive.duration, drive.last_viewed, drive.web_view_link, drive.thumbnail_link
   FROM model
   INNER JOIN drive on drive.drive_id = any(model.drive_ids)
