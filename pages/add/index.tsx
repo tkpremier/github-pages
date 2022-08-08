@@ -89,7 +89,7 @@ const AddPage = (props: AddProps) => {
       },
       body: JSON.stringify({ ...data, date })
     };
-    fetch('http://localhost:9000/api/interview', options)
+    fetch('http://api:9000/api/interview', options)
       .then(handleResponse)
       .then(res => {
         setStatus(res);

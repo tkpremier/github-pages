@@ -27,7 +27,7 @@ const createDriveFilesTable = () => {
  */
 const createModelTable = () => {
   const modelCreateQuery = `CREATE TABLE IF NOT EXISTS model
-    (id SERIAL PRIMARY KEY,
+    (id INTEGER PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     platform VARCHAR(100) NOT NULL,
     drive_ids VARCHAR(500)[],
@@ -42,14 +42,12 @@ const createModelTable = () => {
   name VARCHAR(100) UNIQUE NOT NULL, 
   phone VARCHAR(100));
  */
-const createClientTable = () => {
-  const clientCreateQuery = `CREATE TABLE IF NOT EXISTS client
-  (id SERIAL PRIMARY KEY, 
-  email VARCHAR(100) UNIQUE NOT NULL, 
-  first_name VARCHAR(100), 
-  last_name VARCHAR(100), 
-  password VARCHAR(100) NOT NULL,
-  created_on DATE NOT NULL)`;
+const createInterviewTable = () => {
+  const clientCreateQuery = `CREATE TABLE IF NOT EXISTS interview
+  (id integer PRIMARY KEY, 
+  company VARCHAR(100) NOT NULL, 
+  retro VARCHAR(5000),
+  date DATE)`;
   return pool.query(clientCreateQuery);
 };
 
@@ -97,7 +95,7 @@ const dropModelTable = () => pool.query('DROP TABLE IF EXISTS model').then(() =>
  * Create All Tables
  */
 const createAllTables = () =>
-  Promise.all([createClientTable(), createDriveFilesTable(), createModelTable()])
+  Promise.all([createInterviewTable(), createDriveFilesTable(), createModelTable()])
     .then(() => {
       console.log('all tables created values: ');
       pool.end();
@@ -124,7 +122,7 @@ pool.on('remove', () => {
 export {
   createAllTables,
   createDriveFilesTable,
-  createClientTable,
+  createInterviewTable,
   dropAllTables,
   dropDriveFilesTable,
   dropClientTable

@@ -1,9 +1,0 @@
-version: '3'
-services:
-  myapp:
-    build: ./front-end
-  myproxy:
-    container_name: myproxy
-    build: ./nginx
-    ports:
-      - 80:80

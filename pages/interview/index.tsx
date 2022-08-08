@@ -24,7 +24,14 @@ interface IInterviewProps {
 }
 
 export async function getServerSideProps(): Promise<{ props: IInterviewProps }> {
-  const response = await fetch('http://localhost:9000/api/interview');
+  const response = await fetch('http://api:9000/api/interview');
+  if (!response.ok) {
+    return {
+      props: {
+        data: []
+      }
+    }
+  }
   const props = await response.json();
   return {
     props
