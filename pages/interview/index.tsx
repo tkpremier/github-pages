@@ -1,6 +1,5 @@
 import React, { FormEvent, useCallback, useState, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { IEventInfo } from '../../components/Editor';
 import format from 'date-fns/format';
 import serialize from 'form-serialize';
@@ -11,6 +10,7 @@ import Form from '../../components/Form';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
 import handleResponse from '../../utils/handleResponse';
+import { AnyCnameRecord } from 'dns';
 
 type Interview = {
   id: number;
@@ -24,7 +24,7 @@ interface IInterviewProps {
 }
 
 export async function getServerSideProps(): Promise<{ props: IInterviewProps }> {
-  const response = await fetch('http://api:9000/api/interview');
+  const response = await fetch('http://localhost:9000/api/interview');
   if (!response.ok) {
     return {
       props: {
@@ -69,7 +69,7 @@ const InterviewItem = (props: Interview) => {
     [updatedRetro]
   );
   const handleUpdateRetro = useCallback(
-    (_eventInfo: IEventInfo, editor: CKEditor) => {
+    (_eventInfo: IEventInfo, editor: any) => {
       if (updatedRetro !== editor.getData()) {
         updateRetro(editor.getData());
       }

@@ -17,7 +17,7 @@ type SuccessResponse = {
 };
 export const getExp = async () => {
   const getModelQuery = `SELECT * FROM
-  public.exp ORDER BY id DESC`;
+  exp ORDER BY id DESC`;
   try {
     const { rows } = (await dbQuery.query(getModelQuery, [])) as DbResponse;
     const dbResponse = rows;
@@ -37,7 +37,7 @@ export const getExp = async () => {
 };
 export const addExp = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, description } = req.body;
-  const createExpQuery = `INSERT INTO public.exp(name, description) VALUES($1, $2, $3) returning *`;
+  const createExpQuery = `INSERT INTO exp(name, description) VALUES($1, $2, $3) returning *`;
   const values = [name, description];
   try {
     const { rows } = (await dbQuery.query(createExpQuery, values)) as DbResponse;
@@ -54,7 +54,7 @@ export const addExp = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 export const addInterview = async (req: NextApiRequest, res: NextApiResponse) => {
   const { company, date, retro } = req.body;
-  const createExpQuery = `INSERT INTO public.interview(company, retro, date) VALUES($1, $2, $3) returning *`;
+  const createExpQuery = `INSERT INTO interview(company, retro, date) VALUES($1, $2, $3) returning *`;
   const values = [company, retro, date];
   let errorMessage: ErrorResponse;
   try {
@@ -71,7 +71,7 @@ export const addInterview = async (req: NextApiRequest, res: NextApiResponse) =>
 };
 export const getInterview = async () => {
   const getModelQuery = `SELECT * FROM
-  public.interview ORDER BY id DESC`;
+  interview ORDER BY id DESC`;
   try {
     const { rows } = (await dbQuery.query(getModelQuery, [])) as DbResponse;
     const dbResponse = rows;
@@ -139,7 +139,7 @@ const createDriveFile = async values => {
     created_on DATE NOT NULL)
   */
   const createDriveFileQuery = `INSERT INTO
-  public.drive(id, drive_id, type, name, web_view_link, web_content_link, thumbnail_link, created_time, last_viewed, duration, created_on)
+  drive(id, drive_id, type, name, web_view_link, web_content_link, thumbnail_link, created_time, last_viewed, duration, created_on)
   VALUES($1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
   returning *`;
   const createdOn = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -196,7 +196,7 @@ export const createNewDriveFile = async (req, res) => {
 
 export const getDriveFile = async () => {
   const getDriveFileQuery = `SELECT * FROM
-  public.drive ORDER BY created_time DESC`;
+  drive ORDER BY created_time DESC`;
   try {
     const { rows } = (await dbQuery.query(getDriveFileQuery, [])) as DbResponse;
     const dbResponse = rows;
@@ -230,7 +230,7 @@ export const getDriveFile = async () => {
 
 export const getDriveFileApi = async (_req: NextApiRequest, res: NextApiResponse) => {
   const getDriveFileQuery = `SELECT * FROM
-  public.drive ORDER BY created_time DESC`;
+  drive ORDER BY created_time DESC`;
   let errorMessage: ErrorResponse;
   try {
     const { rows } = (await dbQuery.query(getDriveFileQuery, [])) as DbResponse;
@@ -249,7 +249,7 @@ export const getDriveFileApi = async (_req: NextApiRequest, res: NextApiResponse
 
 export const getModel = async (id: string) => {
   const getModelQuery = `SELECT model.name as model_name, drive.name, drive.model_id, model.id, model.drive_ids, drive.drive_id, drive.type, drive.duration, drive.last_viewed, drive.web_view_link, drive.thumbnail_link
-  FROM public.model
+  FROM model
   INNER JOIN drive on drive.drive_id = any(model.drive_ids)
   WHERE model.id = $1`;
   const value = [parseInt(id, 10)];
@@ -307,7 +307,7 @@ export const getModelApi = async (req, res) => {
 
 export const getModelList = async () => {
   const getModelQuery = `SELECT * FROM
-  public.model ORDER BY id DESC`;
+  model ORDER BY id DESC`;
   try {
     const { rows } = (await dbQuery.query(getModelQuery, [])) as DbResponse;
     const dbResponse = rows;
@@ -335,7 +335,7 @@ export const getModelList = async () => {
 };
 
 const updateDrive = async data => {
-  const query = `UPDATE public.drive
+  const query = `UPDATE drive
   SET ${data.shift()} = $1
   WHERE id = $2`;
   try {
@@ -376,9 +376,10 @@ export const updateDriveApi = async (req, res) => {
 };
 
 const updateModel = async data => {
-  const query = `UPDATE public.model
+  const query = `UPDATE model
   SET ${data.shift()} = $1
   WHERE id = $2`;
+  console.log('data: [model_id, id] ', data);
   try {
     const { rows } = (await dbQuery.query(query, data)) as DbResponse;
     const dbResponse = rows;
@@ -402,20 +403,16 @@ const updateModel = async data => {
 export const updateModelApi = async (req, res) => {
   try {
     const { data } = await updateModel(req.body);
-    const dbResponse = data;
-    let successMessage: SuccessResponse;
-    successMessage.data = dbResponse.map(f =>
+    const response = data.map(f =>
       Object.keys(f).reduce((o, k) => {
         o[camelCase(k)] =
           f[k] instanceof Date ? (!isNull(f[k]) ? format(new Date(f[k]), "MM/dd/yyyy' 'HH:mm:ss") : f[k]) : f[k];
         return o;
       }, {})
     );
-    return res.status(status.success).send(successMessage);
+    return res.status(status.success).send(response);
   } catch (error) {
-    let errorMessage: ErrorResponse;
-    errorMessage.error = 'An error Occured';
     console.log('error: ', error);
-    return res.status(status.error).send(errorMessage);
+    return res.status(status.error).send(error);
   }
 };

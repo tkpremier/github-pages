@@ -1,6 +1,5 @@
 import React from 'react';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import InlineEditor from '@ckeditor/ckeditor5-build-inline';
+import useCkEditor from "../hooks/useCkEditor";
 
 export interface IEventInfo {
   name: string;
@@ -11,11 +10,18 @@ export interface IEventInfo {
 interface EditorProps {
   data: string;
   name: string;
-  onChange: (eventInfo: IEventInfo, editor: CKEditor) => any;
+  onChange: (eventInfo: IEventInfo, editor: any) => any;
 }
 
-const Editor = (props: EditorProps) => (
-  <CKEditor editor={InlineEditor} data={props.data} name={props.name} onBlur={props.onChange} />
-);
+const Editor = (props: EditorProps) => {
+  const {
+    isEditorLoaded,
+    CKEditor,
+    InlineEditor
+  } = useCkEditor();
+  return isEditorLoaded
+    ? <CKEditor editor={InlineEditor} data={props.data} name={props.name} onBlur={props.onChange} />
+    : <div>Editor loading</div>
+};
 
 export default Editor;

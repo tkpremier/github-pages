@@ -49,7 +49,10 @@ const getDriveFromApi = async () => {
     // return f;
     const dbFile = dbData.find((d: DBData) => d.id === f.id) as DBData;
     return typeof dbFile === 'undefined'
-      ? f
+      ? {
+          ...f,
+          modelId: null
+        }
       : {
           ...f,
           modelId: dbFile.modelId
