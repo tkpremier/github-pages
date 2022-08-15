@@ -41,10 +41,8 @@ export const addExp = async (req: NextApiRequest, res: NextApiResponse) => {
   const values = [name, description];
   try {
     const { rows } = (await dbQuery.query(createExpQuery, values)) as DbResponse;
-    const dbResponse = rows[0];
-    let successMessage: SuccessResponse;
-    successMessage.data = dbResponse;
-    return res.status(status.success).json(successMessage);
+    const data = rows[0];
+    return res.status(status.success).json({ data, status: 'success' });
   } catch (error) {
     console.log('db error: ', error);
     let errorMessage: ErrorResponse;
@@ -59,10 +57,8 @@ export const addInterview = async (req: NextApiRequest, res: NextApiResponse) =>
   let errorMessage: ErrorResponse;
   try {
     const { rows } = (await dbQuery.query(createExpQuery, values)) as DbResponse;
-    const dbResponse = rows[0];
-    let successMessage: SuccessResponse;
-    successMessage.data = dbResponse;
-    return res.status(status.success).json(successMessage);
+    const data = rows[0];
+    return res.status(status.success).json({ data, status: 'success' });
   } catch (error) {
     console.log('db error: ', error);
     errorMessage.error = 'Operation was not successful';
@@ -113,11 +109,9 @@ export const createModel = async (req, res) => {
   }
   try {
     const { rows } = (await dbQuery.query(createModelQuery, values)) as DbResponse;
-    const dbResponse = rows[0];
-    let successMessage: SuccessResponse;
-    successMessage.data = dbResponse;
-    console.log('createModel success: ', successMessage, rows);
-    return res.status(status.success).json(successMessage);
+    const data = rows[0];
+    console.log('createModel success: ', data);
+    return res.status(status.success).json({ data, status: 'success' });
   } catch (error) {
     console.log('db error: ', error);
     errorMessage.error = 'Operation was not successful';
