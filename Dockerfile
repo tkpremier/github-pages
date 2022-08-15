@@ -1,7 +1,7 @@
 FROM node:16 as builder
 
 # Change working directory
-WORKDIR "/client"
+WORKDIR /client
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
