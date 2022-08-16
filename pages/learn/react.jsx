@@ -36,7 +36,7 @@ const LearnReact = () => (
             </Slider>
           </Drawer>
           <Drawer header="useTransition">
-            <Slider>
+            <Slider carouselTitle="useTransition" carouselDesc="Useful to let React know which update are urgent">
               <Code text={codeHooks.useTransitionWrong} key="wrong" />
               <div key="heavy-updates">
                 <h3>Heavy UI updates as transitions</h3>

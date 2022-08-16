@@ -40,15 +40,17 @@ export default function About({ data }: AboutProps) {
             </ul>
           </Drawer>
         ))}
-        <li>
-          <Slider carouselTitle={data[0].name} carouselDesc="June 2014 - June 2022">
-            <div key={data[0].name}>
-              {data[0].description.split('\n').map(desc => (
-                <p key={desc}>{desc}</p>
-              ))}
-            </div>
-          </Slider>
-        </li>
+        {data[0] ? (
+          <li>
+            <Slider carouselTitle={data[0].name} carouselDesc="June 2014 - June 2022">
+              <div key={data[0].name}>
+                {data[0].description.split('\n').map(desc => (
+                  <p key={desc}>{desc}</p>
+                ))}
+              </div>
+            </Slider>
+          </li>
+        ) : null}
       </ul>
     </Layout>
   );

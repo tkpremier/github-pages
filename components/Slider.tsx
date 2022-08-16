@@ -178,12 +178,8 @@ const Slider = (props: ISlider) => {
 };
 
 Slider.defaultProps = {
-  autoplay: false,
-  carouselTitle: '',
   carouselDesc: '',
-  interval: 5000,
-  loop: false,
-  pagination: false
+  carouselTitle: ''
 };
 
 export default Slider;
