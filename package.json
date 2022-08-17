@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "export": "next export",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "export": "next export"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-inline": "^34.2.0",
