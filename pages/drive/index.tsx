@@ -78,7 +78,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
   const [sortDir, sortBy] = useState('createdTime-desc');
   const folders = data.filter(d => d.mimeType === 'application/vnd.google-apps.folder');
   const handleGetMore = useCallback(async () => {
-    const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
+    const response = await fetch(`http://api:9000/api/drive-list?nextPage=${nextPage}`);
     const { files, nextPageToken } = await response.json();
     setData(curr =>
       curr.concat(

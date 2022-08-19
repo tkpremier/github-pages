@@ -51,7 +51,7 @@ function authorize(): OAuth2Client {
 //   return fetch;
 // }
 async function getDriveFile(driveId: string): Promise<any> {
-  const data = await fetch(`http://localhost:9000/api/drive-file?driveId=${driveId}`)
+  const data = await fetch(`http://api:9000/api/drive-file?driveId=${driveId}`)
     .then(handleResponse)
     .then(res => res)
     .catch(err => {
@@ -61,7 +61,7 @@ async function getDriveFile(driveId: string): Promise<any> {
   return data;
 }
 async function getDrive(nextPage = ''): Promise<any> {
-  const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
+  const response = await fetch(`http://api:9000/api/drive-list?nextPage=${nextPage}`);
   return response;
 }
 

@@ -24,7 +24,7 @@ interface IInterviewProps {
 }
 
 export async function getServerSideProps(): Promise<{ props: IInterviewProps }> {
-  const response = await fetch('http://localhost:9000/api/interview');
+  const response = await fetch('http://api:9000/api/interview');
   if (!response.ok) {
     return {
       props: {
@@ -59,7 +59,7 @@ const InterviewItem = (props: Interview) => {
         },
         body: JSON.stringify({ ...data, date, interviewId: i.id, retro: updatedRetro })
       };
-      fetch('http://localhost:9000/api/interview', options)
+      fetch('http://api:9000/api/interview', options)
         .then(handleResponse)
         .then(res => {
           updateItem(res.data[0]);

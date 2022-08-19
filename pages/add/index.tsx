@@ -60,7 +60,7 @@ const AddPage = (props: AddProps) => {
       },
       body: JSON.stringify(data)
     };
-    fetch('http://localhost:9000/api/experience', options)
+    fetch('http://api:9000/api/experience', options)
       .then(handleResponse)
       .then((res: ApiResponse) => setStatus(res))
       .catch(err => console.log('err: ', err));
@@ -97,7 +97,7 @@ const AddPage = (props: AddProps) => {
       },
       body: JSON.stringify({ ...data, date })
     };
-    fetch('http://localhost:9000/api/interview', options)
+    fetch('http://api:9000/api/interview', options)
       .then(handleResponse)
       .then(res => {
         setStatus(res);
