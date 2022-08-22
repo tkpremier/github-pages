@@ -201,7 +201,7 @@ const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }
               </Link>
             ) : null}
 
-            <h2>{data[0].modelName}</h2>
+            <h2 style={{margin: '0 15px'}}>{data[0].modelName}</h2>
             <Link href={`/model/${props.id + 1}`}>
               <a>Next Model</a>
             </Link>

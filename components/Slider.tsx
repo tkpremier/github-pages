@@ -79,7 +79,7 @@ const Slider = (props: ISlider) => {
       }
       setState(curr => ({
         ...curr,
-        curIndex: (curr.curIndex += int),
+        curIndex: (curr.curIndex + int),
         animating: true
       }));
     },
