@@ -9,13 +9,14 @@ COPY package*.json ./
 
 USER node
 # Install npm production packages 
-RUN npm install --production
+# RUN npm install --production
+RUN npm install --force
 COPY --chown=node:node . .
-ENV NODE_ENV production
+# ENV NODE_ENV production
 ENV PORT 3000
-RUN npm run build
+# RUN npm run build
 
 EXPOSE 3000
 
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
