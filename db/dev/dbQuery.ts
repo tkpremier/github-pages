@@ -9,11 +9,12 @@ export default {
    */
   query(queryText, params) {
     return new Promise((resolve, reject) => {
-      pool.query(queryText, params)
-        .then((res) => {
+      pool
+        .query(queryText, params)
+        .then(res => {
           resolve(res);
         })
-        .catch((err) => {
+        .catch(err => {
           reject(err);
         });
     });

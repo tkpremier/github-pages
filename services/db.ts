@@ -334,6 +334,7 @@ const updateDrive = async data => {
   WHERE id = $2`;
   try {
     const { rows } = (await dbQuery.query(query, data)) as DbResponse;
+    console.log('query', query, 'dta', data, rows);
     const dbResponse = rows;
     // if (dbResponse[0] === undefined) {
     //   console.log("No updates");
@@ -355,6 +356,7 @@ const updateDrive = async data => {
 export const updateDriveApi = async (req, res) => {
   try {
     const { data } = await updateDrive(req.body);
+    console.log(data);
     // if (data && data.length === 0) {
     //   errorMessage.error = 'No updates to be made';
     //   return res.status(status.notfound).send(errorMessage);

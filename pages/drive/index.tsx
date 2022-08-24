@@ -2,14 +2,17 @@ import React, { Fragment, useCallback, useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { GetServerSideProps } from 'next';
 import { isNull } from 'lodash';
+import classNames from 'classnames';
 import Link from 'next/link';
 import Drawer from '../../components/Drawer';
 import styles from '../../components/grid.module.scss';
+import buttonStyles from '../../components/button.module.scss';
 import Layout from '../../components/layout';
 import { getDrive } from '../../services/drive';
-import { getDriveFile } from '../../services/db';
+import { getDriveFile, getModelList } from '../../services/db';
 import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
+import { factchecktools_v1alpha1 } from 'googleapis';
 
 type VideoMediaMetadata = {
   durationMillis: string;
@@ -27,7 +30,13 @@ interface GoogleDriveData {
   viewedByMeTime: string;
   videoMediaMetadata?: VideoMediaMetadata;
 }
-
+interface Contact {
+  createdOn: string;
+  driveIds: Array<string>;
+  id: number;
+  name: string;
+  platform: string;
+}
 interface DBData extends GoogleDriveData {
   modelId: Array<number>;
   createdOn: string;
@@ -45,13 +54,14 @@ const getDriveFromApi = async () => {
   const response = await getDrive();
   const data = (await handleResponse(response)) as { files: Array<GoogleDriveData>; nextPageToken: string };
   const { data: dbData } = await getDriveFile();
+  const { data: modelList } = await getModelList();
   const files = data.files.map((f: GoogleDriveData) => {
     // return f;
     const dbFile = dbData.find((d: DBData) => d.id === f.id) as DBData;
     return typeof dbFile === 'undefined'
       ? {
           ...f,
-          modelId: null
+          modelId: []
         }
       : {
           ...f,
@@ -61,6 +71,7 @@ const getDriveFromApi = async () => {
   return {
     dbData,
     data: files,
+    modelList,
     nextPage: data.nextPageToken
   };
 };
@@ -71,12 +82,93 @@ export const getServerSideProps: GetServerSideProps = async () => {
     props
   };
 };
+interface IAddModel extends DBData {
+  modelList: Array<Contact>;
+}
+const AddModel = (props: IAddModel) => {
+  const [modelId, setModelIds] = useState(props.modelId);
+  const [driveIds, setDriveIds] = useState(props.modelList.find(m => modelId.indexOf(m.id) > -1)?.driveIds || []);
+  const [showButton, toggleButton] = useState(modelId.length === 0);
+  const [modelName, setModelName] = useState(props.modelList.find(m => modelId.indexOf(m.id) > -1)?.name || '');
+  const handleUpdateModel = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newModelId = parseInt(e.target.value);
+      if (parseInt(e.target.value) === 0) {
+        return;
+      }
+      const modelResponse = await fetch(`/api/model/${newModelId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(['drive_ids', [...driveIds, props.id], newModelId])
+      });
+      const driveResponse = await fetch(`/api/drive/${props.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(['model_id', [newModelId], props.id])
+      });
+      Promise.all([modelResponse, driveResponse]).then(values => {
+        console.log('successful values: ', values);
+        toggleButton(false);
+        setDriveIds(arr => [...arr, props.id]);
+        setModelName(props.modelList.find(m => newModelId === m.id)?.name);
+        setModelIds([...modelId, newModelId]);
+      });
+      // return response.ok ? await response.text() : `Error: ${response.text()}`;
+    },
+    [driveIds]
+  );
+  const handleAdd = useCallback(
+    (_: React.PointerEvent<HTMLButtonElement>) => {
+      toggleButton(!showButton);
+    },
+    [showButton]
+  );
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%'
+      }}
+    >
+      {modelId.length === 0 ? (
+        showButton ? (
+          <button className={classNames(buttonStyles.button, buttonStyles.primary)} onClick={handleAdd}>
+            <span>Add Model</span>
+          </button>
+        ) : (
+          <Fragment>
+            <label htmlFor="model-list-input">
+              <strong>{`${props.modelId.length === 0 ? 'Add ' : ''}Model`}</strong>:&nbsp;
+              <input list="model-list" id="model-list-input" name="model-input" onChange={handleUpdateModel} />
+            </label>
+            <datalist id="model-list">
+              <option key={0} value={0}>
+                New Model
+              </option>
+              {props.modelList.map(m => (
+                <option key={m.id} value={m.id}>
+                  {m.name}
+                </option>
+              ))}
+            </datalist>
+          </Fragment>
+        )
+      ) : (
+        <p>{modelName}</p>
+      )}
+    </div>
+  );
+};
 
-const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: string }) => {
+const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: string; modelList: Array<Contact> }) => {
   const [data, setData] = useState(props.data);
   const [nextPage, updateToken] = useState(props.nextPage);
   const [sortDir, sortBy] = useState('createdTime-desc');
-  const folders = data.filter(d => d.mimeType === 'application/vnd.google-apps.folder');
   const handleGetMore = useCallback(async () => {
     const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
     const { files, nextPageToken } = await response.json();
@@ -86,7 +178,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
           // return f;
           const dbFile = props.dbData.find(d => d.id === f.id);
           return typeof dbFile === 'undefined'
-            ? f
+            ? { ...f, modelId: [] }
             : {
                 ...f,
                 modelId: dbFile.modelId
@@ -122,7 +214,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
     return data.filter(d => d.mimeType.startsWith('video') || d.mimeType.startsWith('image'));
   }, [data, sortDir]);
   return (
-    <Layout title="Driver | TKPremier">
+    <Layout title="Let's Drive | TKPremier">
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here&apos;s what we&apos;ve been up to....</p>
       <fieldset className={styles.gridControls}>
@@ -142,7 +234,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
           <h3>Catalogued</h3>
           <ul className={styles.grid}>
             {sortedData
-              .filter(drive => !isNull(drive.modelId))
+              .filter(drive => drive.modelId.length > 0)
               .map(drive => (
                 <li className={styles.gridItem} key={drive.id}>
                   {/**
@@ -155,6 +247,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                           src={getImageLink(drive.thumbnailLink, 's330', 's220')}
                           referrerPolicy="no-referrer"
                           loading="lazy"
+                          title={`${drive.name}`}
                         />
                       </a>
                       <p>
@@ -172,20 +265,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                     <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
                   </p>
                   {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
-                    <p>
-                      <strong>Model</strong>:&nbsp;
-                      {!isNull(drive.modelId) ? (
-                        drive.modelId.map(n => (
-                          <Link href={`/model/${n}`} key={drive.modelId[0]}>
-                            <a>{n}</a>
-                          </Link>
-                        ))
-                      ) : (
-                        <Link href={`/add?drive=${drive.id}`} key={`add-model-${drive.id}`}>
-                          <a>Add Model</a>
-                        </Link>
-                      )}
-                    </p>
+                    <AddModel {...drive} modelList={props.modelList} />
                   ) : null}
                   <ul>
                     <Drawer header={drive.name} key={`${drive.id}-drawer`}>
@@ -209,7 +289,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
       </ul>
       <ul className={styles.grid}>
         {sortedData
-          .filter(drive => isNull(drive.modelId))
+          .filter(drive => drive.modelId.length === 0)
           .map(drive => (
             <li className={styles.gridItem} key={drive.id}>
               {/**
@@ -222,6 +302,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                       src={getImageLink(drive.thumbnailLink, 's330', 's220')}
                       referrerPolicy="no-referrer"
                       loading="lazy"
+                      title={`${drive.name}`}
                     />
                   </a>
                   <p>
@@ -239,20 +320,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                 <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
               </p>
               {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
-                <p>
-                  <strong>Model</strong>:&nbsp;
-                  {!isNull(drive.modelId) ? (
-                    drive.modelId.map(n => (
-                      <Link href={`/model/${n}`} key={drive.modelId[0]}>
-                        <a>{n}</a>
-                      </Link>
-                    ))
-                  ) : (
-                    <Link href={`/add?drive=${drive.id}`} key={`add-model-${drive.id}`}>
-                      <a>Add Model</a>
-                    </Link>
-                  )}
-                </p>
+                <AddModel {...drive} modelList={props.modelList} />
               ) : null}
               <ul>
                 <Drawer header={drive.name} key={`${drive.id}-drawer`}>

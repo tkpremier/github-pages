@@ -11,7 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { getModelList } from '../../services/db';
 
 type AddProps = {
-  modelData: Array<any>,
+  modelData: Array<any>;
   query: {
     drive?: string;
   };
@@ -60,7 +60,7 @@ const AddPage = (props: AddProps) => {
       },
       body: JSON.stringify(data)
     };
-    fetch('http://api:9000/api/experience', options)
+    fetch('http://localhost:9000/api/experience', options)
       .then(handleResponse)
       .then((res: ApiResponse) => setStatus(res))
       .catch(err => console.log('err: ', err));
@@ -78,11 +78,11 @@ const AddPage = (props: AddProps) => {
     })
       .then(handleResponse)
       .then(res => {
-        setStatus({...res, status: "success"});
+        setStatus({ ...res, status: 'success' });
       })
       .catch(err => console.log('err: ', err));
   }, []);
-  const handleAutoComplete = useCallback((e) => {
+  const handleAutoComplete = useCallback(e => {
     console.log(e.type);
   }, []);
   const handleInterview = useCallback(e => {
@@ -97,7 +97,7 @@ const AddPage = (props: AddProps) => {
       },
       body: JSON.stringify({ ...data, date })
     };
-    fetch('http://api:9000/api/interview', options)
+    fetch('http://localhost:9000/api/interview', options)
       .then(handleResponse)
       .then(res => {
         setStatus(res);
@@ -142,7 +142,17 @@ const AddPage = (props: AddProps) => {
             <p>Add about your chariable donations, when, where, who, how long were these donations?</p>
             <label htmlFor="model-name">
               Name
-              <input type="text" name="modelName" required placeholder="Model Name" id="model-name" autoComplete="off" onFocus={handleAutoComplete} onChange={handleAutoComplete} onBlur={handleAutoComplete} />
+              <input
+                type="text"
+                name="modelName"
+                required
+                placeholder="Model Name"
+                id="model-name"
+                autoComplete="off"
+                onFocus={handleAutoComplete}
+                onChange={handleAutoComplete}
+                onBlur={handleAutoComplete}
+              />
             </label>
             <label htmlFor="exp-desc">
               Platform
