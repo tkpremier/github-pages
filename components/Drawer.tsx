@@ -3,13 +3,12 @@ import classNames from 'classnames';
 import styles from './drawer.module.scss';
 
 interface DrawerProps {
-  children: React.ReactNode;
   className?: string;
   closed?: boolean;
   header: string;
 }
 
-const Drawer = (props: DrawerProps) => {
+const Drawer = (props: React.PropsWithChildren<DrawerProps>): React.ReactNode => {
   const [closed, toggleEl] = useState(props.closed);
   const [maxHeight, setMaxHeight] = useState(props.closed ? 'none' : 'auto');
   const content = useRef(null);

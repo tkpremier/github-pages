@@ -3,6 +3,7 @@ import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
 import { getExp } from '../../services/db';
+import Link from 'next/link';
 
 interface Exp {
   id: number;
@@ -29,29 +30,11 @@ export default function About({ data }: AboutProps) {
         <a href="/resume.pdf" title="Download Resume" target="_blank">
           Resume.
         </a>
+        <br />
+        <Link href="/about/soft-skills">
+          <a>Soft Skills</a>
+        </Link>
       </p>
-      <ul className="root" style={{ maxWidth: '100%' }}>
-        {data.slice(1, data.length - 1).map(post => (
-          <Drawer header={post.name} closed key={post.id}>
-            <ul>
-              {data[2].description.split('\n').map(d => (
-                <li key={d}>{d}</li>
-              ))}
-            </ul>
-          </Drawer>
-        ))}
-        {data[0] ? (
-          <li>
-            <Slider carouselTitle={data[0].name} carouselDesc="June 2014 - June 2022">
-              <div key={data[0].name}>
-                {data[0].description.split('\n').map(desc => (
-                  <p key={desc}>{desc}</p>
-                ))}
-              </div>
-            </Slider>
-          </li>
-        ) : null}
-      </ul>
     </Layout>
   );
 }
