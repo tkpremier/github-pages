@@ -1,5 +1,5 @@
 import React from 'react';
-import useCkEditor from "../hooks/useCkEditor";
+import useCkEditor from '../hooks/useCkEditor';
 
 export interface IEventInfo {
   name: string;
@@ -7,21 +7,19 @@ export interface IEventInfo {
   source: any;
 }
 
-interface EditorProps {
+export interface EditorProps {
   data: string;
   name: string;
   onChange: (eventInfo: IEventInfo, editor: any) => any;
 }
 
 const Editor = (props: EditorProps) => {
-  const {
-    isEditorLoaded,
-    CKEditor,
-    InlineEditor
-  } = useCkEditor();
-  return isEditorLoaded
-    ? <CKEditor editor={InlineEditor} data={props.data} name={props.name} onBlur={props.onChange} />
-    : <div>Editor loading</div>
+  const { isEditorLoaded, CKEditor, InlineEditor } = useCkEditor();
+  return isEditorLoaded ? (
+    <CKEditor editor={InlineEditor} data={props.data} name={props.name} onBlur={props.onChange} />
+  ) : (
+    <div>Editor loading</div>
+  );
 };
 
 export default Editor;

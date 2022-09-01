@@ -1,6 +1,6 @@
 import React, { FormEvent, useCallback, useState, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { IEventInfo } from '../../components/Editor';
+import { IEventInfo, EditorProps } from '../../components/Editor';
 import format from 'date-fns/format';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
@@ -10,7 +10,6 @@ import Form from '../../components/Form';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
 import handleResponse from '../../utils/handleResponse';
-import { AnyCnameRecord } from 'dns';
 
 type Interview = {
   id: number;
@@ -30,7 +29,7 @@ export async function getServerSideProps(): Promise<{ props: IInterviewProps }> 
       props: {
         data: []
       }
-    }
+    };
   }
   const props = await response.json();
   return {
@@ -42,10 +41,7 @@ const InterviewItem = (props: Interview) => {
   const [i, updateItem] = useState(props);
   const [updatedRetro, updateRetro] = useState(i.retro);
   const [interviewDate, setDate] = useState(new Date(i.date));
-  const Editor = useMemo(
-    () => dynamic(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
-    []
-  );
+  const Editor = useMemo(() => dynamic<EditorProps>(() => import('../../components/Editor', { ssr: false })), []);
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();

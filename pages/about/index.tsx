@@ -35,6 +35,13 @@ export default function About({ data }: AboutProps) {
           <a>Soft Skills</a>
         </Link>
       </p>
+      <blockquote>
+        <figure>Tell me about your journey into tech. How did you get interested in coding, and why was web development (or
+        replace with other job-specific skills) a good fit for you?
+        </figure> How is that applicable to our role or company
+        goals?" It is probably not a good idea to spend valuable time talking about things which aren't relevant to the
+        job!
+      </blockquote>
     </Layout>
   );
 }
