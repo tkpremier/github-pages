@@ -16,12 +16,8 @@ const Message = (props: UserMessage): any => (
 export default function Home() {
   return (
     <Layout home title="Welcome to TK Premier">
-      <h1 className="title">TKeezy Premier</h1>
-      <p className="description">Get started.</p>
-      <MyContext.Consumer>
-        {(context: UserMessage): any => <Message message={context.message} name={context.name} />}
-      </MyContext.Consumer>
-      <section className={utilStyles.headingMd}>…</section>
+      <h1 className="title">Thomas Kim</h1>
+      <p className="description">This too shall pass.</p>
     </Layout>
   );
 }

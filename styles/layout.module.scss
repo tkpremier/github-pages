@@ -11,12 +11,8 @@
   justify-items: center;
   align-items: center;
   flex-wrap: wrap;
-  max-width: 800px;
+  max-width: 1280px;
   margin-top: 3rem;
-  @media (mm-width: 600px) {
-    column-gap: 5%;
-    width: 100%;
-  }
 }
 .mainRoot {
   display: flex;

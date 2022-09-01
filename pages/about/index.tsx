@@ -3,6 +3,7 @@ import Drawer from '../../components/Drawer';
 import Layout from '../../components/layout';
 import Slider from '../../components/Slider';
 import { getExp } from '../../services/db';
+import Link from 'next/link';
 
 interface Exp {
   id: number;
@@ -29,23 +30,11 @@ export default function About({ data }: AboutProps) {
         <a href="/resume.pdf" title="Download Resume" target="_blank">
           Resume.
         </a>
+        <br />
+        <Link href="/about/soft-skills">
+          <a>Soft Skills</a>
+        </Link>
       </p>
-      <ul className="root" style={{ maxWidth: '100%' }}>
-        {data.slice(3, data.length - 1).map(post => (
-          <Drawer header={post.name} closed key={post.id}>
-            <div dangerouslySetInnerHTML={{ __html: post.description }} />
-          </Drawer>
-        ))}
-        {data[0] ? (
-          <li>
-            <Slider carouselTitle={data[0].name} carouselDesc={data[1].name}>
-              <div key={data[0].name} dangerouslySetInnerHTML={{ __html: data[0].description }} />
-              <div key={data[1].name} dangerouslySetInnerHTML={{ __html: data[1].description }} />
-              <div key={data[2].name} dangerouslySetInnerHTML={{ __html: data[2].description }} />
-            </Slider>
-          </li>
-        ) : null}
-      </ul>
     </Layout>
   );
 }

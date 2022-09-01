@@ -15,17 +15,13 @@ export const MyContext = createContext(initState);
 type State = Readonly<typeof initState>;
 
 type Props = {
-  children: React.ReactNode;
   home?: boolean;
   title: string;
 };
 
-class Layout extends Component<Props, State> {
+class Layout extends Component<React.PropsWithChildren<Props>, State> {
   readonly state: State = initState;
   eventsEmitter: any;
-  constructor(props) {
-    super(props);
-  }
   // addComment = comment => {
   //   this.setState({
   //     comments: [...this.state.comments, comment]
@@ -79,16 +75,10 @@ class Layout extends Component<Props, State> {
                 <p>Get to know me.</p>
               </a>
             </Link>
-            <Link href="/examples" key="examples">
+            <Link href="/learn" key="learn">
               <a className={styles.card}>
-                <h3>Examples</h3>
-                <p>Check out some more standard components.</p>
-              </a>
-            </Link>
-            <Link href="/add" key="add">
-              <a className={styles.card}>
-                <h3>Add Data</h3>
-                <p>Learn by adding new data and &#x1F4AA; on them skills.</p>
+                <h3>My Learning </h3>
+                <p>Always. Be. Collecting (new knowledge).</p>
               </a>
             </Link>
             <Link href="/interview" key="interview">
@@ -97,18 +87,24 @@ class Layout extends Component<Props, State> {
                 <p>Companies, dates, and feedback notes.</p>
               </a>
             </Link>
-            <Link href="/drive" key="drive">
+            {/* <Link href="/add" key="add">
+              <a className={styles.card}>
+                <h3>Add Data</h3>
+                <p>Learn by adding new data and &#x1F4AA; on them skills.</p>
+              </a>
+            </Link> */}
+            {/* <Link href="/drive" key="drive">
               <a className={styles.card}>
                 <h3>Put that data to work, Tommy</h3>
                 <p>Show them how data can get sorted.</p>
               </a>
-            </Link>
-            <Link href="/model" key="model">
+            </Link> */}
+            {/* <Link href="/model" key="model">
               <a className={styles.card}>
                 <h3>Models &rarr;</h3>
                 <p>My contacts.</p>
               </a>
-            </Link>
+            </Link> */}
           </div>
         </main>
         <footer>
