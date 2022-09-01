@@ -20,6 +20,44 @@ class Parent extends React.Component {
 }
 `;
 
+// CONTEXT CONTENT
+
+export const contextSample = `
+const ThemeContext = React.createContext('light');
+
+class App extends React.Component {
+  render() {
+    // Use a Provider to pass the current theme to the tree below.
+    // Any component can read it, no matter how deep it is.
+    // In this example, we're passing "dark" as the current value.
+    return (
+      <ThemeContext.Provider value="dark">
+        <Toolbar />
+      </ThemeContext.Provider>
+    );
+  }
+}
+
+// A component in the middle doesn't have to
+// pass the theme down explicitly anymore.
+function Toolbar() {
+  return (
+    <div>
+      <ThemedButton />
+    </div>
+  );
+}
+
+class ThemedButton extends React.Component {
+  // Assign a contextType to read the current theme context.
+  // React will find the closest theme Provider above and use its value.
+  // In this example, the current theme is "dark".
+  static contextType = ThemeContext;
+  render() {
+    return <Button theme={this.context} />;
+  }
+}`;
+
 // Render Props CONTENT
 
 export const crossCutting = `class Cat extends React.Component {
@@ -72,6 +110,10 @@ class MouseTracker extends React.Component {
   }
 }`;
 
+export const renderPropsEx1 = `<DataProvider render={data => (
+  <h1>Hello {data.target}</h1>
+)}/>`;
+
 export const renderPropsHOC = `// If you really want a HOC for some reason, you can easily
 // create one using a regular component with a render prop!
 function withMouse(Component) {
@@ -83,6 +125,28 @@ function withMouse(Component) {
         )}/>
       );
     }
+  }
+}`;
+
+export const renderPropsWrong = `class Mouse extends React.PureComponent {
+  // Same implementation as above...
+}
+
+class MouseTracker extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>Move the mouse around!</h1>
+
+        {/*
+          This is bad! The value of the \`render\` prop will
+          be different on each render.
+        */}
+        <Mouse render={mouse => (
+          <Cat mouse={mouse} />
+        )}/>
+      </div>
+    );
   }
 }`;
 

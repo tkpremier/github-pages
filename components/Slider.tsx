@@ -1,9 +1,14 @@
 import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './carousel.module.scss';
 
-interface ISlider {
+const defaultProps = Object.freeze({
+  carouselTitle: '',
+  carouselDesc: '',
+  classNames: ''
+});
+
+type ISlider = {
   arrows?: boolean;
   autoplay?: boolean;
   carouselTitle?: string;
@@ -13,7 +18,7 @@ interface ISlider {
   loop?: boolean;
   pagination?: boolean;
   children: React.ReactNode;
-}
+} & typeof defaultProps;
 
 const Slider = (props: ISlider) => {
   const carouselRef = useRef(null);
@@ -79,7 +84,7 @@ const Slider = (props: ISlider) => {
       }
       setState(curr => ({
         ...curr,
-        curIndex: (curr.curIndex + int),
+        curIndex: curr.curIndex + int,
         animating: true
       }));
     },
@@ -177,9 +182,6 @@ const Slider = (props: ISlider) => {
   );
 };
 
-Slider.defaultProps = {
-  carouselDesc: '',
-  carouselTitle: ''
-};
+Slider.defaultProps = defaultProps;
 
 export default Slider;
