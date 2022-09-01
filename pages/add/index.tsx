@@ -1,8 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
+
+import Context from '@ckeditor/ckeditor5-core/src/context';
+import { IEventInfo } from '../../components/Editor';
 import Form from '../../components/Form';
 import Layout from '../../components/layout';
 import layoutStyles from '../../styles/layout.module.scss';
@@ -47,24 +51,30 @@ const state: State = {
 
 const AddPage = (props: AddProps) => {
   const [response, setStatus] = useState(state);
+  const [editorData, handleChange] = useState('');
   const [autoCompleteList, updateAutoComplete] = useState('');
   const [interviewDate, setDate] = useState(new Date());
-  const handleSubmit = useCallback(e => {
-    e.preventDefault();
-    const form = e.target;
-    const data = serialize(form, { hash: true });
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify(data)
-    };
-    fetch('http://localhost:9000/api/experience', options)
-      .then(handleResponse)
-      .then((res: ApiResponse) => setStatus(res))
-      .catch(err => console.log('err: ', err));
-  }, []);
+
+  const Editor = useMemo(() => dynamic(() => import('../../components/Editor', { ssr: false })), []);
+  const handleSubmit = useCallback(
+    e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = serialize(form, { hash: true });
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({ ...data, description: editorData })
+      };
+      fetch('http://localhost:9000/api/experience', options)
+        .then(handleResponse)
+        .then((res: ApiResponse) => setStatus(res))
+        .catch(err => console.log('err: ', err));
+    },
+    [editorData]
+  );
   const handleSubmitModel = useCallback(e => {
     e.preventDefault();
     const form = e.target;
@@ -95,7 +105,7 @@ const AddPage = (props: AddProps) => {
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
       },
-      body: JSON.stringify({ ...data, date })
+      body: JSON.stringify({ ...data, date, retro: editorData })
     };
     fetch('http://localhost:9000/api/interview', options)
       .then(handleResponse)
@@ -104,6 +114,9 @@ const AddPage = (props: AddProps) => {
       })
       .catch(err => console.log('err: ', err));
   }, []);
+  const handleEditorChange = (_eventInfo: IEventInfo, editor: any) => {
+    handleChange(editor.getData());
+  };
   return (
     <Layout title="Add something about yourself | TK Premier">
       <h1>Add something about yourself.</h1>
@@ -130,13 +143,13 @@ const AddPage = (props: AddProps) => {
               <input type="text" name="name" required placeholder="Company Name" id="exp-name" />
             </label>
             <label htmlFor="exp-desc">
-              Description
-              <textarea name="description" placeholder="Description" />
+              Answer
+              <Editor data={editorData} onChange={handleEditorChange} name="description" />
             </label>
             <input type="submit" value="Update" />
           </Form>
         </div>
-        <div className={layoutStyles.card}>
+        {/* <div className={layoutStyles.card}>
           <Form onSubmit={handleSubmitModel}>
             <h3>About TK the Philanthropist &rarr;</h3>
             <p>Add about your chariable donations, when, where, who, how long were these donations?</p>
@@ -164,12 +177,11 @@ const AddPage = (props: AddProps) => {
             </label>
             <input type="submit" value="Update" />
           </Form>
-        </div>
+        </div> */}
         <div className={layoutStyles.card}>
+          <h3>About TK&lsquo;s interviews &#x1F935;</h3>
+          <p>A retrospective...&#x1F5E3;</p>
           <Form onSubmit={handleInterview}>
-            <h3>About TK&lsquo;s interviews &#x1F935;</h3>
-            <p>Add about your chariable donations, when, where, who, how long were these donations?</p>
-
             <label htmlFor="interview-company">
               Company
               <input type="text" name="company" required placeholder="Name" id="interview-company" />
@@ -179,8 +191,8 @@ const AddPage = (props: AddProps) => {
               <DatePicker selected={interviewDate} onChange={date => setDate(date)} name="date" />
             </label>
             <label htmlFor="interview-retro">
-              Platform
-              <textarea name="retro" id="interview-retro" placeholder="Retrospective" rows={30} />
+              Retrospective
+              <Editor data="" onChange={handleEditorChange} name="retrospective" />
             </label>
             <input type="submit" value="Update" />
           </Form>

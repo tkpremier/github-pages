@@ -1,15 +1,32 @@
 import React, { Profiler } from 'react';
-import Code from '../../components/Code';
-import Drawer from '../../components/Drawer';
-import Layout from '../../components/layout';
-import Slider from '../../components/Slider';
-import * as codeString from '../../code-strings/react/';
-import * as codeHooks from '../../code-strings/react/hooks';
+import Code from '../../../components/Code';
+import Drawer from '../../../components/Drawer';
+import Layout from '../../../components/layout';
+import Slider from '../../../components/Slider';
+import * as codeString from '../../../code-strings/react';
+import * as codeHooks from '../../../code-strings/react/hooks';
 
 const LearnReact = () => (
   <Layout title="Time to Learn React">
     <h1>Learn React Guide</h1>
     <ul className="root">
+      <Drawer key="react-context" header="Context">
+        <ul>
+          <li>
+            Context provides a way to share props that are used by many components with an application. It allows
+            components access to this data without having to explicitly pass a prop through every level of the tree.
+          </li>
+          <li>
+            <strong>Examples:</strong>&nbsp;current authenticated user, theme, or preffered language.
+          </li>
+          <li>
+            <h4></h4>
+          </li>
+          <li>
+            <Code text={codeString.contextSample}></Code>
+          </li>
+        </ul>
+      </Drawer>
       <Drawer key="react-hooks" header="Hooks">
         <ul>
           <li>
@@ -149,11 +166,7 @@ const LearnReact = () => (
           A component with a render prop takes a func that returns a React element and calls it instead of implementing
           its own render logic.
         </p>
-        <Code
-          text={`<DataProvider render={data => (
-  <h1>Hello {data.target}</h1>
-)}/>`}
-        />
+        <Code text={codeString.renderPropsEx1} />
         <h4>Use Render Props for Cross-Cutting Concerns</h4>
         <p>
           How can we reuse common behaviors in multiple components? In other words, if anotehr component needs to know
@@ -178,29 +191,7 @@ const LearnReact = () => (
           <Drawer header="Caveats">
             <h4>Be careful when using Render Props with React.PureComponent</h4>
             <h5 style={{ color: 'red' }}>WRONG</h5>
-            <Code
-              text={`class Mouse extends React.PureComponent {
-  // Same implementation as above...
-}
-
-class MouseTracker extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>Move the mouse around!</h1>
-
-        {/*
-          This is bad! The value of the \`render\` prop will
-          be different on each render.
-        */}
-        <Mouse render={mouse => (
-          <Cat mouse={mouse} />
-        )}/>
-      </div>
-    );
-  }
-}`}
-            />
+            <Code text={codeString.renderPropsWrong} />
             <div>
               In this example, each time <pre>&lt;MouseTracker&gt;</pre> renders, it generates a new function as the
               value of the &lt;Mouse&gt; render prop, thus negating the effect of &lt;Mouse&gt; extending

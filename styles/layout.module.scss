@@ -6,7 +6,8 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 47.5%);
+  grid-template-columns: 100%;
+  grid-template-rows: auto;
   justify-items: center;
   align-items: center;
   flex-wrap: wrap;
@@ -29,8 +30,9 @@
   align-items: center;
 }
 .card {
-  margin: 1rem;
-  flex-basis: 45%;
+  margin: 1rem 0;
+  width: 1fr;
+  justify-self: stretch;
   padding: 1.5rem;
   text-align: left;
   color: inherit;
