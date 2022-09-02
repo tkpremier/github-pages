@@ -43,8 +43,6 @@ export default function Experience({ data }: AboutProps): JSX.Element {
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      const form = e.target as HTMLFormElement;
-      const newData = serialize(form, { hash: true }) as any;
       const options = {
         method: 'PUT',
         headers: {

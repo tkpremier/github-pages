@@ -55,11 +55,14 @@ const AddPage = (props: AddProps) => {
   const [autoCompleteList, updateAutoComplete] = useState('');
   const [interviewDate, setDate] = useState(new Date());
 
-  const Editor = useMemo(() => dynamic(() => import('../../components/Editor', { ssr: false })), []);
-  const handleSubmit = useCallback(
+  const Editor = useMemo(
+    () => dynamic(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
+    []
+  );
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
     e => {
       e.preventDefault();
-      const form = e.target;
+      const form = e.currentTarget;
       const data = serialize(form, { hash: true });
       const options = {
         method: 'POST',
@@ -95,9 +98,9 @@ const AddPage = (props: AddProps) => {
   const handleAutoComplete = useCallback(e => {
     console.log(e.type);
   }, []);
-  const handleInterview = useCallback(e => {
+  const handleInterview: React.FormEventHandler<HTMLFormElement> = useCallback(e => {
     e.preventDefault();
-    const form = e.target;
+    const form = e.currentTarget;
     const data = serialize(form, { hash: true }) as any;
     const date = new Date(data.date);
     const options = {
