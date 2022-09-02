@@ -41,7 +41,10 @@ const InterviewItem = (props: Interview) => {
   const [i, updateItem] = useState(props);
   const [updatedRetro, updateRetro] = useState(i.retro);
   const [interviewDate, setDate] = useState(new Date(i.date));
-  const Editor = useMemo(() => dynamic<EditorProps>(() => import('../../components/Editor', { ssr: false })), []);
+  const Editor = useMemo(
+    () => dynamic<EditorProps>(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
+    []
+  );
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();

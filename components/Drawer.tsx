@@ -8,7 +8,7 @@ interface DrawerProps {
   header: string;
 }
 
-const Drawer = (props: React.PropsWithChildren<DrawerProps>): React.ReactNode => {
+const Drawer = (props: React.PropsWithChildren<DrawerProps>): JSX.Element => {
   const [closed, toggleEl] = useState(props.closed);
   const [maxHeight, setMaxHeight] = useState(props.closed ? 'none' : 'auto');
   const content = useRef(null);
@@ -35,6 +35,7 @@ const Drawer = (props: React.PropsWithChildren<DrawerProps>): React.ReactNode =>
           },
           props.className
         )}
+        aria-label="toggle-open-drawer"
         onClick={handleToggle}
         type="button"
         dangerouslySetInnerHTML={{

@@ -70,7 +70,7 @@ const AddPage = (props: AddProps) => {
       };
       fetch('http://localhost:9000/api/experience', options)
         .then(handleResponse)
-        .then((res: ApiResponse) => setStatus(res))
+        .then((res: ApiResponse) => setStatus({ status: 'experience success', ...res }))
         .catch(err => console.log('err: ', err));
     },
     [editorData]
@@ -120,16 +120,7 @@ const AddPage = (props: AddProps) => {
   return (
     <Layout title="Add something about yourself | TK Premier">
       <h1>Add something about yourself.</h1>
-      {response.status.length > 0 ? (
-        <h2>
-          {response.status}&nbsp;
-          {response.data.id ? (
-            <Link href={`/model/${response.data.id}`}>
-              <a>Go to model</a>
-            </Link>
-          ) : null}
-        </h2>
-      ) : null}
+      {response.status.length > 0 ? <h2>{response.status}&nbsp;</h2> : null}
       <main className={layoutStyles.grid}>
         <div className={layoutStyles.card}>
           <Form onSubmit={handleSubmit}>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, createContext } from 'react';
 import Layout, { MyContext } from '../components/layout';
-import utilStyles from '../styles/utils.module.scss';
 
 interface UserMessage {
   name: string;

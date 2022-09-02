@@ -1,17 +1,11 @@
-import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment } from 'react';
+import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment, PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import styles from './carousel.module.scss';
-
-const defaultProps = Object.freeze({
-  carouselTitle: '',
-  carouselDesc: '',
-  classNames: ''
-});
 
 type ISlider = {
   arrows?: boolean;
   autoplay?: boolean;
-  carouselTitle?: string;
+  carouselTitle: string;
   carouselDesc?: string;
   classNames?: string;
   interval?: number;
@@ -20,7 +14,13 @@ type ISlider = {
   children: React.ReactNode;
 } & typeof defaultProps;
 
-const Slider = (props: ISlider) => {
+const defaultProps = {
+  carouselTitle: '',
+  carouselDesc: '',
+  classNames: ''
+};
+
+const Slider = (props: PropsWithChildren<ISlider>) => {
   const carouselRef = useRef(null);
   const wrapperRef = useRef(null);
   const intervalRef = useRef(null);
@@ -167,12 +167,14 @@ const Slider = (props: ISlider) => {
               value={-1}
               onClick={handleClick}
               type="button"
+              aria-label="button-previous"
             />
             <button
               className={classNames(styles.button, styles.buttonNext)}
               value={1}
               onClick={handleClick}
               type="button"
+              aria-label="button-next"
             />
           </Fragment>
         ) : null}
