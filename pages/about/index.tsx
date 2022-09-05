@@ -20,7 +20,7 @@ export default function About() {
           <a>Soft Skills</a>
         </Link>
       </nav>
-      <style jsx>{`
+      <style>{`
         .about-nav {
           width: 100%;
           max-width: 260px;

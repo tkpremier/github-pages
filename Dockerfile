@@ -9,8 +9,7 @@ COPY package*.json ./
 
 USER node
 # Install npm production packages 
-# RUN npm install --production
-RUN npm install --force
+RUN npm install --production
 COPY --chown=node:node . .
 # ENV NODE_ENV production
 ENV PORT 3000

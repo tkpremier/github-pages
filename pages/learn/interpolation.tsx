@@ -80,7 +80,7 @@ export default function Interpolation() {
           {n > -1 ? `Result at ${n}` : `Could not find ${n}`}
         </p>
       </div>
-      <style jsx>{`
+      <style>{`
         .faq {
           max-width: 100%;
         }
