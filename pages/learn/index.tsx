@@ -3,7 +3,7 @@ import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
 import Drawer from '../../components/Drawer';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import {
   binaryIterative,
   binaryRecursive,

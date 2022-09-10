@@ -1,0 +1,32 @@
+.hamBurger {
+  background: transparent;
+  border: none;
+}
+.header {
+  position: relative;
+  width: 100%;
+  // &Item {
+  //   flex: 1 1 auto;
+  // }
+  &Nav {
+    width: 100%;
+  }
+  // <ul>
+  &Wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-start;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.offCanvasNav {
+  &Wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-start;
+    padding: 0;
+    list-style: none;
+  }
+}

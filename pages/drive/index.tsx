@@ -7,12 +7,11 @@ import Link from 'next/link';
 import Drawer from '../../components/Drawer';
 import styles from '../../components/grid.module.scss';
 import buttonStyles from '../../components/button.module.scss';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import { getDrive } from '../../services/drive';
 import { getDriveFile, getModelList } from '../../services/db';
 import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
-import { factchecktools_v1alpha1 } from 'googleapis';
 
 type VideoMediaMetadata = {
   durationMillis: string;
@@ -27,7 +26,7 @@ interface GoogleDriveData {
   webContentLink: string;
   thumbnailLink: string | null;
   mimeType: string;
-  viewedByMeTime: string;
+  viewedByMeTime: Date;
   videoMediaMetadata?: VideoMediaMetadata;
 }
 interface Contact {
@@ -41,8 +40,8 @@ interface DBData extends GoogleDriveData {
   modelId: Array<number>;
   createdOn: string;
   duration: number;
-  lastViewed: string;
-  createdTime: string;
+  lastViewed: Date;
+  createdTime: Date;
 }
 
 const getImageLink = (link = '', endStr = 's220', split = 's220') => {
@@ -50,38 +49,6 @@ const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   return `${base}${endStr}`;
 };
 
-const getDriveFromApi = async () => {
-  const response = await getDrive();
-  const data = (await handleResponse(response)) as { files: Array<GoogleDriveData>; nextPageToken: string };
-  const { data: dbData } = await getDriveFile();
-  const { data: modelList } = await getModelList();
-  const files = data.files.map((f: GoogleDriveData) => {
-    // return f;
-    const dbFile = dbData.find((d: DBData) => d.id === f.id) as DBData;
-    return typeof dbFile === 'undefined'
-      ? {
-          ...f,
-          modelId: []
-        }
-      : {
-          ...f,
-          modelId: dbFile.modelId
-        };
-  }) as Array<DBData>;
-  return {
-    dbData,
-    data: files,
-    modelList,
-    nextPage: data.nextPageToken
-  };
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const props = await getDriveFromApi();
-  return {
-    props
-  };
-};
 interface IAddModel extends DBData {
   modelList: Array<Contact>;
 }
@@ -165,6 +132,39 @@ const AddModel = (props: IAddModel) => {
   );
 };
 
+const getDriveFromApi = async () => {
+  const response = await getDrive();
+  const data = (await handleResponse(response)) as { files: Array<GoogleDriveData>; nextPageToken: string };
+  const { data: dbData } = await getDriveFile();
+  const { data: modelList } = await getModelList();
+  const files = data.files.map((f: GoogleDriveData) => {
+    // return f;
+    const dbFile = dbData.find((d: DBData) => d.id === f.id) as DBData;
+    return typeof dbFile === 'undefined'
+      ? {
+          ...f,
+          modelId: []
+        }
+      : {
+          ...f,
+          modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
+        };
+  }) as Array<DBData>;
+  return {
+    dbData,
+    data: files,
+    modelList,
+    nextPage: data.nextPageToken
+  };
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const props = await getDriveFromApi();
+  return {
+    props
+  };
+};
+
 const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: string; modelList: Array<Contact> }) => {
   const [data, setData] = useState(props.data);
   const [nextPage, updateToken] = useState(props.nextPage);
@@ -181,7 +181,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
             ? { ...f, modelId: [] }
             : {
                 ...f,
-                modelId: dbFile.modelId
+                modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
               };
         })
       )
@@ -262,7 +262,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                   <p>
                     <strong>{drive.name}</strong>
                     <br />
-                    <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
+                    <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')}
                   </p>
                   {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
                     <AddModel {...drive} modelList={props.modelList} />
@@ -317,7 +317,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
               <p>
                 <strong>{drive.name}</strong>
                 <br />
-                <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), "MM/dd/yyyy' 'HH:mm:ss")}
+                <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')}
               </p>
               {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
                 <AddModel {...drive} modelList={props.modelList} />

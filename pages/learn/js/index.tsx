@@ -1,7 +1,7 @@
 import React from 'react';
 import Code from '../../../components/Code';
 import Drawer from '../../../components/Drawer';
-import Layout from '../../../components/layout';
+import Layout from '../../../components/Layout';
 import * as jsThis from '../../../code-strings/js/this';
 import * as jsClass from '../../../code-strings/js/class';
 import * as jsExCon from '../../../code-strings/js/execution-context';

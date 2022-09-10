@@ -2,8 +2,8 @@ import React, { Component, createContext, useState } from 'react';
 import PropTypes, { func } from 'prop-types';
 import Head from 'next/head';
 import Link from 'next/link';
-import styles from '../styles/layout.module.scss';
-import utilStyles from '../styles/utils.module.scss';
+import Header from './header';
+import styles from './layout.module.scss';
 
 const name = 'TK Premier';
 const initState = {
@@ -32,10 +32,11 @@ class Layout extends Component<React.PropsWithChildren<Props>, State> {
     return (
       <div className={styles.container}>
         <Head>
-          <title>{title}</title>
+          <title>{title} | TK Premier</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <header className={styles.header}>
+        <Header />
+        {/* <header className={styles.header}>
           {home ? (
             <>
               <img
@@ -63,7 +64,7 @@ class Layout extends Component<React.PropsWithChildren<Props>, State> {
               </h2>
             </>
           )}
-        </header>
+        </header> */}
         <MyContext.Provider value={this.state}>
           <main className={styles.mainRoot}>{children}</main>
         </MyContext.Provider>

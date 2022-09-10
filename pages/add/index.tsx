@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Context from '@ckeditor/ckeditor5-core/src/context';
 import { IEventInfo } from '../../components/Editor';
 import Form from '../../components/Form';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import layoutStyles from '../../styles/layout.module.scss';
 import handleResponse from '../../utils/handleResponse';
 import 'react-datepicker/dist/react-datepicker.css';
