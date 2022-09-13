@@ -270,10 +270,11 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                   <ul>
                     <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                       <p>{drive.mimeType}</p>
-                      <p>
-                        <strong>Last viewed:</strong>&nbsp;
-                        {drive.viewedByMeTime || 'Never'}
-                      </p>
+                      {drive.viewedByMeTime ? (
+                        <p>
+                          <strong>Last viewed:</strong>&nbsp;{format(new Date(drive.viewedByMeTime), 'MM/dd/yyyy')}
+                        </p>
+                      ) : null}
                       {drive.videoMediaMetadata ? (
                         <p>
                           <strong>Duration: </strong>
@@ -325,10 +326,11 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
               <ul>
                 <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                   <p>{drive.mimeType}</p>
-                  <p>
-                    <strong>Last viewed:</strong>&nbsp;
-                    {drive.viewedByMeTime || 'Never'}
-                  </p>
+                  {drive.viewedByMeTime ? (
+                    <p>
+                      <strong>Last viewed:</strong>&nbsp;{format(new Date(drive.viewedByMeTime), 'MM/dd/yyyy')}
+                    </p>
+                  ) : null}
                   {drive.videoMediaMetadata ? (
                     <p>
                       <strong>Duration: </strong>
