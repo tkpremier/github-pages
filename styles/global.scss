@@ -15,7 +15,7 @@ body {
 }
 footer {
   width: 100%;
-  border-top: 1px solid hsl(129deg, 68%, 69%);
+  border-top: 1px solid $textColor;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,7 +39,7 @@ main {
   align-items: center;
 }
 a {
-  color: hsl(129deg, 68%, 69%);
+  color: $textColor;
   text-decoration: none;
 }
 
