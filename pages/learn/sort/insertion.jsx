@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../../components/Code';
-import Layout from '../../../components/layout';
+import Layout from '../../../components/Layout';
 import { insertionSortCode } from '../../../code-examples';
 import { insertionSort } from '../../../code-examples/sort';
 
