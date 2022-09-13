@@ -3,13 +3,10 @@ import dynamic from 'next/dynamic';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import Link from 'next/link';
-
-import Context from '@ckeditor/ckeditor5-core/src/context';
 import { IEventInfo } from '../../components/Editor';
 import Form from '../../components/Form';
 import Layout from '../../components/Layout';
-import layoutStyles from '../../styles/layout.module.scss';
+import layoutStyles from '../../components/layout.module.scss';
 import handleResponse from '../../utils/handleResponse';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getModelList } from '../../services/db';
