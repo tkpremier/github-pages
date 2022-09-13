@@ -2,7 +2,7 @@ import React, { Component, createRef, FormEvent, useEffect, useState } from 'rea
 import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import Drawer from '../../components/Drawer';
 import utilStyles from '../../styles/utils.module.scss';
 import * as sampleString from '../../code-strings/search/anagram'; // { countAnagrams, sherlockAndAnagram }

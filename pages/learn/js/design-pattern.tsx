@@ -1,6 +1,6 @@
 import React from 'react';
 import Code from '../../../components/Code';
-import Layout from '../../../components/layout';
+import Layout from '../../../components/Layout';
 import bar from '../../../code-examples/scope';
 
 const privateMethods = `

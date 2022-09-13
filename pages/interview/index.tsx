@@ -7,15 +7,16 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Drawer from '../../components/Drawer';
 import Form from '../../components/Form';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import Slider from '../../components/Slider';
 import handleResponse from '../../utils/handleResponse';
 
 type Interview = {
   id: number;
   company: string;
-  date: string;
+  date: Date;
   retro: string;
+  onClick?: (event: React.PointerEvent<HTMLButtonElement>) => void;
 };
 
 interface IInterviewProps {
@@ -38,47 +39,89 @@ export async function getServerSideProps(): Promise<{ props: IInterviewProps }> 
 }
 
 const InterviewItem = (props: Interview) => {
-  const [i, updateItem] = useState(props);
-  const [updatedRetro, updateRetro] = useState(i.retro);
-  const [interviewDate, setDate] = useState(new Date(i.date));
+  console.log('new Date: ', new Date(props.date));
+  const interviewDate = useMemo(() => format(new Date(props.date), 'MM/dd/yyyy'), [props.date]);
+  console.log('interviewDate: ', interviewDate);
+  return (
+    <>
+      <p>{interviewDate}</p>
+      <div dangerouslySetInnerHTML={{ __html: props.retro }} />
+      <button aria-label={`Update ${props.company}`} onClick={props.onClick} value={props.id}>
+        Update {props.company}
+      </button>
+    </>
+  );
+};
+
+const defaultProps = { id: 0, company: '', date: new Date(Date.now()), retro: '' } as Interview;
+
+const Interview = (props: IInterviewProps): JSX.Element => {
+  const [updatedInt, updateInt] = useState(defaultProps);
   const Editor = useMemo(
     () => dynamic<EditorProps>(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
     []
   );
+  const handleDateChange = date => {
+    // console.log('date: ', typeof date);
+    updateInt(i => ({ ...i, date }));
+  };
+  const handleUpdate = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const id = parseInt(e.currentTarget.value, 10);
+    if (id === updatedInt.id) {
+      return;
+    }
+    const selected = props.data.find(i => i.id === id);
+    console.log('selected: ', selected);
+    updateInt({ ...selected, date: new Date(selected.date) });
+  };
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      const form = e.target as HTMLFormElement;
+      const form = e.currentTarget;
       const data = serialize(form, { hash: true }) as any;
-      const date = new Date(data.date);
       const options = {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json;charset=utf-8'
         },
-        body: JSON.stringify({ ...data, date, interviewId: i.id, retro: updatedRetro })
+        body: JSON.stringify({
+          ...updatedInt,
+          interviewId: updatedInt.id,
+          company: data.company
+        })
       };
       fetch('http://localhost:9000/api/interview', options)
         .then(handleResponse)
         .then(res => {
-          updateItem(res.data[0]);
+          console.log('res: ', res);
+          updateInt(defaultProps);
         })
         .catch(err => console.log('err: ', err));
     },
-    [updatedRetro]
+    [updatedInt]
   );
-  const handleUpdateRetro = useCallback(
+  const handleEditor = useCallback(
     (_eventInfo: IEventInfo, editor: any) => {
-      if (updatedRetro !== editor.getData()) {
-        updateRetro(editor.getData());
+      if (updatedInt.retro !== editor.getData()) {
+        updateInt(ex => ({
+          ...ex,
+          retro: editor.getData()
+        }));
       }
     },
-    [updatedRetro]
+    [updatedInt]
   );
   return (
-    <Slider carouselTitle={i.company}>
+    <Layout title="Interviews">
+      <ul className="root">
+        {props.data.map(i => (
+          <Drawer key={i.id} header={i.company} closed>
+            <InterviewItem key={i.id} {...i} onClick={handleUpdate} />
+          </Drawer>
+        ))}
+      </ul>
       <Form onSubmit={handleSubmit}>
-        <h3>About TK&rsquo;s interviews with {i.company}</h3>
+        <h3>About TK&rsquo;s interviews with {updatedInt.company}</h3>
         <label key="interview-company" htmlFor="interview-company">
           Company
           <input
@@ -87,34 +130,21 @@ const InterviewItem = (props: Interview) => {
             required
             placeholder="Name"
             id="interview-company"
-            defaultValue={i.company}
+            defaultValue={updatedInt.company}
           />
         </label>
         <label htmlFor="interview-date" key="interview-date">
           Date
-          <DatePicker selected={interviewDate} name="date" onChange={date => setDate(date)} />
+          <DatePicker selected={updatedInt.date} name="date" onChange={handleDateChange} />
         </label>
         <label htmlFor="interview-retro" key="interview-retro">
           Retrospective
-          <Editor data={updatedRetro} onChange={handleUpdateRetro} name="retro" />
+          <Editor data={updatedInt.retro} onChange={handleEditor} name="retro" />
         </label>
         <input type="submit" value="Update" />
       </Form>
-      <div dangerouslySetInnerHTML={{ __html: updatedRetro }} />
-    </Slider>
+    </Layout>
   );
 };
-
-const Interview = (props: IInterviewProps) => (
-  <Layout title="Interviews">
-    <ul className="root">
-      {props.data.map(i => (
-        <Drawer key={i.id} header={i.company}>
-          <InterviewItem key={i.id} {...i} />
-        </Drawer>
-      ))}
-    </ul>
-  </Layout>
-);
 
 export default Interview;

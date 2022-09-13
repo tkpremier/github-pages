@@ -3,7 +3,7 @@ import Link from 'next/link';
 // import { format } from "date-fns";
 // import { isNull } from "lodash";
 // import Grid from "../../components/Grid";
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 // import handleResponse from "../../utils/handleResponse";
 import { getModelList } from '../../services/db';
 

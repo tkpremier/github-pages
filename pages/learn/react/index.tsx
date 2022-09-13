@@ -1,7 +1,7 @@
 import React, { Profiler } from 'react';
 import Code from '../../../components/Code';
 import Drawer from '../../../components/Drawer';
-import Layout from '../../../components/layout';
+import Layout from '../../../components/Layout';
 import Slider from '../../../components/Slider';
 import * as codeString from '../../../code-strings/react';
 import * as codeHooks from '../../../code-strings/react/hooks';

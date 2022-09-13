@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext } from 'react';
-import Layout, { MyContext } from '../components/layout';
+import Layout, { MyContext } from '../components/Layout';
 
 interface UserMessage {
   name: string;

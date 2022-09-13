@@ -1,10 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import serialize from 'form-serialize';
 import classNames from 'classnames';
 import Drawer from '../../components/Drawer';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import { getExp } from '../../services/db';
 import { IEventInfo, EditorProps } from '../../components/Editor';
 import Form from '../../components/Form';

@@ -1,7 +1,7 @@
 import React, { Component, createRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Code from '../../components/Code';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import utilStyles from '../../styles/utils.module.scss';
 import { pubSubClass } from '../../code-examples';
 

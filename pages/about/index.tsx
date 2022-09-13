@@ -1,6 +1,6 @@
 import React from 'react';
 import Drawer from '../../components/Drawer';
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 import Slider from '../../components/Slider';
 import { getExp } from '../../services/db';
 import Link from 'next/link';

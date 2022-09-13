@@ -32,11 +32,5 @@ export default function App(props: Props) {
     first,
     second
   }
-  // any
-  const firstName: any = 4;
-  // void
-  const warning = (): void => {
-    console.log('Warning');
-  };
   return <Component {...pageProps} />;
 }
