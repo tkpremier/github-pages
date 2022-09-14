@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Layout from '../components/Layout';
+import styles from '../components/layout.module.scss';
 
 // interface UserMessage {
 //   name: string;
@@ -11,15 +12,18 @@ export default function Home() {
   return (
     <Layout home title="Welcome to TK Premier">
       <h1 className="title">Thomas Kim</h1>
-      <iframe
-        width="560"
-        height="315"
-        src="https://www.youtube-nocookie.com/embed/ibPkLdbG4VU?start=3319"
-        title="This too shall pass"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
+      <div className={styles.iframeWrapper}>
+        <iframe
+          className={styles.iframe}
+          // width="560"
+          // height="315"
+          src="https://www.youtube-nocookie.com/embed/ibPkLdbG4VU?start=3319"
+          title="This too shall pass"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
       <blockquote>
         &ldquo;...I wish I had known that this too shall pass...You feel bad right now? You feel pissed off? You feel
         angry?...this too shall pass. You feel GREAT? You feel like you know all the answers? You feel like everyone
