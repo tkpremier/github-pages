@@ -6,12 +6,16 @@ import Layout from '../../../components/Layout';
 import { insertionSortCode } from '../../../code-examples';
 import { insertionSort } from '../../../code-examples/sort';
 
+type FormValue = {
+  selectionSortArray: string;
+};
+
 const Insertion = () => {
-  const [sortedList, sortList] = useState([]);
-  const handleSelectionSort = useCallback(e => {
+  const [sortedList, sortList] = useState([] as number[] | string[]);
+  const handleSelectionSort = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { selectionSortArray } = serialize(e.target, { hash: true });
-    const arr = selectionSortArray.split(' ').map(s => parseInt(s, 10));
+    const { selectionSortArray } = serialize(e.currentTarget, { hash: true }) as FormValue;
+    const arr = selectionSortArray.split(' ').map(s => parseInt(s, 10)) as number[];
     if (arr.length > 0) {
       sortList(insertionSort(arr));
     }

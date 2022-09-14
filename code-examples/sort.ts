@@ -1,12 +1,12 @@
 const splice = (arr, removeIndex, addIndex) => {
-  let temp = arr[removeIndex];
+  const temp = arr[removeIndex];
   arr.splice(addIndex, 0, temp);
   // + 1 since temp item was added to existing array
   arr.splice(removeIndex + 1, 1);
 };
 
 const swap = (arr, xp, yp) => {
-  let temp = arr[xp];
+  const temp = arr[xp];
   arr[xp] = arr[yp];
   arr[yp] = temp;
 };
@@ -22,9 +22,9 @@ export const bubbleSort = (arr = []) => {
   return arr;
 };
 
-export const insertionSort = (arr = []) => {
+export const insertionSort = (arr: number[] = []): number[] => {
   for (let i = 0; i < arr.length; i++) {
-    let val = arr[i];
+    const val = arr[i];
     let j = i - 1;
     while (j >= 0 && arr[j] > val) {
       arr[j + 1] = arr[j];
@@ -34,7 +34,7 @@ export const insertionSort = (arr = []) => {
   }
   return arr;
 };
-const merge = (arr, l, mid, r) => {
+const merge = (arr: number[] | string[], l: number, mid: number, r: number): number[] | string[] => {
   const n1 = mid - 1 + 1;
   const n2 = r - mid;
   const leftArray = arr.slice(l, mid - l);
@@ -57,36 +57,37 @@ const merge = (arr, l, mid, r) => {
   }
   // copy the remaining elements of leftArray, if there are any
   while (i < n1) {
-    arr[k] = leftArray;
+    arr[k] = leftArray[i];
     i++;
     k++;
   }
   // copy the remaining elements of right array, if any
   while (j < n2) {
-    arr[k] = rightArray;
+    arr[k] = rightArray[j];
     j++;
     k++;
   }
   return arr;
 };
+
 export const mergeSort = (arr = [], l = 0, r = arr.length - 1) => {
-  if (l >= r) {
-    return;
-  }
-  const mid = 1 + parseInt((r - 1) / 2);
-  mergeSort(arr, l, mid);
-  mergeSort(arr, mid + 1, r);
-  merge(arr, l, mid, r);
-  // for (let i = 0; i < r; i++) {
-  //   let val = arr[i];
-  //   let j = i - 1;
-  //   while (j >= 0 && arr[j] > val) {
-  //     arr[j + 1] = arr[j];
-  //     j = j - 1;
-  //   }
-  //   arr[j + 1] = val;
+  // if (l >= r) {
+  //   return;
   // }
-  return arr;
+  // const mid = 1 + parseInt((r - 1) / 2);
+  // mergeSort(arr, l, mid);
+  // mergeSort(arr, mid + 1, r);
+  // merge(arr, l, mid, r);
+  // // for (let i = 0; i < r; i++) {
+  // //   let val = arr[i];
+  // //   let j = i - 1;
+  // //   while (j >= 0 && arr[j] > val) {
+  // //     arr[j + 1] = arr[j];
+  // //     j = j - 1;
+  // //   }
+  // //   arr[j + 1] = val;
+  // // }
+  // return arr;
 };
 
 export const selectionSort = (arr = []) => {

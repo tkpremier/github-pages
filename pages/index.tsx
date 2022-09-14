@@ -30,8 +30,8 @@ export default function Home() {
         finally gets you?...&rdquo;
       </blockquote>
       <p>
-        Oh, hello. Welcome to my website. I haven&apos;nt figured out my content and aesthetics yet, but please bare
-        with me. If you are here from my{' '}
+        Oh, hello. Welcome to my website. I haven&apos;t figured out my content and aesthetics yet, but please bare with
+        me. If you are here from my{' '}
         <a href="/resume.pdf" target="_blank">
           resume
         </a>

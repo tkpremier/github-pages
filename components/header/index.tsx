@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import Link from 'next/link';
 import styles from './header.module.scss';
@@ -6,8 +6,7 @@ import utilStyles from '../../styles/utils.module.scss';
 
 const Header = () => {
   const [isOpen, toggleOffCanvas] = useState(false);
-  const handleToggle = e => {
-    console.log('handleToggle ');
+  const handleToggle = () => {
     toggleOffCanvas(!isOpen);
   };
   return (

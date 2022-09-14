@@ -39,7 +39,6 @@ export async function getServerSideProps(): Promise<{ props: IInterviewProps }> 
 }
 
 const InterviewItem = (props: Interview) => {
-  console.log('new Date: ', new Date(props.date));
   const interviewDate = useMemo(() => format(new Date(props.date), 'MM/dd/yyyy'), [props.date]);
   console.log('interviewDate: ', interviewDate);
   return (
@@ -71,7 +70,6 @@ const Interview = (props: IInterviewProps): JSX.Element => {
       return;
     }
     const selected = props.data.find(i => i.id === id);
-    console.log('selected: ', selected);
     updateInt({ ...selected, date: new Date(selected.date) });
   };
   const handleSubmit = useCallback(
