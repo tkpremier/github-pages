@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Layout from '../components/Layout';
+import Slider from '../components/Slider';
 import styles from '../components/layout.module.scss';
 
 // interface UserMessage {
@@ -37,21 +38,19 @@ export default function Home() {
         </a>
         , I invite you to definitely check out the <Link href="/about">About</Link> section.
       </p>
-      <h3>
-        And finally, I would like to give special thanks to the wonderful technology that I built this tech on.
-        &#x1F4AA; &#x1F60F;
-      </h3>
-      <ul style={{ listStyle: 'none' }}>
-        <li>Digital Ocean Droplets</li>
-        <li>Docker</li>
-        <li>PostgresSQL</li>
-        <li>Nginx</li>
-        <li>Typescript</li>
-        <li>NodeJS (API)</li>
-        <li>NextJS (Client)</li>
-        <li>SCSS</li>
-        <li>&#x1F90C;</li>
-      </ul>
+      <h3></h3>
+      <Slider>
+        <div className={styles.card}>Digital Ocean Droplets</div>
+        <div className={styles.card}>Docker</div>
+        <div className={styles.card}>PostgresSQL</div>
+        <div className={styles.card}>Nginx</div>
+        <div className={styles.card}>Typescript</div>
+        <div className={styles.card}>NodeJS (API)</div>
+        <div className={styles.card}>NextJS (Client)</div>
+        <div className={styles.card}>SCSS</div>
+        <div className={styles.card}>&#x1F90C;</div>
+      </Slider>
+      <ul style={{ listStyle: 'none' }}></ul>
     </Layout>
   );
 }

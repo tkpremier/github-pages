@@ -29,6 +29,12 @@
   border-radius: 9999px;
 }
 
+.iconBorderCircle {
+  padding: 5px;
+  border-radius: 100%;
+  border: 1px solid hsla(95, 45%, 50%, 0.33);
+}
+
 .colorInherit {
   color: inherit;
 }

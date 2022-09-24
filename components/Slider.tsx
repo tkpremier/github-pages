@@ -2,6 +2,13 @@ import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment, Pro
 import classNames from 'classnames';
 import styles from './carousel.module.scss';
 
+type Sizes = {
+  xl?: number;
+  lg: number;
+  md: number;
+  sm?: number;
+} & typeof defaultSizes;
+
 type ISlider = {
   arrows?: boolean;
   autoplay?: boolean;
@@ -12,12 +19,33 @@ type ISlider = {
   loop?: boolean;
   pagination?: boolean;
   children: React.ReactNode;
+  sizes?: Sizes;
 } & typeof defaultProps;
 
+const defaultSizes = {
+  lg: 3,
+  md: 3,
+  sm: 1
+};
 const defaultProps = {
   carouselTitle: '',
   carouselDesc: '',
   classNames: ''
+};
+
+const getItemCount = (size: Sizes) => {
+  const sizeQueries = {
+    xs: '(max-width: 479px)',
+    sm: '(min-width: 480px) and (max-width: 767px)',
+    md: '(min-width: 768px) and (max-width: 1111px)',
+    lg: '(min-width: 1112px) and (max-width: 1175px)',
+    xl: '(min-width: 1176px)'
+  };
+  // const listeners = Object.keys(defaultSizes).map(key => {
+  //   const mql = window.matchMedia(sizeQueries[key]);
+  //   mql.size = key;
+  //   return mql;
+  // });
 };
 
 const Slider = (props: PropsWithChildren<ISlider>) => {
@@ -74,8 +102,8 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
     };
   }, []);
   const handleClick = useCallback(
-    e => {
-      const int = parseInt(e.target.value, 10);
+    (e: React.PointerEvent<HTMLButtonElement>) => {
+      const int = parseInt(e.currentTarget.value, 10);
       if (
         (int === 1 && state.curIndex === React.Children.count(props.children)) ||
         (int === -1 && state.curIndex === -1)
@@ -117,20 +145,19 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
           onTransitionEnd={handleTransitionEnd}
         >
           )
-          {[
-            props.children[React.Children.count(props.children) - 1],
-            ...React.Children.toArray(props.children),
-            props.children[0]
-          ].map((child, i) => (
-            <li
-              style={{
-                width: `${state.itemWidth}px`
-              }}
-              key={i === 0 || i === React.Children.count(props.children) + 1 ? `${child.key}-clone` : child.key}
-            >
-              {child}
-            </li>
-          ))}
+          {[props.children[React.Children.count(props.children) - 1]]
+            .concat(React.Children.toArray(props.children))
+            .concat([props.children[0]])
+            .map((child, i) => (
+              <li
+                style={{
+                  width: `${state.itemWidth}px`
+                }}
+                key={i === 0 || i === React.Children.count(props.children) + 1 ? `${child.key}-clone` : child.key}
+              >
+                {child}
+              </li>
+            ))}
         </ul>
       ) : props.children ? (
         <ul
@@ -185,5 +212,4 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
 };
 
 Slider.defaultProps = defaultProps;
-
 export default Slider;

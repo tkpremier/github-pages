@@ -1,16 +1,16 @@
-const splice = (arr, removeIndex, addIndex) => {
+const splice = (arr: any[], removeIndex = 0, addIndex = 0) => {
   const temp = arr[removeIndex];
   arr.splice(addIndex, 0, temp);
   // + 1 since temp item was added to existing array
   arr.splice(removeIndex + 1, 1);
 };
 
-const swap = (arr, xp, yp) => {
+const swap = (arr: any[], xp: number, yp: number) => {
   const temp = arr[xp];
   arr[xp] = arr[yp];
   arr[yp] = temp;
 };
-export const bubbleSort = (arr = []) => {
+export const bubbleSort = (arr: number[] = []) => {
   const n = arr.length;
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - i - 1; j++) {
@@ -34,63 +34,63 @@ export const insertionSort = (arr: number[] = []): number[] => {
   }
   return arr;
 };
-const merge = (arr: number[] | string[], l: number, mid: number, r: number): number[] | string[] => {
-  const n1 = mid - 1 + 1;
-  const n2 = r - mid;
-  const leftArray = arr.slice(l, mid - l);
-  const rightArray = arr.slice(r - mid, r);
-  // initial index of first subarray
-  let i = 0;
-  // initial index of second subarray
-  let j = 0;
-  // initial index of merged subarray
-  let k = l;
-  while (i < leftArray.length && j < rightArray.length) {
-    if (leftArray[i] <= rightArray[j]) {
-      arr[k] = leftArray[i];
-      i++;
-    } else {
-      arr[k] = rightArray[j];
-      j++;
-    }
-    k++;
-  }
-  // copy the remaining elements of leftArray, if there are any
-  while (i < n1) {
-    arr[k] = leftArray[i];
-    i++;
-    k++;
-  }
-  // copy the remaining elements of right array, if any
-  while (j < n2) {
-    arr[k] = rightArray[j];
-    j++;
-    k++;
-  }
-  return arr;
-};
+// const merge = (arr: number[] | string[], l: number, mid: number, r: number): number[] | string[] => {
+//   const n1 = mid - 1 + 1;
+//   const n2 = r - mid;
+//   const leftArray = arr.slice(l, mid - l);
+//   const rightArray = arr.slice(r - mid, r);
+//   // initial index of first subarray
+//   let i = 0;
+//   // initial index of second subarray
+//   let j = 0;
+//   // initial index of merged subarray
+//   let k = l;
+//   while (i < leftArray.length && j < rightArray.length) {
+//     if (leftArray[i] <= rightArray[j]) {
+//       arr[k] = leftArray[i];
+//       i++;
+//     } else {
+//       arr[k] = rightArray[j];
+//       j++;
+//     }
+//     k++;
+//   }
+//   // copy the remaining elements of leftArray, if there are any
+//   while (i < n1) {
+//     arr[k] = leftArray[i];
+//     i++;
+//     k++;
+//   }
+//   // copy the remaining elements of right array, if any
+//   while (j < n2) {
+//     arr[k] = rightArray[j];
+//     j++;
+//     k++;
+//   }
+//   return arr;
+// };
 
-export const mergeSort = (arr = [], l = 0, r = arr.length - 1) => {
-  // if (l >= r) {
-  //   return;
-  // }
-  // const mid = 1 + parseInt((r - 1) / 2);
-  // mergeSort(arr, l, mid);
-  // mergeSort(arr, mid + 1, r);
-  // merge(arr, l, mid, r);
-  // // for (let i = 0; i < r; i++) {
-  // //   let val = arr[i];
-  // //   let j = i - 1;
-  // //   while (j >= 0 && arr[j] > val) {
-  // //     arr[j + 1] = arr[j];
-  // //     j = j - 1;
-  // //   }
-  // //   arr[j + 1] = val;
-  // // }
-  // return arr;
-};
+// export const mergeSort = (arr = [], l = 0, r = arr.length - 1) => {
+// if (l >= r) {
+//   return;
+// }
+// const mid = 1 + parseInt((r - 1) / 2);
+// mergeSort(arr, l, mid);
+// mergeSort(arr, mid + 1, r);
+// merge(arr, l, mid, r);
+// // for (let i = 0; i < r; i++) {
+// //   let val = arr[i];
+// //   let j = i - 1;
+// //   while (j >= 0 && arr[j] > val) {
+// //     arr[j + 1] = arr[j];
+// //     j = j - 1;
+// //   }
+// //   arr[j + 1] = val;
+// // }
+// return arr;
+// };
 
-export const selectionSort = (arr = []) => {
+export const selectionSort = (arr: number[] = []) => {
   const n = arr.length;
   for (let i = 0; i < n; i++) {
     let minIndex = i;
@@ -110,7 +110,7 @@ export const selectionSort = (arr = []) => {
   return arr;
 };
 
-export const selectionSortStable = (arr = []) => {
+export const selectionSortStable = (arr: number[] = []) => {
   const n = arr.length;
   for (let i = 0; i < n; i++) {
     let minIndex = i;
@@ -141,7 +141,7 @@ export const selectionSortStable = (arr = []) => {
   return arr;
 };
 
-export const selectionSortString = (arr = []) => {
+export const selectionSortString = (arr: string[] = []) => {
   const n = arr.length;
   for (let i = 0; i < n; i++) {
     let minIndex = i;

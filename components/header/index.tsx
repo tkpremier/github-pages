@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import classNames from 'classnames';
 import Link from 'next/link';
 import styles from './header.module.scss';
+import buttonStyles from '../button.module.scss';
 import utilStyles from '../../styles/utils.module.scss';
 
 const Header = () => {
   const [isOpen, toggleOffCanvas] = useState(false);
-  const handleToggle = () => {
-    toggleOffCanvas(!isOpen);
-  };
+  const handleToggle = useCallback(() => {
+    toggleOffCanvas(open => !open);
+  }, [isOpen]);
   return (
     <>
       <header
@@ -25,19 +26,16 @@ const Header = () => {
              *  2) Name
              *  3) Menu
              */}
-            <li>
+            <li className={classNames(styles.headerNavItem, styles.headerNavItemMenu)}>
               <button onClick={handleToggle} className={styles.hamBurger} type="button" aria-label="Toggle Button">
-                <svg width="18px" height="18px" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fill="#bff3c7"
-                    d="M17 5H1a1 1 0 0 1 0-2h16a1 1 0 0 1 0 2zm0 5H1a1 1 0 0 1 0-2h16a1 1 0 0 1 0 2zm0 5H1a1 1 0 0 1 0-2h16a1 1 0 0 1 0 2z"
-                  />
-                </svg>
+                <img src="/images/hamburger.svg" width={36} height={36} alt="Hamburger" />
               </button>
             </li>
-            <li className={styles.headerNavItemName}>
+            <li className={classNames(styles.headerNavItem, styles.headerNavItemName)}>
               <Link href="/">
-                <a className={styles.logo}>TK Premier</a>
+                <a>
+                  <h2 className={styles.logo}>TK Premier</h2>
+                </a>
               </Link>
             </li>
             <li className={styles.headerNavItem}>
@@ -55,12 +53,23 @@ const Header = () => {
                 <a>Interviews</a>
               </Link>
             </li>
-            <li className={styles.headerNavItemLogo}>
-              <img
-                src="/images/fbprofile.jpg"
-                className={classNames(utilStyles.borderCircle, styles.headerNavItemLogoImage)}
-                alt="TK Premier Update"
-              />
+            <li className={classNames(styles.headerNavItem, styles.headerNavItemLogo)}>
+              <button
+                className={classNames(buttonStyles.card, { [buttonStyles.cardIsFlipped]: isOpen })}
+                onClick={handleToggle}
+              >
+                <img
+                  className={classNames(utilStyles.iconBorderCircle, buttonStyles.cardItem, buttonStyles.cardItemBack)}
+                  src="/images/close_36.svg"
+                  alt="Close button"
+                />
+                <img
+                  src="/images/headshot_48px.jpg"
+                  srcSet="/images/headshot_96px.jpg 2x"
+                  className={classNames(utilStyles.borderCircle, styles.headerNavItemLogoImage, buttonStyles.cardItem)}
+                  alt="TK Premier Update"
+                />
+              </button>
             </li>
           </ul>
         </nav>
@@ -89,11 +98,6 @@ const Header = () => {
             <Link href="/interview">
               <a>Interviews</a>
             </Link>
-          </li>
-          <li className={classNames(styles.offCanvasNavItem, styles.offCanvasNavItemClose)}>
-            <button onClick={handleToggle} className={styles.hamBurger} type="button" aria-label="Toggle Button">
-              X
-            </button>
           </li>
         </ul>
       </nav>
