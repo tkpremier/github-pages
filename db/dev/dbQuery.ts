@@ -7,7 +7,7 @@ export default {
    * @param {object} params
    * @returns {Promise}
    */
-  query(queryText, params) {
+  query(queryText: string, params: string[]) {
     return new Promise((resolve, reject) => {
       pool
         .query(queryText, params)
