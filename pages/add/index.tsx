@@ -75,26 +75,26 @@ const AddPage = (props: AddProps) => {
     },
     [editorData]
   );
-  const handleSubmitModel = useCallback(e => {
-    e.preventDefault();
-    const form = e.target;
-    const data = serialize(form, { hash: true });
-    fetch('/api/model', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify(data)
-    })
-      .then(handleResponse)
-      .then(res => {
-        setStatus({ ...res, status: 'success' });
-      })
-      .catch(err => console.log('err: ', err));
-  }, []);
-  const handleAutoComplete = useCallback(e => {
-    console.log(e.type);
-  }, []);
+  // const handleSubmitModel = useCallback(e => {
+  //   e.preventDefault();
+  //   const form = e.target;
+  //   const data = serialize(form, { hash: true });
+  //   fetch('/api/model', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json;charset=utf-8'
+  //     },
+  //     body: JSON.stringify(data)
+  //   })
+  //     .then(handleResponse)
+  //     .then(res => {
+  //       setStatus({ ...res, status: 'success' });
+  //     })
+  //     .catch(err => console.log('err: ', err));
+  // }, []);
+  // const handleAutoComplete = useCallback(e => {
+  //   console.log(e.type);
+  // }, []);
   const handleInterview: React.FormEventHandler<HTMLFormElement> = useCallback(e => {
     e.preventDefault();
     const form = e.currentTarget;

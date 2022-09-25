@@ -10,8 +10,8 @@ async function getDriveFile(driveId: string): Promise<any> {
     });
   return data;
 }
-async function getDrive(nextPage = ''): Promise<any> {
-  const response = await fetch(`http://api:9000/api/drive-list?nextPage=${nextPage}`);
+async function getDrive(nextPage = '') {
+  const response: Response = await fetch(`http://api:9000/api/drive-list?nextPage=${nextPage}`);
   return response;
 }
 

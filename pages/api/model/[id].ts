@@ -1,6 +1,7 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getModelApi, updateModelApi } from '../../../services/db';
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
     const response = await updateModelApi(req, res);
     return response;

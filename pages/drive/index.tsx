@@ -3,7 +3,10 @@ import { format } from 'date-fns';
 import { GetServerSideProps } from 'next';
 import { isNull } from 'lodash';
 import classNames from 'classnames';
-import Link from 'next/link';
+import {
+  drive_v3 // For every service client, there is an exported namespace
+} from 'googleapis';
+// import Link from 'next/link';
 import Drawer from '../../components/Drawer';
 import styles from '../../components/grid.module.scss';
 import buttonStyles from '../../components/button.module.scss';
@@ -17,7 +20,7 @@ type VideoMediaMetadata = {
   durationMillis: string;
 };
 
-interface GoogleDriveData {
+interface GoogleDriveData extends drive_v3.Schema$File {
   id: string;
   driveId: string;
   type: string;
@@ -26,7 +29,7 @@ interface GoogleDriveData {
   webContentLink: string;
   thumbnailLink: string | null;
   mimeType: string;
-  viewedByMeTime: Date;
+  viewedByMeTime: string;
   videoMediaMetadata?: VideoMediaMetadata;
 }
 interface Contact {
@@ -36,13 +39,20 @@ interface Contact {
   name: string;
   platform: string;
 }
+interface ModelId {
+  modelId: Array<number>;
+}
 interface DBData extends GoogleDriveData {
   modelId: Array<number>;
   createdOn: string;
   duration: number;
   lastViewed: Date;
-  createdTime: Date;
+  createdTime: string;
 }
+
+type GAPIList = {
+  data: drive_v3.Schema$FileList;
+};
 
 const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
@@ -170,22 +180,20 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
   const [nextPage, updateToken] = useState(props.nextPage);
   const [sortDir, sortBy] = useState('createdTime-desc');
   const handleGetMore = useCallback(async () => {
-    const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
-    const { files, nextPageToken } = await response.json();
-    setData(curr =>
-      curr.concat(
-        files.map(f => {
-          // return f;
-          const dbFile = props.dbData.find(d => d.id === f.id);
-          return typeof dbFile === 'undefined'
-            ? { ...f, modelId: [] }
-            : {
-                ...f,
-                modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
-              };
-        })
-      )
-    );
+    const response = await fetch(`://localhost:9000/api/drive-list?nextPage=${nextPage}`);
+    const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
+    const newData: DBData = files.map(f => {
+      // return f;
+      const dbFile = props.dbData.find(d => d.id === f.id);
+      return typeof dbFile === 'undefined'
+        ? { ...f, modelId: [] }
+        : {
+            ...f,
+            modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
+          };
+    });
+    console.log('newData: ', newData);
+    setData(curr => curr.concat(newData));
     updateToken(nextPageToken);
   }, []);
   const handleSort = useCallback(e => (e.target.value !== sortDir ? sortBy(e.target.value) : null), []);
@@ -262,7 +270,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                   <p>
                     <strong>{drive.name}</strong>
                     <br />
-                    <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')}
+                    {/* <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')} */}
                   </p>
                   {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
                     <AddModel {...drive} modelList={props.modelList} />
@@ -270,11 +278,11 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                   <ul>
                     <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                       <p>{drive.mimeType}</p>
-                      {drive.viewedByMeTime ? (
+                      {/* {drive.viewedByMeTime ? (
                         <p>
                           <strong>Last viewed:</strong>&nbsp;{format(new Date(drive.viewedByMeTime), 'MM/dd/yyyy')}
                         </p>
-                      ) : null}
+                      ) : null} */}
                       {drive.videoMediaMetadata ? (
                         <p>
                           <strong>Duration: </strong>
@@ -318,7 +326,7 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
               <p>
                 <strong>{drive.name}</strong>
                 <br />
-                <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')}
+                {/* <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')} */}
               </p>
               {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
                 <AddModel {...drive} modelList={props.modelList} />
@@ -326,11 +334,11 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
               <ul>
                 <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                   <p>{drive.mimeType}</p>
-                  {drive.viewedByMeTime ? (
+                  {/* {drive.viewedByMeTime ? (
                     <p>
                       <strong>Last viewed:</strong>&nbsp;{format(new Date(drive.viewedByMeTime), 'MM/dd/yyyy')}
                     </p>
-                  ) : null}
+                  ) : null} */}
                   {drive.videoMediaMetadata ? (
                     <p>
                       <strong>Duration: </strong>

@@ -1,8 +1,14 @@
-import { createModel } from "../../../services/db";
-import { getDrive } from "../../../services/drive";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { createModel } from '../../../services/db';
+import { getDrive } from '../../../services/drive';
 
-export default async function handler(req, res) {
-  if (req.method === "POST") {
+type NextApiRequestWithQuery = NextApiRequest & {
+  query?: {
+    [key: string]: string;
+  };
+};
+export default async function handler(req: NextApiRequestWithQuery, res: NextApiResponse) {
+  if (req.method === 'POST') {
     const response = await createModel(req, res);
     return response;
   }
