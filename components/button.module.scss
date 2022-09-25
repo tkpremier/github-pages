@@ -95,6 +95,7 @@
   perspective: 1000px;
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
+  pointer-events: none;
   &Item {
     position: absolute;
     top: 0;
@@ -105,6 +106,7 @@
     }
   }
   &IsFlipped {
+    pointer-events: all;
     cursor: pointer;
     transform: rotateY(180deg);
   }

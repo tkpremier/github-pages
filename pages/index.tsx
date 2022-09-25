@@ -39,16 +39,34 @@ export default function Home() {
         , I invite you to definitely check out the <Link href="/about">About</Link> section.
       </p>
       <h3></h3>
-      <Slider>
-        <div className={styles.card}>Digital Ocean Droplets</div>
-        <div className={styles.card}>Docker</div>
-        <div className={styles.card}>PostgresSQL</div>
-        <div className={styles.card}>Nginx</div>
-        <div className={styles.card}>Typescript</div>
-        <div className={styles.card}>NodeJS (API)</div>
-        <div className={styles.card}>NextJS (Client)</div>
-        <div className={styles.card}>SCSS</div>
-        <div className={styles.card}>&#x1F90C;</div>
+      <Slider sizes={{ md: 2, lg: 2 }}>
+        <div key={0} className={styles.card}>
+          Digital Ocean Droplets
+        </div>
+        <div key={1} className={styles.card}>
+          Docker
+        </div>
+        <div key={2} className={styles.card}>
+          PostgresSQL
+        </div>
+        <div key={3} className={styles.card}>
+          Nginx
+        </div>
+        <div className={styles.card} key={4}>
+          Typescript
+        </div>
+        <div className={styles.card} key={5}>
+          NodeJS (API)
+        </div>
+        <div className={styles.card} key={6}>
+          NextJS (Client)
+        </div>
+        <div className={styles.card} key={7}>
+          SCSS
+        </div>
+        <div className={styles.card} key={8}>
+          &#x1F90C;
+        </div>
       </Slider>
       <ul style={{ listStyle: 'none' }}></ul>
     </Layout>

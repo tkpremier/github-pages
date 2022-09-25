@@ -1,6 +1,7 @@
 import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment, PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import styles from './carousel.module.scss';
+import { listeners } from 'process';
 
 type Sizes = {
   xl?: number;
@@ -23,27 +24,44 @@ type ISlider = {
 } & typeof defaultProps;
 
 const defaultSizes = {
+  xl: 3,
   lg: 3,
-  md: 3,
+  md: 2,
   sm: 1
 };
 const defaultProps = {
   carouselTitle: '',
   carouselDesc: '',
-  classNames: ''
+  classNames: '',
+  sizes: defaultSizes,
+  itemsPerSlide: 1
 };
-
-const getItemCount = (size: Sizes) => {
-  const sizeQueries = {
-    xs: '(max-width: 479px)',
-    sm: '(min-width: 480px) and (max-width: 767px)',
-    md: '(min-width: 768px) and (max-width: 1111px)',
-    lg: '(min-width: 1112px) and (max-width: 1175px)',
-    xl: '(min-width: 1176px)'
-  };
-  // const listeners = Object.keys(defaultSizes).map(key => {
-  //   const mql = window.matchMedia(sizeQueries[key]);
-  //   mql.size = key;
+enum DEVICE_WIDTH_TYPES {
+  SM = 'sm',
+  MD = 'md',
+  LG = 'lg',
+  XL = 'xl'
+}
+type MediaQuery = {
+  itemsPerSlide: number;
+  mql: MediaQueryList;
+};
+const getMediaQueries = (): Map<DEVICE_WIDTH_TYPES, MediaQueryList> => {
+  const sizeQueries = new Map([
+    ['sm', '(max-width: 479px)'],
+    ['md', '(min-width: 480px) and (max-width: 767px)'],
+    ['lg', '(min-width: 768px) and (max-width: 1175px)'],
+    ['xl', '(min-width: 1176px)']
+  ]) as Map<DEVICE_WIDTH_TYPES, string>;
+  const listenersMap = new Map();
+  for (const [key, val] of sizeQueries) {
+    listenersMap.set(key, window.matchMedia(val));
+  }
+  return listenersMap;
+  // const listeners = Object.keys(sizeQueries).map(key => {
+  //   const query: string = sizeQueries;
+  //   const mql = window.matchMedia(query);
+  //   // mql.size = key;
   //   return mql;
   // });
 };
@@ -52,6 +70,7 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
   const carouselRef = useRef(null);
   const wrapperRef = useRef(null);
   const intervalRef = useRef(null);
+  const mqlRef = useRef(null);
   const [state, setState] = useState({
     animating: false,
     curIndex: 0,
@@ -61,13 +80,37 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
     prevDisabled: React.Children.count(props.children) < 2,
     wrapperWidth: 1110
   });
-
   useEffect(() => {
+    //    console.log(state, props.sizes);
     if (carouselRef.current !== null) {
-      const newItemWidth = Math.ceil(carouselRef.current.offsetWidth / state.itemsPerSlide);
+      let { itemsPerSlide } = state;
+      if (typeof window !== 'undefined') {
+        const mediaQueryResults = getMediaQueries();
+        const enabledMQs: MediaQuery[] = [];
+        for (const [key, mql] of mediaQueryResults) {
+          // console.log(key);
+          if (mql.matches) {
+            enabledMQs.push({ itemsPerSlide: props.sizes[key], mql });
+          }
+        }
+        if (enabledMQs.length > 0) {
+          if (enabledMQs[enabledMQs.length - 1].itemsPerSlide !== itemsPerSlide) {
+            mqlRef.current = enabledMQs.pop();
+            // console.log(mqlRef.current);
+            itemsPerSlide = mqlRef.current.itemsPerSlide;
+            if (mqlRef.current !== null) {
+              mqlRef.current.mql.addEventListener('change', handleMql);
+            }
+          }
+        }
+      }
+      // console.log(itemsPerSlide, carouselRef.current.offsetWidth);
+      const newItemWidth = Math.ceil(carouselRef.current.offsetWidth / itemsPerSlide);
+
       if (newItemWidth !== state.itemWidth) {
         setState({
           ...state,
+          itemsPerSlide,
           itemWidth: newItemWidth,
           wrapperWidth: newItemWidth * (React.Children.count(props.children) + 2),
           prevDisabled: state.curIndex === 0,
@@ -99,8 +142,45 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current);
       }
+      if (mqlRef.current !== null) {
+        mqlRef.current.mql.removeEventListener('change', handleMql);
+        mqlRef.current = null;
+      }
     };
   }, []);
+  const handleMql = useCallback(
+    e => {
+      const mediaQueryResults = getMediaQueries();
+      console.log('mediaQueryResults', mediaQueryResults);
+      const enabledMQs: MediaQuery[] = [];
+      console.log('e: ', e);
+      for (const [key, mql] of mediaQueryResults) {
+        if (mql.matches) {
+          enabledMQs.push({ itemsPerSlide: props.sizes[key], mql });
+        }
+      }
+      if (enabledMQs.length > 0) {
+        console.log('handleMql enabledMQs: ', enabledMQs);
+        console.log('carouselRef info: ', carouselRef.current.offsetWidth);
+        // if (enabledMQs[enabledMQs.length - 1].itemsPerSlide !== state.itemsPerSlide) {
+        //   if (mqlRef.current && mqlRef.current.mql) {
+        //     mqlRef.current.mql.removeEventListener('change', handleMql);
+        //   }
+        //   mqlRef.current = enabledMQs.pop();
+        //   const itemsPerSlide = mqlRef.current.mql.itemsPerSlide || state.itemsPerSlide;
+        //   if (mqlRef.current !== null) {
+        //     mqlRef.current.mql.addEventListener('change', handleMql);
+        //     setState(prev => ({
+        //       ...prev,
+        //       itemsPerSlide,
+        //       itemWidth: Math.ceil(carouselRef.current.offsetWidth / itemsPerSlide)
+        //     }));
+        //   }
+        // }
+      }
+    },
+    [state.itemsPerSlide, props.sizes]
+  );
   const handleClick = useCallback(
     (e: React.PointerEvent<HTMLButtonElement>) => {
       const int = parseInt(e.currentTarget.value, 10);
