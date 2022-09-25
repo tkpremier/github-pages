@@ -19,7 +19,7 @@ type ISlider = {
   interval?: number;
   loop?: boolean;
   pagination?: boolean;
-  children: React.ReactNode;
+  children: React.ReactNode | React.ReactElement;
   sizes?: Sizes;
 } & typeof defaultProps;
 
@@ -149,7 +149,7 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
     };
   }, []);
   const handleMql = useCallback(
-    e => {
+    (e: MediaQueryListEvent) => {
       const mediaQueryResults = getMediaQueries();
       console.log('mediaQueryResults', mediaQueryResults);
       const enabledMQs: MediaQuery[] = [];
@@ -179,7 +179,7 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
         // }
       }
     },
-    [state.itemsPerSlide, props.sizes]
+    [state.itemsPerSlide, props.sizes, carouselRef.current]
   );
   const handleClick = useCallback(
     (e: React.PointerEvent<HTMLButtonElement>) => {
@@ -225,19 +225,41 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
           onTransitionEnd={handleTransitionEnd}
         >
           )
-          {[props.children[React.Children.count(props.children) - 1]]
+          {[
+            React.Children.toArray(props.children).find((child, i) => {
+              if (i === React.Children.count(props.children) - 1) {
+                const clone = React.isValidElement(child)
+                  ? React.cloneElement(child, { key: `${child.key}-clone-begin` })
+                  : undefined;
+                console.log('clone', clone);
+                return clone;
+              }
+              return undefined;
+            })
+          ]
             .concat(React.Children.toArray(props.children))
-            .concat([props.children[0]])
-            .map((child, i) => (
-              <li
-                style={{
-                  width: `${state.itemWidth}px`
-                }}
-                key={i === 0 || i === React.Children.count(props.children) + 1 ? `${child.key}-clone` : child.key}
-              >
-                {child}
-              </li>
-            ))}
+            .concat([
+              React.Children.toArray(props.children).find((child, i) =>
+                i === 0
+                  ? React.isValidElement(child)
+                    ? React.cloneElement(child, { key: `${child.key}-clone-end` })
+                    : undefined
+                  : undefined
+              )
+            ])
+            .map((child: React.ReactElement, i) => {
+              console.log(child.key);
+              return (
+                <li
+                  style={{
+                    width: `${state.itemWidth}px`
+                  }}
+                  key={child.key}
+                >
+                  {child}
+                </li>
+              );
+            })}
         </ul>
       ) : props.children ? (
         <ul
