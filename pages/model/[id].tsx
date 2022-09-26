@@ -9,14 +9,8 @@ import { getModel } from '../../services/db';
 import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
 
-interface IContext extends GetServerSidePropsContext {
-  params: {
-    id: string;
-  };
-}
-
-export const getServerSideProps: GetServerSideProps = async (context: IContext) => {
-  const { data, driveIds } = await getModel(context.params.id);
+export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { data, driveIds } = await getModel(parseInt(context.params.id.toString(), 10));
   return {
     props: {
       data,

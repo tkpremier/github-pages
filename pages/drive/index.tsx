@@ -178,8 +178,8 @@ const getDriveFromApi = async () => {
           type: f.mimeType
         }
       : {
-          ...f,
           ...dbFile,
+          ...f,
           createdTime: format(new Date(dbFile.createdTime), 'MM/dd/yyyy'),
           modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
         };
@@ -235,10 +235,9 @@ const Drive = (props: {
             type: f.mimeType
           }
         : {
-            ...f,
             ...dbFile,
+            ...f,
             createdTime: format(new Date(dbFile.createdTime), 'MM/dd/yyyy'),
-
             modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
           };
     });

@@ -1,7 +1,7 @@
 import { getDriveFile } from '../../../services/drive';
 import { updateDriveApi } from '../../../services/db';
-import { NextApiRequestWithQuery } from '../model';
 import { NextApiResponse } from 'next';
+import { NextApiRequestWithQuery } from '../../../types';
 
 export default async function handler(req: NextApiRequestWithQuery, res: NextApiResponse) {
   if (req.method === 'PUT') {
