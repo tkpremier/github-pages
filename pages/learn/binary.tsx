@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
 import Layout from '../../components/Layout';
@@ -9,7 +9,7 @@ import styles from '../../components/code.module.scss';
 export default function Binary() {
   const [exampleArray, runAndSet] = useState([]);
   const [target, setTarget] = useState(-1);
-  const handleNumbers = e => {
+  const handleNumbers: React.FocusEventHandler = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     const string = e.target.value;
     const preppedNumbers = string
       .split(',')
@@ -17,14 +17,14 @@ export default function Binary() {
       .filter(n => !Number.isNaN(n))
       .sort((a, b) => a - b);
     runAndSet(preppedNumbers);
-  };
-  const handleSubmit = e => {
+  }, []);
+  const handleSubmit: React.FormEventHandler = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { search } = serialize(e.target, { hash: true }) as any;
+    const { search } = serialize(e.currentTarget, { hash: true }) as any;
     if (!Number.isNaN(parseInt(search, 10))) {
       setTarget(parseInt(search, 10));
     }
-  };
+  }, []);
   const n = recursiveApproach(
     exampleArray.sort((a, b) => a - b),
     0,

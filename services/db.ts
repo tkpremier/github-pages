@@ -4,6 +4,7 @@ import dbQuery from '../db/dev/dbQuery';
 import { isValidEmail, validatePassword, isEmpty } from '../utils/validations';
 import { errorMessage, successMessage, status } from '../utils/status';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequestWithQuery } from '../types';
 type DbResponse = {
   rows: Array<any>;
 };
@@ -15,6 +16,29 @@ type ErrorResponse = {
 type SuccessResponse = {
   data: Array<any>;
 };
+
+type DriveFile = {
+  id: string;
+  driveId: string;
+  type: string;
+  name: string;
+  webViewLink: string;
+  webContentLink?: string;
+  thumbnailLink?: string;
+  createdTime: string;
+  lastViewed?: string | null;
+  createdOn: string;
+  duration?: number;
+  modelId: Array<number>;
+};
+
+type Contact = {};
+
+type OptionalAll<Type> = {
+  [Property in keyof Type]?: string | number | Array<number>;
+};
+type ODriveFile = OptionalAll<DriveFile>;
+
 export const getExp = async () => {
   const getModelQuery = `SELECT * FROM
   exp ORDER BY id DESC`;
@@ -90,7 +114,7 @@ export const getInterview = async () => {
     return { data: [] };
   }
 };
-export const createModel = async (req, res) => {
+export const createModel = async (req: NextApiRequest, res: NextApiResponse) => {
   let errorMessage: ErrorResponse;
   const { driveIds, modelName, platform } = req.body;
   const createdOn = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
@@ -98,7 +122,7 @@ export const createModel = async (req, res) => {
     errorMessage.error = 'Name or platform cannot be empty';
     return res.status(status.bad).send(errorMessage);
   }
-  const ids = driveIds.length > 0 ? driveIds.split(';').map(id => id.trim()) : [];
+  const ids = driveIds.length > 0 ? driveIds.split(';').map((id: string) => id.trim()) : [];
   const hasIds = ids.length > 0;
   const createModelQuery = hasIds
     ? `INSERT INTO model(name, platform, created_on, drive_ids) VALUES($1, $2, $3, $4) returning *`
@@ -119,7 +143,7 @@ export const createModel = async (req, res) => {
   }
 };
 
-const createDriveFile = async values => {
+const createDriveFile = async (values: string[]): Promise<DbResponse['rows']> => {
   /*
     (id VARCHAR(100) NOT NULL,
     drive_id VARCHAR(100) NOT NULL,
@@ -142,7 +166,7 @@ const createDriveFile = async values => {
   return rows;
 };
 
-export const createNewDriveFile = async (req, res) => {
+export const createNewDriveFile = async (req: NextApiRequest, res: NextApiResponse) => {
   let errorMessage: ErrorResponse;
   const {
     id,
@@ -201,18 +225,24 @@ export const getDriveFile = async () => {
       // return res.status(status.notfound).send(errorMessage);
     }
     return {
-      data: dbResponse.map(f =>
-        Object.keys(f).reduce((o, k) => {
-          const dateKeys = ['createdOn', 'createdTime', 'lastViewed'];
-          o[camelCase(k)] =
-            dateKeys.indexOf(camelCase(k)) > -1
-              ? !isNull(f[k])
-                ? format(new Date(f[k]), "MM/dd/yyyy' 'HH:mm:ss")
-                : f[k]
-              : f[k];
-          return o;
-        }, {})
-      )
+      data: dbResponse.map((f: DriveFile) =>
+        Object.keys(f).reduce(
+          (o: { [key: string]: string | number | null | Array<number> }, k: keyof DriveFile, i, keys): ODriveFile => {
+            const dateKeys = ['createdOn', 'createdTime', 'lastViewed'];
+            const key = camelCase(k);
+            o[key] =
+              dateKeys.indexOf(key) > -1
+                ? key === 'createdOn' || key === 'createdTime'
+                  ? format(new Date(f[k] as DriveFile['createdOn'] | DriveFile['createdTime']), "MM/dd/yyyy' 'HH:mm:ss")
+                  : !isNull(f[k])
+                  ? format(new Date(f[k] as DriveFile['lastViewed']), "MM/dd/yyyy' 'HH:mm:ss")
+                  : f[k]
+                : f[k];
+            return o;
+          },
+          {}
+        )
+      ) as Array<DriveFile>
     };
   } catch (error) {
     console.log('An error occurred', error);
@@ -241,12 +271,12 @@ export const getDriveFileApi = async (_req: NextApiRequest, res: NextApiResponse
   }
 };
 
-export const getModel = async (id: string) => {
+export const getModel = async (id: number) => {
   const getModelQuery = `SELECT model.name as model_name, drive.name, drive.model_id, model.id, model.drive_ids, drive.drive_id, drive.type, drive.duration, drive.last_viewed, drive.web_view_link, drive.thumbnail_link
   FROM model
   INNER JOIN drive on drive.drive_id = any(model.drive_ids)
   WHERE model.id = $1`;
-  const value = [parseInt(id, 10)];
+  const value = [id];
   try {
     const { rows } = (await dbQuery.query(getModelQuery, value)) as DbResponse;
     const dbResponse = rows;
@@ -274,10 +304,10 @@ export const getModel = async (id: string) => {
   }
 };
 
-export const getModelApi = async (req, res) => {
+export const getModelApi = async (req: NextApiRequestWithQuery, res: NextApiResponse) => {
   let errorMessage: ErrorResponse;
   try {
-    const { data } = await getModel(req.query.id);
+    const { data } = await getModel(parseInt(req.query.id, 10));
     const dbResponse = data;
     if (dbResponse[0] === undefined) {
       errorMessage.error = 'That model does not exist';

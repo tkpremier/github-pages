@@ -60,7 +60,7 @@ const Interview = (props: IInterviewProps): JSX.Element => {
     () => dynamic<EditorProps>(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
     []
   );
-  const handleDateChange = date => {
+  const handleDateChange = (date: Date) => {
     // console.log('date: ', typeof date);
     updateInt(i => ({ ...i, date }));
   };

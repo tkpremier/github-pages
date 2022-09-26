@@ -24,10 +24,8 @@ type ISlider = {
 } & typeof defaultProps;
 
 const defaultSizes = {
-  xl: 3,
   lg: 3,
-  md: 2,
-  sm: 1
+  md: 2
 };
 const defaultProps = {
   carouselTitle: '',
@@ -71,6 +69,11 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
   const wrapperRef = useRef(null);
   const intervalRef = useRef(null);
   const mqlRef = useRef(null);
+  const sizesRef = useRef({
+    xl: props.sizes.xl || props.sizes.md,
+    sm: props.sizes.sm || 1,
+    ...props.sizes
+  });
   const [state, setState] = useState({
     animating: false,
     curIndex: 0,
@@ -90,7 +93,7 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
         for (const [key, mql] of mediaQueryResults) {
           // console.log(key);
           if (mql.matches) {
-            enabledMQs.push({ itemsPerSlide: props.sizes[key], mql });
+            enabledMQs.push({ itemsPerSlide: sizesRef.current[key], mql });
           }
         }
         if (enabledMQs.length > 0) {
@@ -153,10 +156,9 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
       const mediaQueryResults = getMediaQueries();
       console.log('mediaQueryResults', mediaQueryResults);
       const enabledMQs: MediaQuery[] = [];
-      console.log('e: ', e);
       for (const [key, mql] of mediaQueryResults) {
         if (mql.matches) {
-          enabledMQs.push({ itemsPerSlide: props.sizes[key], mql });
+          enabledMQs.push({ itemsPerSlide: sizesRef.current[key], mql });
         }
       }
       if (enabledMQs.length > 0) {

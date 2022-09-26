@@ -1,15 +1,18 @@
-import React, { Component, createRef, FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
 import Layout from '../../components/Layout';
 import Drawer from '../../components/Drawer';
-import utilStyles from '../../styles/utils.module.scss';
 import * as sampleString from '../../code-strings/search/anagram'; // { countAnagrams, sherlockAndAnagram }
 import * as sample from '../../code-examples/search/anagram';
 
+enum AnagramFuncNames {
+  'countAnagramSubstring',
+  'countAnagrams'
+}
 interface ISample {
-  func: string;
+  func: keyof typeof AnagramFuncNames;
   header: string;
   closed?: boolean;
 }
@@ -18,7 +21,8 @@ const Sample = ({ func, header, closed }: ISample) => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const data = serialize(e.target as HTMLFormElement, { hash: true });
-    setCount(sample[func](...Object.keys(data).map(key => data[key])));
+    const params = Object.keys(data).map(key => data[key]) as string[];
+    setCount(sample[func](params[0], params[1]));
   };
   return (
     <Drawer header={header} closed={closed}>

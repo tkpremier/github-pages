@@ -49,7 +49,7 @@ type DBData = {
   webContentLink?: string;
   thumbnailLink?: string;
   createdTime: string;
-  lastViewed?: string;
+  lastViewed?: string | null;
   createdOn: string;
   duration?: number;
   modelId: Array<number>;
@@ -59,11 +59,12 @@ type MergedData = GDriveApiBase &
   DBData & {
     [key: string]:
       | string
-      | Array<string>
       | number
+      | Array<string>
       | Array<number>
       | GDriveApiOptional['imageMediaMetadata']
-      | GDriveApiOptional['videoMediaMetadata'];
+      | GDriveApiOptional['videoMediaMetadata']
+      | null;
   };
 
 const getImageLink = (link = '', endStr = 's220', split = 's220') => {

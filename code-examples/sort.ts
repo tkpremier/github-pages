@@ -34,61 +34,61 @@ export const insertionSort = (arr: number[] = []): number[] => {
   }
   return arr;
 };
-// const merge = (arr: number[] | string[], l: number, mid: number, r: number): number[] | string[] => {
-//   const n1 = mid - 1 + 1;
-//   const n2 = r - mid;
-//   const leftArray = arr.slice(l, mid - l);
-//   const rightArray = arr.slice(r - mid, r);
-//   // initial index of first subarray
-//   let i = 0;
-//   // initial index of second subarray
-//   let j = 0;
-//   // initial index of merged subarray
-//   let k = l;
-//   while (i < leftArray.length && j < rightArray.length) {
-//     if (leftArray[i] <= rightArray[j]) {
-//       arr[k] = leftArray[i];
-//       i++;
-//     } else {
-//       arr[k] = rightArray[j];
-//       j++;
-//     }
-//     k++;
-//   }
-//   // copy the remaining elements of leftArray, if there are any
-//   while (i < n1) {
-//     arr[k] = leftArray[i];
-//     i++;
-//     k++;
-//   }
-//   // copy the remaining elements of right array, if any
-//   while (j < n2) {
-//     arr[k] = rightArray[j];
-//     j++;
-//     k++;
-//   }
-//   return arr;
-// };
+const merge = (arr: Array<string | number>, l: number, mid: number, r: number): Array<string | number> => {
+  const n1 = mid - 1 + 1;
+  const n2 = r - mid;
+  const leftArray = arr.slice(l, mid - l);
+  const rightArray = arr.slice(r - mid, r);
+  // initial index of first subarray
+  let i = 0;
+  // initial index of second subarray
+  let j = 0;
+  // initial index of merged subarray
+  let k = l;
+  while (i < leftArray.length && j < rightArray.length) {
+    if (leftArray[i] <= rightArray[j]) {
+      arr[k] = leftArray[i];
+      i++;
+    } else {
+      arr[k] = rightArray[j];
+      j++;
+    }
+    k++;
+  }
+  // copy the remaining elements of leftArray, if there are any
+  while (i < n1) {
+    arr[k] = leftArray[i];
+    i++;
+    k++;
+  }
+  // copy the remaining elements of right array, if any
+  while (j < n2) {
+    arr[k] = rightArray[j];
+    j++;
+    k++;
+  }
+  return arr;
+};
 
-// export const mergeSort = (arr = [], l = 0, r = arr.length - 1) => {
-// if (l >= r) {
-//   return;
-// }
-// const mid = 1 + parseInt((r - 1) / 2);
-// mergeSort(arr, l, mid);
-// mergeSort(arr, mid + 1, r);
-// merge(arr, l, mid, r);
-// // for (let i = 0; i < r; i++) {
-// //   let val = arr[i];
-// //   let j = i - 1;
-// //   while (j >= 0 && arr[j] > val) {
-// //     arr[j + 1] = arr[j];
-// //     j = j - 1;
-// //   }
-// //   arr[j + 1] = val;
-// // }
-// return arr;
-// };
+export const mergeSort = (arr: Array<string | number>, l: number, r: number) => {
+  if (l >= r) {
+    return;
+  }
+  const mid = Math.floor(1 + (r - 1) / 2);
+  mergeSort(arr, l, mid);
+  mergeSort(arr, mid + 1, r);
+  merge(arr, l, mid, r);
+  // for (let i = 0; i < r; i++) {
+  //   let val = arr[i];
+  //   let j = i - 1;
+  //   while (j >= 0 && arr[j] > val) {
+  //     arr[j + 1] = arr[j];
+  //     j = j - 1;
+  //   }
+  //   arr[j + 1] = val;
+  // }
+  return arr;
+};
 
 export const selectionSort = (arr: number[] = []) => {
   const n = arr.length;

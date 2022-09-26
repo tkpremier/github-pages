@@ -3,13 +3,14 @@
  * @param {string} s1 | first string
  * @param {string} s2 | second string
  */
-function areAnagram(s1, s2) {
-  let m = new Map();
+
+function areAnagram(s1: string, s2: string): boolean {
+  const m: Map<string, number> = new Map([]);
   for (let i = 0; i < s1.length; i++) {
     if (m.has(s1[i]) === false) {
       m.set(s1[i], 1);
     } else {
-      let cnt = m.get(s1[i]);
+      const cnt = m.get(s1[i]);
       m.delete(s1[i]);
       m.set(s1[i], cnt + 1);
     }
@@ -18,21 +19,21 @@ function areAnagram(s1, s2) {
     if (m.has(s2[j]) === false) {
       return false;
     } else {
-      let cnt = m.get(s2[j]);
+      const cnt = m.get(s2[j]);
       m.delete(s2[j]);
       m.set(s2[j], cnt - 1);
     }
   }
-  for (const it in m.values()) {
+  for (const it of m.values()) {
     if (it !== 0) return false;
   }
   return true;
 }
-export function countAnagramSubstring(s) {
+export function countAnagramSubstring(s: string): number {
   // Returns total number of anagram
   // substrings in s
-  let n = s.length;
-  let mp = new Map();
+  const n = s.length;
+  const mp: Map<string, number> = new Map();
 
   // loop for length of substring
   for (let i = 0; i < n; i++) {
@@ -50,7 +51,7 @@ export function countAnagramSubstring(s) {
 
   // loop over all different dictionary
   // items and aggregate substring count
-  for (let [k, v] of mp) {
+  for (const [k, v] of mp) {
     anas += Math.floor((v * (v - 1)) / 2);
   }
   return anas;
@@ -61,7 +62,7 @@ export function countAnagramSubstring(s) {
  * @param {string} s1
  * @returns {number} res | amount of times repped
  */
-export function countAnagrams(s1, s2) {
+export function countAnagrams(s1: string, s2: string): number {
   let res = 0;
   for (let i = 0; i < s1.length - s2.length + 1; i++) {
     // Check if the s2 and substring are
@@ -70,18 +71,4 @@ export function countAnagrams(s1, s2) {
     if (areAnagram(s1.substring(i, i + s2.length), s2)) res++;
   }
   return res;
-  // const multi = Object.keys(letterCounts)
-  //   .filter(key => letterCounts1[key].length > 1)
-  //   .map(key => {
-  //     // check the distance between each dupe and increase
-  //     // pairs count recursively
-  //     const dupeIds = letterCounts1[key];
-  //     for (let i = 0; i < dupeIdlength; i++) {
-  //       for (let j = dupeIdlength - 1 - i; j > i; j--) {
-  //         console.log('i and j', i, j);
-  //         pairs += dupeIds1[j] - dupeIds1[i];
-  //         console.log('pairs: ', pairs);
-  //       }
-  //     }
-  //   });
 }

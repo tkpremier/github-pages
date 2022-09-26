@@ -109,9 +109,10 @@ const Card = (props: CardProps) => {
             src={getImageLink(contact.data.thumbnailLink, 's1260', 's220')}
             referrerPolicy="no-referrer"
             loading="lazy"
+            alt="Thumbnail"
           />
         ) : (
-          <img src="/mstile-150x150.png" referrerPolicy="no-referrer" loading="lazy" />
+          <img src="/mstile-150x150.png" referrerPolicy="no-referrer" loading="lazy" alt="No thumbnail" />
         )}
       </a>
       {isNull(contact.data.modelId) ? (
@@ -148,11 +149,9 @@ interface Data {
 
 const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }) => {
   const [data, setData] = useState(props.data);
-  const handleAddDrive = e => {
+  const handleAddDrive: React.FormEventHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.target;
-
-    const formData = serialize(form, { hash: true });
+    const formData = serialize(e.currentTarget, { hash: true });
     const data = ['drive_ids', [...props.driveIds, formData.driveIds], props.id];
     fetch(`/api/model/${props.id}`, {
       method: 'PUT',

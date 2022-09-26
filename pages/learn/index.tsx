@@ -18,7 +18,7 @@ function Learn() {
   const handleSort = useCallback((e: FormEvent) => {
     e.preventDefault();
     const { selectionSortArray } = serialize(e.target as HTMLFormElement, { hash: true }) as any;
-    const arr = selectionSortArray.split(' ').map(s => parseInt(s, 10));
+    const arr = selectionSortArray.split(' ').map((s: string) => parseInt(s, 10));
     if (arr.length > 0) {
       sortList(mergeSort(arr, 0, arr.length - 1));
     }
