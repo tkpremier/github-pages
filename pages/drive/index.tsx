@@ -16,22 +16,22 @@ import { getDriveFile, getModelList } from '../../services/db';
 import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
 
-type VideoMediaMetadata = {
-  durationMillis: string;
-};
+type GDriveApiBase = Required<
+  Pick<drive_v3.Schema$File, 'kind' | 'id' | 'name' | 'createdTime' | 'mimeType' | 'webViewLink'>
+>;
 
-interface GoogleDriveData extends drive_v3.Schema$File {
-  id: string;
-  driveId: string;
-  type: string;
-  name: string;
-  webViewLink: string;
-  webContentLink: string;
-  thumbnailLink: string | null;
-  mimeType: string;
-  viewedByMeTime: string;
-  videoMediaMetadata?: VideoMediaMetadata;
-}
+type GDriveApiOptional = Pick<
+  drive_v3.Schema$File,
+  | 'parents'
+  | 'spaces'
+  | 'imageMediaMetadata'
+  | 'webContentLink'
+  | 'thumbnailLink'
+  | 'videoMediaMetadata'
+  | 'viewedByMeTime'
+>;
+
+type GoogleDriveAPIResponse = GDriveApiBase & GDriveApiOptional;
 interface Contact {
   createdOn: string;
   driveIds: Array<string>;
@@ -39,20 +39,32 @@ interface Contact {
   name: string;
   platform: string;
 }
-interface ModelId {
-  modelId: Array<number>;
-}
-interface DBData extends GoogleDriveData {
-  modelId: Array<number>;
-  createdOn: string;
-  duration: number;
-  lastViewed: Date;
-  createdTime: string;
-}
 
-type GAPIList = {
-  data: drive_v3.Schema$FileList;
+type DBData = {
+  id: string;
+  driveId: string;
+  name: string;
+  type: string;
+  webViewLink: string;
+  webContentLink?: string;
+  thumbnailLink?: string;
+  createdTime: string;
+  lastViewed?: string;
+  createdOn: string;
+  duration?: number;
+  modelId: Array<number>;
 };
+type MergedData = GDriveApiBase &
+  GDriveApiOptional &
+  DBData & {
+    [key: string]:
+      | string
+      | Array<string>
+      | number
+      | Array<number>
+      | GDriveApiOptional['imageMediaMetadata']
+      | GDriveApiOptional['videoMediaMetadata'];
+  };
 
 const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
@@ -144,22 +156,33 @@ const AddModel = (props: IAddModel) => {
 
 const getDriveFromApi = async () => {
   const response = await getDrive();
-  const data = (await handleResponse(response)) as { files: Array<GoogleDriveData>; nextPageToken: string };
+  const data = (await handleResponse(response)) as { files: Array<GoogleDriveAPIResponse>; nextPageToken: string };
   const { data: dbData } = await getDriveFile();
   const { data: modelList } = await getModelList();
-  const files = data.files.map((f: GoogleDriveData) => {
+  const files: Array<MergedData> = data.files.map((f: GoogleDriveAPIResponse) => {
     // return f;
     const dbFile = dbData.find((d: DBData) => d.id === f.id) as DBData;
     return typeof dbFile === 'undefined'
       ? {
           ...f,
-          modelId: []
+          id: f.id,
+          name: f.name,
+          driveId: f.id,
+          modelId: [],
+          createdOn: format(new Date(), 'MM/dd/yyyy'),
+          createdTime: format(new Date(f.createdTime), 'MM/dd/yyyy'),
+          lastViewed:
+            f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
+          duration: null,
+          type: f.mimeType
         }
       : {
           ...f,
+          ...dbFile,
+          createdTime: format(new Date(dbFile.createdTime), 'MM/dd/yyyy'),
           modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
         };
-  }) as Array<DBData>;
+  });
   return {
     dbData,
     data: files,
@@ -175,20 +198,46 @@ export const getServerSideProps: GetServerSideProps = async () => {
   };
 };
 
-const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: string; modelList: Array<Contact> }) => {
+enum SortOptions {
+  'createdTime',
+  'lastViewed'
+}
+
+type SortOptionKeys = keyof typeof SortOptions;
+const Drive = (props: {
+  data: Array<MergedData>;
+  dbData: Array<DBData>;
+  nextPage: string;
+  modelList: Array<Contact>;
+}) => {
   const [data, setData] = useState(props.data);
   const [nextPage, updateToken] = useState(props.nextPage);
   const [sortDir, sortBy] = useState('createdTime-desc');
   const handleGetMore = useCallback(async () => {
-    const response = await fetch(`://localhost:9000/api/drive-list?nextPage=${nextPage}`);
+    const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
-    const newData: DBData = files.map(f => {
+    const newData: Array<MergedData> = files.map((f: GoogleDriveAPIResponse) => {
       // return f;
       const dbFile = props.dbData.find(d => d.id === f.id);
       return typeof dbFile === 'undefined'
-        ? { ...f, modelId: [] }
+        ? {
+            ...f,
+            modelId: [],
+            id: f.id,
+            name: f.name,
+            driveId: f.id,
+            createdTime: format(new Date(f.createdTime), 'MM/dd/yyyy'),
+            createdOn: format(new Date(), 'MM/dd/yyyy'),
+            lastViewed:
+              f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
+            duration: null,
+            type: f.mimeType
+          }
         : {
             ...f,
+            ...dbFile,
+            createdTime: format(new Date(dbFile.createdTime), 'MM/dd/yyyy'),
+
             modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
           };
     });
@@ -196,10 +245,13 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
     setData(curr => curr.concat(newData));
     updateToken(nextPageToken);
   }, []);
-  const handleSort = useCallback(e => (e.target.value !== sortDir ? sortBy(e.target.value) : null), []);
+  const handleSort = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => (e.target.value !== sortDir ? sortBy(e.target.value) : null),
+    []
+  );
   const sortedData = useMemo(() => {
     data.sort((a, b): number => {
-      const [key, dir] = sortDir.split('-');
+      const [key, dir]: Array<SortOptionKeys | string> = sortDir.split('-');
       if (key === 'duration') {
         if (a.videoMediaMetadata && b.videoMediaMetadata) {
           return dir === 'desc'
@@ -214,10 +266,12 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
         }
         return 0;
       }
-      if (dir === 'desc') {
-        return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+      if (key === 'lastViewed' || key === 'createdTime') {
+        if (dir === 'desc') {
+          return new Date(b[key]).getTime() - new Date(a[key]).getTime();
+        }
+        return new Date(a[key]).getTime() - new Date(b[key]).getTime();
       }
-      return new Date(a[key]).getTime() - new Date(b[key]).getTime();
     });
     return data.filter(d => d.mimeType.startsWith('video') || d.mimeType.startsWith('image'));
   }, [data, sortDir]);
@@ -231,8 +285,8 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
           <option value="">Choose Sort</option>
           <option value="createdTime-desc">Created - Latest</option>
           <option value="createdTime-asc">Created - Earliest</option>
-          <option value="viewedByMeTime-desc">Viewed - Latest</option>
-          <option value="viewedByMeTime-asc">Viewed - Earliest</option>
+          <option value="lastViewed-desc">Viewed - Latest</option>
+          <option value="lastViewed-asc">Viewed - Earliest</option>
           <option value="duration-desc">Duration - Longest</option>
           <option value="duration-asc">Duration - shortest</option>
         </select>
@@ -270,19 +324,21 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
                   <p>
                     <strong>{drive.name}</strong>
                     <br />
-                    {/* <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')} */}
+                    <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
                   </p>
                   {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
                     <AddModel {...drive} modelList={props.modelList} />
                   ) : null}
                   <ul>
                     <Drawer header={drive.name} key={`${drive.id}-drawer`}>
-                      <p>{drive.mimeType}</p>
-                      {/* {drive.viewedByMeTime ? (
+                      <p>{drive.type}</p>
+                      {!isNull(drive.lastViewed) ? (
                         <p>
-                          <strong>Last viewed:</strong>&nbsp;{format(new Date(drive.viewedByMeTime), 'MM/dd/yyyy')}
+                          <strong>Last viewed:</strong>&nbsp;{drive.lastViewed}
                         </p>
-                      ) : null} */}
+                      ) : (
+                        drive.lastViewed
+                      )}
                       {drive.videoMediaMetadata ? (
                         <p>
                           <strong>Duration: </strong>
@@ -326,19 +382,21 @@ const Drive = (props: { data: Array<DBData>; dbData: Array<DBData>; nextPage: st
               <p>
                 <strong>{drive.name}</strong>
                 <br />
-                {/* <strong>Uploaded on:</strong>&nbsp;{format(new Date(drive.createdTime), 'MM/dd/yyyy')} */}
+                <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
               </p>
               {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
                 <AddModel {...drive} modelList={props.modelList} />
               ) : null}
               <ul>
                 <Drawer header={drive.name} key={`${drive.id}-drawer`}>
-                  <p>{drive.mimeType}</p>
-                  {/* {drive.viewedByMeTime ? (
+                  <p>{drive.type}</p>
+                  {!isNull(drive.lastViewed) ? (
                     <p>
-                      <strong>Last viewed:</strong>&nbsp;{format(new Date(drive.viewedByMeTime), 'MM/dd/yyyy')}
+                      <strong>Last viewed:</strong>&nbsp;{drive.lastViewed}
                     </p>
-                  ) : null} */}
+                  ) : (
+                    drive.lastViewed
+                  )}
                   {drive.videoMediaMetadata ? (
                     <p>
                       <strong>Duration: </strong>
