@@ -15,6 +15,7 @@ import { getDrive } from '../../services/drive';
 import { getDriveFile, getModelList } from '../../services/db';
 import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
+import { Contact } from '../../types';
 
 type GDriveApiBase = Required<
   Pick<drive_v3.Schema$File, 'kind' | 'id' | 'name' | 'createdTime' | 'mimeType' | 'webViewLink'>
@@ -32,13 +33,6 @@ type GDriveApiOptional = Pick<
 >;
 
 type GoogleDriveAPIResponse = GDriveApiBase & GDriveApiOptional;
-interface Contact {
-  createdOn: string;
-  driveIds: Array<string>;
-  id: number;
-  name: string;
-  platform: string;
-}
 
 type DBData = {
   id: string;
@@ -241,7 +235,6 @@ const Drive = (props: {
             modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
           };
     });
-    console.log('newData: ', newData);
     setData(curr => curr.concat(newData));
     updateToken(nextPageToken);
   }, []);

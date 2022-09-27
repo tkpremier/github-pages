@@ -5,3 +5,19 @@ export type NextApiRequestWithQuery = NextApiRequest & {
     [key: string]: string;
   };
 };
+
+export interface ContactDB {
+  createdOn: Date;
+  driveIds: Array<string>;
+  id: number;
+  name: string;
+  platform: string;
+}
+
+export interface Contact {
+  createdOn: string;
+  driveIds: Array<string>;
+  id: number;
+  name: string;
+  platform: string;
+}

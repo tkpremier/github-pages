@@ -1,13 +1,7 @@
 import pool from './pool';
 
 export default {
-  /**
-   * DB Query
-   * @param {string} queryText
-   * @param {object} params
-   * @returns {Promise}
-   */
-  query(queryText: string, params: Array<string | number>) {
+  query(queryText: string, params: Array<any>) {
     return new Promise((resolve, reject) => {
       pool
         .query(queryText, params)

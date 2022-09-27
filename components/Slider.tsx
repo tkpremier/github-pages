@@ -154,7 +154,6 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
   const handleMql = useCallback(
     (e: MediaQueryListEvent) => {
       const mediaQueryResults = getMediaQueries();
-      console.log('mediaQueryResults', mediaQueryResults);
       const enabledMQs: MediaQuery[] = [];
       for (const [key, mql] of mediaQueryResults) {
         if (mql.matches) {
@@ -233,7 +232,6 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
                 const clone = React.isValidElement(child)
                   ? React.cloneElement(child, { key: `${child.key}-clone-begin` })
                   : undefined;
-                console.log('clone', clone);
                 return clone;
               }
               return undefined;

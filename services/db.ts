@@ -4,7 +4,7 @@ import dbQuery from '../db/dev/dbQuery';
 import { isValidEmail, validatePassword, isEmpty } from '../utils/validations';
 import { errorMessage, successMessage, status } from '../utils/status';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { NextApiRequestWithQuery } from '../types';
+import { ContactDB, NextApiRequestWithQuery } from '../types';
 type DbResponse = {
   rows: Array<any>;
 };
@@ -31,8 +31,6 @@ type DriveFile = {
   duration?: number;
   modelId: Array<number>;
 };
-
-type Contact = {};
 
 type OptionalAll<Type> = {
   [Property in keyof Type]?: string | number | Array<number>;
@@ -227,7 +225,7 @@ export const getDriveFile = async () => {
     return {
       data: dbResponse.map((f: DriveFile) =>
         Object.keys(f).reduce(
-          (o: { [key: string]: string | number | null | Array<number> }, k: keyof DriveFile, i, keys): ODriveFile => {
+          (o: { [key: string]: string | number | null | Array<number> }, k: keyof DriveFile): ODriveFile => {
             const dateKeys = ['createdOn', 'createdTime', 'lastViewed'];
             const key = camelCase(k);
             o[key] =
@@ -288,10 +286,10 @@ export const getModel = async (id: number) => {
     }
     return {
       driveIds: dbResponse[0].drive_ids || [],
-      data: dbResponse.map(f =>
-        Object.keys(f).reduce((o, k) => {
+      data: dbResponse.map((f: ContactDB) =>
+        Object.keys(f).reduce((o: { [key: string]: Date | Array<string> | number | string }, k: keyof ContactDB) => {
           o[camelCase(k)] =
-            f[k] instanceof Date ? (!isNull(f[k]) ? format(new Date(f[k]), "MM/dd/yyyy' 'HH:mm:ss") : f[k]) : f[k];
+            f[k] instanceof Date ? format(new Date(f[k] as ContactDB['createdOn']), "MM/dd/yyyy' 'HH:mm:ss") : f[k];
           return o;
         }, {})
       )
@@ -313,15 +311,7 @@ export const getModelApi = async (req: NextApiRequestWithQuery, res: NextApiResp
       errorMessage.error = 'That model does not exist';
       return res.status(status.notfound).send(errorMessage);
     }
-    let successMessage: SuccessResponse;
-    successMessage.data = dbResponse.map(f =>
-      Object.keys(f).reduce((o, k) => {
-        o[camelCase(k)] =
-          f[k] instanceof Date ? (!isNull(f[k]) ? format(new Date(f[k]), "MM/dd/yyyy' 'HH:mm:ss") : f[k]) : f[k];
-        return o;
-      }, {})
-    );
-    return res.status(status.success).send(successMessage);
+    return res.status(status.success).send({ data });
   } catch (error) {
     errorMessage.error = 'An error Occured';
     console.log('error: ', error);
@@ -342,10 +332,10 @@ export const getModelList = async () => {
       // return res.status(status.notfound).send(errorMessage);
     }
     return {
-      data: dbResponse.map(f =>
-        Object.keys(f).reduce((o, k) => {
+      data: dbResponse.map((f: ContactDB) =>
+        Object.keys(f).reduce((o: { [key: string]: Date | Array<string> | number | string }, k: keyof ContactDB) => {
           o[camelCase(k)] =
-            f[k] instanceof Date ? (!isNull(f[k]) ? format(new Date(f[k]), "MM/dd/yyyy' 'HH:mm:ss") : f[k]) : f[k];
+            f[k] instanceof Date ? format(new Date(f[k] as ContactDB['createdOn']), "MM/dd/yyyy' 'HH:mm:ss") : f[k];
           return o;
         }, {})
       )
@@ -358,50 +348,49 @@ export const getModelList = async () => {
   }
 };
 
-const updateDrive = async data => {
-  const query = `UPDATE drive
-  SET ${data.shift()} = $1
-  WHERE id = $2`;
-  try {
-    const { rows } = (await dbQuery.query(query, data)) as DbResponse;
-    console.log('query', query, 'dta', data, rows);
-    const dbResponse = rows;
-    // if (dbResponse[0] === undefined) {
-    //   console.log("No updates");
-    //   return { data: [] };
-    //   // errorMessage.error = 'There are no models';
-    //   // return res.status(status.notfound).send(errorMessage);
-    // }
-    return {
-      data: dbResponse
-    };
-  } catch (error) {
-    console.log('An error occurred', error);
-    // errorMessage.error = 'An error Occured';
-    // return res.status(status.error).send(errorMessage);
-    return { data: [] };
-  }
-};
+// const updateDrive = async (data) => {
+//   const query = `UPDATE drive
+//   SET ${data.shift()} = $1
+//   WHERE id = $2`;
+//   try {
+//     const { rows } = (await dbQuery.query(query, data)) as DbResponse;
+//     console.log('query', query, 'dta', data, rows);
+//     const dbResponse = rows;
+//     // if (dbResponse[0] === undefined) {
+//     //   console.log("No updates");
+//     //   return { data: [] };
+//     //   // errorMessage.error = 'There are no models';
+//     //   // return res.status(status.notfound).send(errorMessage);
+//     // }
+//     return {
+//       data: dbResponse
+//     };
+//   } catch (error) {
+//     console.log('An error occurred', error);
+//     // errorMessage.error = 'An error Occured';
+//     // return res.status(status.error).send(errorMessage);
+//     return { data: [] };
+//   }
+// };
 
-export const updateDriveApi = async (req, res) => {
-  try {
-    const { data } = await updateDrive(req.body);
-    console.log(data);
-    // if (data && data.length === 0) {
-    //   errorMessage.error = 'No updates to be made';
-    //   return res.status(status.notfound).send(errorMessage);
-    // }
-    const successMessage = 'Successfully updated drive file';
-    return res.status(status.success).send(successMessage);
-  } catch (error) {
-    console.log('An error occurred', error);
-    let errorMessage: ErrorResponse;
-    errorMessage.error = 'An error Occured';
-    return res.status(status.error).send(errorMessage);
-  }
-};
+// export const updateDriveApi = async (req: NextApiRequest, res: NextApiResponse) => {
+//   try {
+//     const { data } = await updateDrive(req.body);
+//     // if (data && data.length === 0) {
+//     //   errorMessage.error = 'No updates to be made';
+//     //   return res.status(status.notfound).send(errorMessage);
+//     // }
+//     const successMessage = 'Successfully updated drive file';
+//     return res.status(status.success).send(successMessage);
+//   } catch (error) {
+//     console.log('An error occurred', error);
+//     let errorMessage: ErrorResponse;
+//     errorMessage.error = 'An error Occured';
+//     return res.status(status.error).send(errorMessage);
+//   }
+// };
 
-const updateModel = async data => {
+const updateModel = async (data: Array<string | number | Array<string>>) => {
   const query = `UPDATE model
   SET ${data.shift()} = $1
   WHERE id = $2`;
@@ -426,15 +415,18 @@ const updateModel = async data => {
   }
 };
 
-export const updateModelApi = async (req, res) => {
+export const updateModelApi = async (req: NextApiRequestWithQuery, res: NextApiResponse) => {
   try {
     const { data } = await updateModel(req.body);
-    const response = data.map(f =>
-      Object.keys(f).reduce((o, k) => {
-        o[camelCase(k)] =
-          f[k] instanceof Date ? (!isNull(f[k]) ? format(new Date(f[k]), "MM/dd/yyyy' 'HH:mm:ss") : f[k]) : f[k];
-        return o;
-      }, {})
+    const response = data.map((f: ContactDB) =>
+      Object.keys(f).reduce(
+        (o: { [key: string]: string | number | null | Array<string> | Date }, k: keyof ContactDB) => {
+          o[camelCase(k)] =
+            f[k] instanceof Date ? format(new Date(f[k] as ContactDB['createdOn']), "MM/dd/yyyy' 'HH:mm:ss") : f[k];
+          return o;
+        },
+        {}
+      )
     );
     return res.status(status.success).send(response);
   } catch (error) {
