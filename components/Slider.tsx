@@ -229,7 +229,7 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
           {[
             React.Children.toArray(props.children).find((child, i) => {
               if (i === React.Children.count(props.children) - 1) {
-                const clone = React.isValidElement(child)
+                const clone: React.ReactChild | undefined = React.isValidElement(child)
                   ? React.cloneElement(child, { key: `${child.key}-clone-begin` })
                   : undefined;
                 return clone;
