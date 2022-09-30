@@ -2,13 +2,13 @@ import React, { FormEvent, useCallback, useState, useMemo, useRef } from 'react'
 import dynamic from 'next/dynamic';
 import { IEventInfo, EditorProps } from '../../components/Editor';
 import format from 'date-fns/format';
+import { enUS } from 'date-fns/locale';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Drawer from '../../components/Drawer';
 import Form from '../../components/Form';
 import Layout from '../../components/Layout';
-import Slider from '../../components/Slider';
 import handleResponse from '../../utils/handleResponse';
 
 type Interview = {
@@ -24,7 +24,7 @@ interface IInterviewProps {
 }
 
 export async function getServerSideProps(): Promise<{ props: IInterviewProps }> {
-  const response = await fetch('http://api:9000/api/interview');
+  const response: Awaited<Promise<Response>> = await fetch('http://api:9000/api/interview');
   if (!response.ok) {
     return {
       props: {
@@ -39,11 +39,11 @@ export async function getServerSideProps(): Promise<{ props: IInterviewProps }> 
 }
 
 const InterviewItem = (props: Interview) => {
-  const interviewDate = useMemo(() => format(new Date(props.date), 'MM/dd/yyyy'), [props.date]);
-  console.log('interviewDate: ', interviewDate);
+  const interviewDate = useMemo(() => format(new Date(props.date), 'MM/dd/yyyy', { locale: enUS }), [props.date]);
+  console.log(typeof props.date);
   return (
     <>
-      <p>{interviewDate}</p>
+      <p>{props.date}</p>
       <div dangerouslySetInnerHTML={{ __html: props.retro }} />
       <button aria-label={`Update ${props.company}`} onClick={props.onClick} value={props.id}>
         Update {props.company}

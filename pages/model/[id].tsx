@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { isNull } from 'lodash';
+import { isNull, trim } from 'lodash';
 import serialize from 'form-serialize';
 import Layout from '../../components/Layout';
 import Slider from '../../components/Slider';
@@ -10,11 +10,12 @@ import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { data, driveIds } = await getModel(parseInt(context.params.id.toString(), 10));
+  const response = await fetch(`http://api:9000/api/model/${context.params.id}`);
+  const { data } = await handleResponse(response);
   return {
     props: {
       data,
-      driveIds,
+      driveIds: [],
       id: parseInt(context.params.id.toString())
     }
   };
@@ -47,7 +48,7 @@ const Card = (props: CardProps) => {
   //   data: {}
   // });
   useEffect(() => {
-    fetch(`/api/drive/${contact.data.driveId}`)
+    fetch(`http://localhost:9000/api/drive-file/${contact.data.driveId}`)
       .then(handleResponse)
       .then(res => {
         if (res.data.thumbnailLink !== contact.data.thumbnailLink) {
@@ -74,19 +75,12 @@ const Card = (props: CardProps) => {
       },
       body: JSON.stringify(data)
     };
-    fetch(`/api/drive/${props.driveId}`, opt)
+    fetch(`http://localhost:9000/api/drive-list/${props.driveId}`, opt)
+      .then(handleResponse)
       .then(response => {
-        if (!response.ok) {
-          return response.json().then(error => {
-            console.error('API ERROR: ', error);
-            throw new Error(error.message);
-          });
-        }
-        return response.text();
-      })
-      .then(r => {
+        console.log(response);
         updateCard({
-          status: r,
+          status: 'File Successfully Updated',
           data: {
             ...contact.data,
             modelId: [contact.data.id]
@@ -111,7 +105,7 @@ const Card = (props: CardProps) => {
       </a>
       {isNull(contact.data.modelId) ? (
         <button onClick={handleAdd} name="model_id" value={contact.data.id}>
-          Add to file
+          Add Model to file
         </button>
       ) : null}
       {contact.status.length > 0 ? <span>{contact.status}</span> : null}
@@ -142,12 +136,24 @@ interface Data {
 }
 
 const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }) => {
+  console.log(props.data);
   const [data, setData] = useState(props.data);
   const handleAddDrive: React.FormEventHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = serialize(e.currentTarget, { hash: true });
-    const data = ['drive_ids', [...props.driveIds, formData.driveIds], props.id];
-    fetch(`/api/model/${props.id}`, {
+    const formData = serialize(e.target as HTMLFormElement, { hash: true });
+    console.log('formData: ', formData.driveIds);
+    const currIds = props.data.map(d => d.driveId);
+    const newIds = formData.driveIds
+      .toString()
+      .split(',')
+      .filter(dId => currIds.indexOf(dId.trim()) === -1)
+      .map(id => trim(id));
+    if (newIds.length === 0) {
+      console.log('drive already included in model');
+      return;
+    }
+    const data = ['drive_ids', newIds, props.id];
+    fetch(`http://localhost:9000/api/model/${props.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -194,7 +200,7 @@ const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }
               </Link>
             ) : null}
 
-            <h2 style={{ margin: '0 15px' }}>{data[0].modelName}</h2>
+            <h2 style={{ margin: '0 15px' }}>{`${data[0].modelName} - ${data.length} items`}</h2>
             <Link href={`/model/${props.id + 1}`}>
               <a>Next Model</a>
             </Link>

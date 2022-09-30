@@ -14,8 +14,9 @@ import Layout from '../../components/Layout';
 import { getDrive } from '../../services/drive';
 import { getDriveFile, getModelList } from '../../services/db';
 import { getDuration } from '../../utils';
-import handleResponse from '../../utils/handleResponse';
+import handleResponse, { handleResponses } from '../../utils/handleResponse';
 import { Contact } from '../../types';
+import serialize from 'form-serialize';
 
 type GDriveApiBase = Required<
   Pick<drive_v3.Schema$File, 'kind' | 'id' | 'name' | 'createdTime' | 'mimeType' | 'webViewLink'>
@@ -66,44 +67,100 @@ const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   return `${base}${endStr}`;
 };
 
-interface IAddModel extends DBData {
+interface IDriveWithModelList extends GoogleDriveAPIResponse {
   modelList: Array<Contact>;
+  modelId: Array<number>;
 }
-const AddModel = (props: IAddModel) => {
-  const [modelId, setModelIds] = useState(props.modelId);
-  const [driveIds, setDriveIds] = useState(props.modelList.find(m => modelId.indexOf(m.id) > -1)?.driveIds || []);
-  const [showButton, toggleButton] = useState(modelId.length === 0);
-  const [modelName, setModelName] = useState(props.modelList.find(m => modelId.indexOf(m.id) > -1)?.name || '');
+const AddDrive = (props: IDriveWithModelList) => {
+  const [currDrive, setDriveFile] = useState(props);
+  const [currModel, setModel] = useState(
+    props.modelList.find(m => m.driveIds.indexOf(props.id) > -1) || {
+      createdOn: '',
+      driveIds: [],
+      id: 0,
+      name: '',
+      platform: ''
+    }
+  );
+  const [showButton, toggleButton] = useState(currDrive.modelId.length === 0);
   const handleUpdateModel = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newModelId = parseInt(e.target.value);
-      if (parseInt(e.target.value) === 0) {
-        return;
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const apiPromises = [];
+      // if driveId isn't in contact's driveIds, add contact api promise
+      if (currModel.driveIds.indexOf(props.id) === -1) {
+        apiPromises.push(
+          await fetch(`http://localhost:9000/api/model/${currModel.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(['drive_ids', [props.id], currModel.id])
+          })
+        );
+      } else {
+        console.log('drive already included for contact');
       }
-      const modelResponse = await fetch(`/api/model/${newModelId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(['drive_ids', [...driveIds, props.id], newModelId])
-      });
-      const driveResponse = await fetch(`/api/drive/${props.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(['model_id', [newModelId], props.id])
-      });
-      Promise.all([modelResponse, driveResponse]).then(values => {
-        console.log('successful values: ', values);
-        toggleButton(false);
-        setDriveIds(arr => [...arr, props.id]);
-        setModelName(props.modelList.find(m => newModelId === m.id)?.name);
-        setModelIds([...modelId, newModelId]);
-      });
+      if (currDrive.modelId.indexOf(currModel.id) === -1) {
+        const driveData = serialize(e.target as HTMLFormElement, { hash: true });
+        const newModelIds = [...currDrive.modelId, currModel.id];
+        const {
+          id,
+          createdTime,
+          mimeType,
+          name,
+          webViewLink,
+          webContentLink,
+          thumbnailLink,
+          videoMediaMetadata,
+          viewedByMeTime
+        } = currDrive;
+        const newDriveData = {
+          id,
+          driveId: id,
+          type:
+            mimeType.toString().indexOf('image') > -1
+              ? 'image'
+              : mimeType.toString().indexOf('video') > -1
+              ? 'video'
+              : 'folder',
+          name,
+          webViewLink,
+          webContentLink,
+          thumbnailLink,
+          createdTime,
+          viewedDate: viewedByMeTime || null,
+          duration: videoMediaMetadata ? parseInt(videoMediaMetadata.durationMillis, 10) : null,
+          modelId: newModelIds
+        };
+        apiPromises.push(
+          await fetch('http://localhost:9000/api/drive-list', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(newDriveData)
+          })
+        );
+      } else {
+        console.log('contact already included in drive');
+      }
+      // const modelResponse =
+      Promise.all(apiPromises)
+        .then(handleResponses)
+        .then(values => {
+          console.log('successful values: ', values);
+          // toggleButton(false);
+          // setDriveIds(arr => [...arr, props.id]);
+          // setModelName(props.modelList.find(m => newModelId === m.id)?.name);
+          // setModelIds([...modelId, newModelId]);
+        })
+        .catch(err => {
+          console.log('errors: ', err);
+        });
       // return response.ok ? await response.text() : `Error: ${response.text()}`;
     },
-    [driveIds]
+    [currModel, currDrive]
   );
   const handleAdd = useCallback(
     (_: React.PointerEvent<HTMLButtonElement>) => {
@@ -111,6 +168,12 @@ const AddModel = (props: IAddModel) => {
     },
     [showButton]
   );
+  const handleUpdateId = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newModel = props.modelList.find(m => m.id === parseInt(e.target.value, 10));
+    if (newModel) {
+      setModel(() => newModel);
+    }
+  }, []);
   return (
     <div
       style={{
@@ -119,40 +182,46 @@ const AddModel = (props: IAddModel) => {
         width: '100%'
       }}
     >
-      {modelId.length === 0 ? (
+      {currDrive.modelId.length === 0 ? (
         showButton ? (
           <button className={classNames(buttonStyles.button, buttonStyles.primary)} onClick={handleAdd}>
             <span>Add Model</span>
           </button>
         ) : (
-          <Fragment>
+          <form onSubmit={handleUpdateModel}>
             <label htmlFor="model-list-input">
-              <strong>{`${props.modelId.length === 0 ? 'Add ' : ''}Model`}</strong>:&nbsp;
-              <input list="model-list" id="model-list-input" name="model-input" onChange={handleUpdateModel} />
+              <strong>{`${currDrive.modelId.length === 0 ? 'Add ' : ''}Model`}</strong>:&nbsp;
+              <input list="model-list" id="model-list-input" name="modelId" onChange={handleUpdateId} />
             </label>
             <datalist id="model-list">
               <option key={0} value={0}>
                 New Model
               </option>
               {props.modelList.map(m => (
-                <option key={m.id} value={m.id}>
+                <option key={m.id} value={m.id.toString()}>
                   {m.name}
                 </option>
               ))}
             </datalist>
-          </Fragment>
+            <label htmlFor="drive-platform">
+              Platform
+              <input type="text" name="platform" placeholder="Platform" />
+            </label>
+            <input type="submit" value="Add Drive to Model" />
+          </form>
         )
       ) : (
-        <p>{modelName}</p>
+        <p>{currModel.name}</p>
       )}
     </div>
   );
 };
 
 const getDriveFromApi = async () => {
-  const response = await getDrive();
-  const data = (await handleResponse(response)) as { files: Array<GoogleDriveAPIResponse>; nextPageToken: string };
-  const { data: dbData } = await getDriveFile();
+  const response = await fetch('http://api:9000/api/drive-google');
+  const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(response);
+  const dbResponse: Awaited<Promise<Response>> = await fetch('http://api:9000/api/drive-list');
+  const { data: dbData } = await handleResponse(dbResponse);
   const { data: modelList } = await getModelList();
   const files: Array<MergedData> = data.files.map((f: GoogleDriveAPIResponse) => {
     // return f;
@@ -232,7 +301,7 @@ const Drive = (props: {
             ...dbFile,
             ...f,
             createdTime: format(new Date(dbFile.createdTime), 'MM/dd/yyyy'),
-            modelId: isNull(dbFile.modelId) ? [] : dbFile.modelId
+            modelId: dbFile.modelId
           };
     });
     setData(curr => curr.concat(newData));
@@ -320,7 +389,7 @@ const Drive = (props: {
                     <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
                   </p>
                   {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
-                    <AddModel {...drive} modelList={props.modelList} />
+                    <AddDrive {...drive} modelList={props.modelList} />
                   ) : null}
                   <ul>
                     <Drawer header={drive.name} key={`${drive.id}-drawer`}>
@@ -378,7 +447,7 @@ const Drive = (props: {
                 <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
               </p>
               {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
-                <AddModel {...drive} modelList={props.modelList} />
+                <AddDrive {...drive} modelList={props.modelList} />
               ) : null}
               <ul>
                 <Drawer header={drive.name} key={`${drive.id}-drawer`}>

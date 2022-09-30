@@ -4,7 +4,7 @@ import dbQuery from '../db/dev/dbQuery';
 import { isValidEmail, validatePassword, isEmpty } from '../utils/validations';
 import { errorMessage, successMessage, status } from '../utils/status';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ContactDB, NextApiRequestWithQuery } from '../types';
+import { ContactDB, NextApiRequestWithQuery, DriveFile } from '../types';
 type DbResponse = {
   rows: Array<any>;
 };
@@ -16,26 +16,6 @@ type ErrorResponse = {
 type SuccessResponse = {
   data: Array<any>;
 };
-
-type DriveFile = {
-  id: string;
-  driveId: string;
-  type: string;
-  name: string;
-  webViewLink: string;
-  webContentLink?: string;
-  thumbnailLink?: string;
-  createdTime: string;
-  lastViewed?: string | null;
-  createdOn: string;
-  duration?: number;
-  modelId: Array<number>;
-};
-
-type OptionalAll<Type> = {
-  [Property in keyof Type]?: string | number | Array<number>;
-};
-type ODriveFile = OptionalAll<DriveFile>;
 
 export const getExp = async () => {
   const getModelQuery = `SELECT * FROM
@@ -141,29 +121,6 @@ export const createModel = async (req: NextApiRequest, res: NextApiResponse) => 
   }
 };
 
-const createDriveFile = async (values: string[]): Promise<DbResponse['rows']> => {
-  /*
-    (id VARCHAR(100) NOT NULL,
-    drive_id VARCHAR(100) NOT NULL,
-    type VARCHAR(100) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    web_view_link VARCHAR(100) NOT NULL,
-    web_content_link VARCHAR(100) NOT NULL,
-    thumbnail_link VARCHAR(100),
-    created_time DATE NOT NULL,
-    viewed_time DATE NOT NULL,
-    created_on DATE NOT NULL)
-  */
-  const createDriveFileQuery = `INSERT INTO
-  drive(id, drive_id, type, name, web_view_link, web_content_link, thumbnail_link, created_time, last_viewed, duration, created_on)
-  VALUES($1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-  returning *`;
-  const createdOn = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-  values.push(createdOn);
-  const { rows } = (await dbQuery.query(createDriveFileQuery, values)) as DbResponse;
-  return rows;
-};
-
 export const createNewDriveFile = async (req: NextApiRequest, res: NextApiResponse) => {
   let errorMessage: ErrorResponse;
   const {
@@ -177,6 +134,7 @@ export const createNewDriveFile = async (req: NextApiRequest, res: NextApiRespon
     mimeType = '',
     videoMediaMetadata
   } = req.body;
+  console.log('newDrive data: ', req.body);
   const viewedDate = req.body.viewedByMeTime || null;
   const duration = videoMediaMetadata ? parseInt(videoMediaMetadata.durationMillis, 10) : null;
   let type = 'folder';
@@ -197,17 +155,18 @@ export const createNewDriveFile = async (req: NextApiRequest, res: NextApiRespon
     isNull(viewedDate) ? viewedDate : format(new Date(viewedByMeTime), "MM/dd/yyyy' 'HH:mm:ss"),
     duration
   ];
-  try {
-    const rows = await createDriveFile(values);
-    const dbResponse = rows[0];
-    let successMessage: SuccessResponse;
-    successMessage.data = dbResponse;
-    return res.status(status.created).send(successMessage);
-  } catch (error) {
-    console.log('error?: ', error);
-    errorMessage.error = 'Operation was not successful';
-    return res.status(status.error).send(error);
-  }
+  console.log('new drive files values: ', values);
+  // try {
+  //   const rows = await createDriveFile(values);
+  //   const dbResponse = rows[0];
+  //   let successMessage: SuccessResponse;
+  //   successMessage.data = dbResponse;
+  //   return res.status(status.created).send(successMessage);
+  // } catch (error) {
+  //   console.log('error?: ', error);
+  //   errorMessage.error = 'Operation was not successful';
+  //   return res.status(status.error).send(error);
+  // }
 };
 
 export const getDriveFile = async () => {
@@ -305,7 +264,8 @@ export const getModel = async (id: number) => {
 export const getModelApi = async (req: NextApiRequestWithQuery, res: NextApiResponse) => {
   let errorMessage: ErrorResponse;
   try {
-    const { data } = await getModel(parseInt(req.query.id, 10));
+    console.log(req);
+    const { data } = await getModel(1);
     const dbResponse = data;
     if (dbResponse[0] === undefined) {
       errorMessage.error = 'That model does not exist';
@@ -347,48 +307,6 @@ export const getModelList = async () => {
     return { data: [] };
   }
 };
-
-// const updateDrive = async (data) => {
-//   const query = `UPDATE drive
-//   SET ${data.shift()} = $1
-//   WHERE id = $2`;
-//   try {
-//     const { rows } = (await dbQuery.query(query, data)) as DbResponse;
-//     console.log('query', query, 'dta', data, rows);
-//     const dbResponse = rows;
-//     // if (dbResponse[0] === undefined) {
-//     //   console.log("No updates");
-//     //   return { data: [] };
-//     //   // errorMessage.error = 'There are no models';
-//     //   // return res.status(status.notfound).send(errorMessage);
-//     // }
-//     return {
-//       data: dbResponse
-//     };
-//   } catch (error) {
-//     console.log('An error occurred', error);
-//     // errorMessage.error = 'An error Occured';
-//     // return res.status(status.error).send(errorMessage);
-//     return { data: [] };
-//   }
-// };
-
-// export const updateDriveApi = async (req: NextApiRequest, res: NextApiResponse) => {
-//   try {
-//     const { data } = await updateDrive(req.body);
-//     // if (data && data.length === 0) {
-//     //   errorMessage.error = 'No updates to be made';
-//     //   return res.status(status.notfound).send(errorMessage);
-//     // }
-//     const successMessage = 'Successfully updated drive file';
-//     return res.status(status.success).send(successMessage);
-//   } catch (error) {
-//     console.log('An error occurred', error);
-//     let errorMessage: ErrorResponse;
-//     errorMessage.error = 'An error Occured';
-//     return res.status(status.error).send(errorMessage);
-//   }
-// };
 
 const updateModel = async (data: Array<string | number | Array<string>>) => {
   const query = `UPDATE model

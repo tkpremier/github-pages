@@ -4,11 +4,12 @@ import Link from 'next/link';
 // import { isNull } from "lodash";
 // import Grid from "../../components/Grid";
 import Layout from '../../components/Layout';
-// import handleResponse from "../../utils/handleResponse";
+import handleResponse from '../../utils/handleResponse';
 import { getModelList } from '../../services/db';
 
 const getModelFromDatabase = async () => {
-  const { data } = await getModelList();
+  const response = await fetch('http://api:9000/api/model');
+  const { data } = await handleResponse(response);
   return { data };
 };
 

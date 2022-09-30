@@ -12,7 +12,6 @@ import styles from '../components/layout.module.scss';
 export default function Home() {
   return (
     <Layout home title="Welcome to TK Premier">
-      <h1 className="title">Thomas Kim</h1>
       <div className={styles.iframeWrapper}>
         <iframe
           className={styles.iframe}

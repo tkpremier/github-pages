@@ -247,19 +247,16 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
                   : undefined
               )
             ])
-            .map((child: React.ReactElement, i) => {
-              console.log(child.key);
-              return (
-                <li
-                  style={{
-                    width: `${state.itemWidth}px`
-                  }}
-                  key={child.key}
-                >
-                  {child}
-                </li>
-              );
-            })}
+            .map((child: React.ReactElement) => (
+              <li
+                style={{
+                  width: `${state.itemWidth}px`
+                }}
+                key={child.key}
+              >
+                {child}
+              </li>
+            ))}
         </ul>
       ) : props.children ? (
         <ul
