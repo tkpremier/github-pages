@@ -20,7 +20,7 @@ interface Exp {
 type AboutProps = {
   data: Array<Exp>;
 };
-export async function getServerSideProps(): Promise<{ props: any }> {
+export async function getServerSideProps() {
   const props = await getExp();
   return {
     props
@@ -92,7 +92,7 @@ export async function getServerSideProps(): Promise<{ props: any }> {
 // Update {e.name}
 // </button>);
 
-export default function Experience({ data }: AboutProps): JSX.Element {
+export default function Experience({ data }: AboutProps) {
   // const [updatedExp, updateExp] = useState({ id: 0, name: '', description: '' });
   return (
     <Layout title="About Thomas Kim | Experience | TK Premier">

@@ -20,7 +20,7 @@ import '../styles/global.scss';
  */
 
 interface Props {
-  Component: React.ComponentType<any>;
+  Component: any;
   pageProps: any;
 }
 export default function App(props: Props) {

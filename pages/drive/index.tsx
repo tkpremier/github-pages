@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState, useMemo } from 'react';
+import React, { Fragment, useCallback, useState, useMemo, useRef } from 'react';
 import { format } from 'date-fns';
 import { GetServerSideProps } from 'next';
 import { isNull } from 'lodash';
@@ -218,14 +218,14 @@ const AddDrive = (props: IDriveWithModelList) => {
 };
 
 const getDriveFromApi = async () => {
-  const response = await fetch('http://api:9000/api/drive-google');
+  const response = await fetch('http://localhost:9000/api/drive-google');
   const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(response);
-  const dbResponse: Awaited<Promise<Response>> = await fetch('http://api:9000/api/drive-list');
+  const dbResponse: Awaited<Promise<Response>> = await fetch('http://localhost:9000/api/drive-list');
   const { data: dbData } = await handleResponse(dbResponse);
   const { data: modelList } = await getModelList();
   const files: Array<MergedData> = data.files.map((f: GoogleDriveAPIResponse) => {
-    // return f;
     const dbFile = dbData.find((d: DBData) => d.id === f.id) as DBData;
+
     return typeof dbFile === 'undefined'
       ? {
           ...f,
@@ -275,10 +275,10 @@ const Drive = (props: {
   modelList: Array<Contact>;
 }) => {
   const [data, setData] = useState(props.data);
-  const [nextPage, updateToken] = useState(props.nextPage);
+  const pageToken = useRef(props.nextPage);
   const [sortDir, sortBy] = useState('createdTime-desc');
   const handleGetMore = useCallback(async () => {
-    const response = await fetch(`http://localhost:9000/api/drive-list?nextPage=${nextPage}`);
+    const response = await fetch(`http://localhost:9000/api/drive-google?nextPage=${pageToken.current}`);
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
     const newData: Array<MergedData> = files.map((f: GoogleDriveAPIResponse) => {
       // return f;
@@ -304,8 +304,10 @@ const Drive = (props: {
             modelId: dbFile.modelId
           };
     });
+    if (pageToken.current !== nextPageToken && nextPageToken.length > 0) {
+      pageToken.current = nextPageToken;
+    }
     setData(curr => curr.concat(newData));
-    updateToken(nextPageToken);
   }, []);
   const handleSort = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => (e.target.value !== sortDir ? sortBy(e.target.value) : null),
@@ -373,6 +375,7 @@ const Drive = (props: {
                           loading="lazy"
                           title={`${drive.name}`}
                         />
+                        {drive.webViewLink}
                       </a>
                       <p>
                         <strong>Id:</strong>&nbsp; {drive.id}
@@ -381,6 +384,7 @@ const Drive = (props: {
                   ) : (
                     <p>
                       <strong>Id:</strong>&nbsp; {drive.id}
+                      <a href={drive.webViewLink}>{drive.webViewLink}</a>
                     </p>
                   )}
                   <p>
@@ -434,11 +438,13 @@ const Drive = (props: {
                   </a>
                   <p>
                     <strong>Id:</strong>&nbsp; {drive.id}
+                    <a href={drive.webViewLink}>{drive.webViewLink}</a>
                   </p>
                 </Fragment>
               ) : (
                 <p>
                   <strong>Id:</strong>&nbsp; {drive.id}
+                  <a href={drive.webViewLink}>{drive.webViewLink}</a>
                 </p>
               )}
               <p>

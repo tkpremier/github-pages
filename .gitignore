@@ -34,3 +34,6 @@ yarn-error.log*
 /.vscode/
 Dockerfile*
 ./Dockerfile
+
+credentials.json
+token.json

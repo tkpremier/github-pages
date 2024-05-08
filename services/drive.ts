@@ -1,7 +1,7 @@
 import handleResponse from '../utils/handleResponse';
 
 async function getDriveFile(driveId: string): Promise<any> {
-  const data = await fetch(`http://api:9000/api/drive-file?driveId=${driveId}`)
+  const data = await fetch(`http://postgres:9000/api/drive-file?driveId=${driveId}`)
     .then(handleResponse)
     .then(res => res)
     .catch(err => {
@@ -11,7 +11,7 @@ async function getDriveFile(driveId: string): Promise<any> {
   return data;
 }
 async function getDrive(nextPage = '') {
-  const response: Awaited<Promise<Response>> = await fetch(`http://api:9000/api/drive-list?nextPage=${nextPage}`);
+  const response: Awaited<Promise<Response>> = await fetch(`http://postgres:9000/api/drive-list?nextPage=${nextPage}`);
   return response;
 }
 

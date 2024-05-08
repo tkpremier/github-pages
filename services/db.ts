@@ -301,7 +301,7 @@ export const getModelList = async () => {
       )
     };
   } catch (error) {
-    console.log('An error occurred');
+    console.log('An error occurred: ', error);
     // errorMessage.error = 'An error Occured';
     // return res.status(status.error).send(errorMessage);
     return { data: [] };
