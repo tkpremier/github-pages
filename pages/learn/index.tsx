@@ -3,7 +3,7 @@ import Link from 'next/link';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
 import Drawer from '../../components/Drawer';
-import Layout from '../../components/Layout';
+import { Layout } from '../../components/Layout';
 import {
   binaryIterative,
   binaryRecursive,
@@ -192,9 +192,7 @@ function Learn() {
           <ol>
             <li>
               <Link href="/learn/sort/selection">
-                <a>
-                  <h3>Selection Sort</h3>
-                </a>
+                <h3>Selection Sort</h3>
               </Link>
               <br />
               <Code text={selectionSortCode} />
@@ -227,9 +225,7 @@ function Learn() {
             </li>
             <li>
               <Link href="/learn/sort/insertion">
-                <a>
-                  <h3>Insertion Sort</h3>
-                </a>
+                <h3>Insertion Sort</h3>
               </Link>
               <Code text={insertionSortCode} />
               <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="nofollower noreferrer">

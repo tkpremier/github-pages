@@ -1,6 +1,6 @@
 import React from 'react';
 import Drawer from '../../components/Drawer';
-import Layout from '../../components/Layout';
+import {Layout} from '../../components/Layout';
 import { getExp } from '../../services/db';
 // import dynamic from 'next/dynamic';
 // import classNames from 'classnames';

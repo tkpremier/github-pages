@@ -1,18 +1,18 @@
 import React from 'react';
 import Link from 'next/link';
-import Layout from '../../components/Layout';
+import {Layout} from '../../components/Layout';
 
 const Examples: React.FunctionComponent<null> = () => (
   <Layout title="Example Questions">
     <ul className="root">
       <li>
         <Link href="/examples/pub-sub">
-          <a>Pub Sub</a>
+          Pub Sub
         </Link>
       </li>
       <li>
         <Link href="/examples/anagram">
-          <a>Anagram</a>
+          Anagram
         </Link>
       </li>
     </ul>

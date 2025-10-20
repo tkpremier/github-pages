@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { IEventInfo } from '../../components/Editor';
 import Form from '../../components/Form';
-import Layout from '../../components/Layout';
+import {Layout} from '../../components/Layout';
 import layoutStyles from '../../components/layout.module.scss';
 import handleResponse from '../../utils/handleResponse';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -179,7 +179,7 @@ const AddPage = (props: AddProps) => {
             </label>
             <label htmlFor="interview-date">
               Date
-              <DatePicker selected={interviewDate} onChange={date => setDate(date)} name="date" />
+              <DatePicker selectsMultiple selected={interviewDate} onChange={date => setDate(date[0])} name="date" />
             </label>
             <label htmlFor="interview-retro">
               Retrospective

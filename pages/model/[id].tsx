@@ -3,7 +3,7 @@ import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import { isNull, trim } from 'lodash';
 import serialize from 'form-serialize';
-import Layout from '../../components/Layout';
+import { Layout } from '../../components/Layout';
 import Slider from '../../components/Slider';
 import { getModel } from '../../services/db';
 import { getDuration } from '../../utils';
@@ -196,13 +196,13 @@ const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }
           >
             {props.id - 1 > 1 ? (
               <Link href={`/model/${props.id - 1}`}>
-                <a>Previous Model</a>
+                Previous Model
               </Link>
             ) : null}
 
             <h2 style={{ margin: '0 15px' }}>{`${data[0].modelName} - ${data.length} items`}</h2>
             <Link href={`/model/${props.id + 1}`}>
-              <a>Next Model</a>
+              Next Model
             </Link>
           </header>
           {images}
@@ -213,7 +213,7 @@ const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }
           <p>No Model</p>
           <p>{props.id}</p>
           <Link href={`/model/1}`}>
-            <a>First Model</a>
+            First Model
           </Link>
         </>
       )}

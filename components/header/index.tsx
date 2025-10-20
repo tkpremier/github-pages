@@ -33,24 +33,22 @@ const Header = () => {
             </li>
             <li className={classNames(styles.headerNavItem, styles.headerNavItemName)}>
               <Link href="/">
-                <a>
                   <h2 className={styles.logo}>TK Premier</h2>
-                </a>
               </Link>
             </li>
             <li className={styles.headerNavItem}>
               <Link href="/about">
-                <a>About</a>
+                About
               </Link>
             </li>
             <li className={styles.headerNavItem}>
               <Link href="/learn">
-                <a>Learn</a>
+                Learn
               </Link>
             </li>
             <li className={styles.headerNavItem}>
               <Link href="/interview">
-                <a>Interviews</a>
+                Interviews
               </Link>
             </li>
             <li className={classNames(styles.headerNavItem, styles.headerNavItemLogo)}>
@@ -86,17 +84,17 @@ const Header = () => {
         >
           <li className={styles.offCanvasNavItem}>
             <Link href="/about">
-              <a>About</a>
+              About
             </Link>
           </li>
           <li className={styles.offCanvasNavItem}>
             <Link href="/learn">
-              <a>Learn</a>
+              Learn
             </Link>
           </li>
           <li className={styles.offCanvasNavItem}>
             <Link href="/interview">
-              <a>Interviews</a>
+              Interviews
             </Link>
           </li>
         </ul>

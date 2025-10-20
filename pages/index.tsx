@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import Layout from '../components/Layout';
+import {Layout} from '../components/Layout';
 import Slider from '../components/Slider';
 import styles from '../components/layout.module.scss';
 
@@ -11,7 +11,7 @@ import styles from '../components/layout.module.scss';
 
 export default function Home() {
   return (
-    <Layout home title="Welcome to TK Premier">
+    <Layout title="Welcome to TK Premier">
       <div className={styles.iframeWrapper}>
         <iframe
           className={styles.iframe}
@@ -19,7 +19,6 @@ export default function Home() {
           // height="315"
           src="https://www.youtube-nocookie.com/embed/ibPkLdbG4VU?start=3319"
           title="This too shall pass"
-          frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />

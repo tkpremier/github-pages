@@ -1,8 +1,5 @@
 import React from 'react';
-import Drawer from '../../components/Drawer';
-import Layout from '../../components/Layout';
-import Slider from '../../components/Slider';
-import { getExp } from '../../services/db';
+import {Layout} from '../../components/Layout';
 import Link from 'next/link';
 
 export default function About() {
@@ -14,10 +11,10 @@ export default function About() {
           Resume
         </a>
         <Link href="/about/experience">
-          <a>Experience</a>
+          Experience
         </Link>
         <Link href="/about/soft-skills">
-          <a>Soft Skills</a>
+          Soft Skills
         </Link>
       </nav>
       <style>{`

@@ -1,24 +1,29 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
-    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "esModuleInterop": true,
+    "incremental": true,
     "module": "esnext",
+    "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "noImplicitAny": true,
-    "incremental": true
+    "jsx": "preserve"
   },
-  "allowSyntheticDefaultImports": true,
-  "esModuleInerop": true,
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "runSass.js"],
-  "exclude": ["node_modules"],
-  "typeRoots": ["src/@types", "node_modules/@types"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

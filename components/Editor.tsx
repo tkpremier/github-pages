@@ -1,5 +1,5 @@
 import React from 'react';
-import useCkEditor from '../hooks/useCkEditor';
+import dynamic from 'next/dynamic';
 
 export interface IEventInfo {
   name: string;
@@ -12,26 +12,16 @@ export interface EditorProps {
   name: string;
   onChange: (eventInfo: IEventInfo, editor: any) => any;
 }
-export const EditorContext = () => {
-  const { isEditorLoaded, CKEditor, CKEditorContext, InlineEditor } = useCkEditor();
-  return isEditorLoaded ? CKEditorContext : 'div';
-};
 
-const Editor = (props: EditorProps) => {
-  const { isEditorLoaded, CKEditor, CKEditorContext, InlineEditor } = useCkEditor();
-  // return {
-  //   Editor: isEditorLoaded ? (
-  //     <CKEditor editor={InlineEditor} data={props.data} name={props.name} onBlur={props.onChange} />
-  //   ) : (
-  //     <textarea name={props.name}>Editor loading</textarea>
-  //   ),
-  //   CKEditorContext
-  // };
-  return isEditorLoaded ? (
-    <CKEditor editor={InlineEditor} data={props.data} name={props.name} onBlur={props.onChange} />
-  ) : (
-    <textarea name={props.name} defaultValue="Editor loading" />
-  );
-};
+const CKEditorComponent = dynamic(
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  () => Promise.resolve(require('./CKEditorComponent').default),
+  { 
+    ssr: false,
+    loading: () => <textarea defaultValue="Loading editor..." />
+  }
+) as React.ComponentType<EditorProps>;
+
+const Editor = (props: EditorProps) => <CKEditorComponent {...props} />;
 
 export default Editor;

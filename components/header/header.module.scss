@@ -1,4 +1,4 @@
-@import '../vars';
+@use '../vars' as vars;
 
 .hamBurger {
   background: transparent;
@@ -7,7 +7,7 @@
   height: 36px;
   cursor: pointer;
   padding: 0;
-  @media screen and (min-width: $large-phone-bp) {
+  @media screen and (min-width: vars.$large-phone-bp) {
     display: none;
   }
 }
@@ -33,7 +33,7 @@
     &Item {
       display: none;
       margin-right: 15px;
-      @media screen and (min-width: $large-phone-bp) {
+      @media screen and (min-width: vars.$large-phone-bp) {
         display: flex;
         align-items: center;
       }
@@ -73,7 +73,7 @@
 }
 
 .logo {
-  color: $textColor;
+  color: vars.$textColor;
   font-weight: 700;
   font-size: 24px;
   line-height: 36px;
@@ -91,7 +91,7 @@
     &Close {
       position: absolute;
       right: 0;
-      color: $textColor;
+      color: vars.$textColor;
     }
   }
   &Wrapper {

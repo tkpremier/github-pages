@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
-import Layout from '../../components/Layout';
+import { Layout } from '../../components/Layout';
 import { binaryRecursive } from '../../code-examples';
 import { binaryRecursive as recursiveApproach } from '../../code-examples/search/iterativeSearch';
 import styles from '../../components/code.module.scss';

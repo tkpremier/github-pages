@@ -1,7 +1,7 @@
 import React, { FormEventHandler, FormEvent, useState, MouseEventHandler, MouseEvent } from 'react';
 import serialize from 'form-serialize';
 import Code from '../../components/Code';
-import Layout from '../../components/Layout';
+import { Layout } from '../../components/Layout';
 import { interpolationSearch } from '../../code-examples';
 import { interpolationSearch as interFunction } from '../../code-examples/search/iterativeSearch';
 import styles from '../../components/code.module.scss';

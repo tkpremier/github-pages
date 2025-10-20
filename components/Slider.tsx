@@ -1,7 +1,6 @@
 import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment, PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import styles from './carousel.module.scss';
-import { listeners } from 'process';
 
 type Sizes = {
   xl?: number;
@@ -21,7 +20,7 @@ type ISlider = {
   pagination?: boolean;
   children: React.ReactNode | React.ReactElement;
   sizes?: Sizes;
-} & typeof defaultProps;
+};
 
 const defaultSizes = {
   lg: 3,
@@ -69,10 +68,11 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
   const wrapperRef = useRef(null);
   const intervalRef = useRef(null);
   const mqlRef = useRef(null);
+  const sizes = props.sizes || defaultSizes;
   const sizesRef = useRef({
-    xl: props.sizes.xl || props.sizes.md,
-    sm: props.sizes.sm || 1,
-    ...props.sizes
+    xl: (sizes as Sizes).xl || sizes.md,
+    sm: (sizes as Sizes).sm || 1,
+    ...sizes
   });
   const [state, setState] = useState({
     animating: false,
@@ -229,7 +229,7 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
           {[
             React.Children.toArray(props.children).find((child, i) => {
               if (i === React.Children.count(props.children) - 1) {
-                const clone: React.ReactChild | undefined = React.isValidElement(child)
+                const clone = React.isValidElement(child)
                   ? React.cloneElement(child, { key: `${child.key}-clone-begin` })
                   : undefined;
                 return clone;
@@ -279,10 +279,10 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
   );
   return (
     <div className={classNames(styles.slider, props.classNames)} ref={carouselRef}>
-      {props.carouselTitle.length > 0 ? (
+      {props.carouselTitle?.length > 0 ? (
         <h2 className="phillips-carousel__title" dangerouslySetInnerHTML={{ __html: props.carouselTitle }} />
       ) : null}
-      {props.carouselDesc.length > 0 ? (
+      {props.carouselDesc?.length > 0 ? (
         <span className="phillips-carousel__description" dangerouslySetInnerHTML={{ __html: props.carouselDesc }} />
       ) : null}
       <div className={styles.sliderWrapper} ref={wrapperRef}>

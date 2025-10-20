@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Code from '../../components/Code';
-import Layout from '../../components/Layout';
+import { Layout } from '../../components/Layout';
 import utilStyles from '../../styles/utils.module.scss';
 import { pubSubClass } from '../../code-examples';
 
@@ -37,7 +37,7 @@ const PubSub = () => (
       </li> */}
       <li>
         <Link href="/examples">
-          <a>Back to Examples</a>
+          Back to Examples
         </Link>
       </li>
     </ul>

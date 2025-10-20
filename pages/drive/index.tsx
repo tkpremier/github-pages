@@ -10,7 +10,7 @@ import {
 import Drawer from '../../components/Drawer';
 import styles from '../../components/grid.module.scss';
 import buttonStyles from '../../components/button.module.scss';
-import Layout from '../../components/Layout';
+import {Layout} from '../../components/Layout';
 import { getDrive } from '../../services/drive';
 import { getDriveFile, getModelList } from '../../services/db';
 import { getDuration } from '../../utils';

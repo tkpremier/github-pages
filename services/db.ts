@@ -184,7 +184,7 @@ export const getDriveFile = async () => {
     return {
       data: dbResponse.map((f: DriveFile) =>
         Object.keys(f).reduce(
-          (o: { [key: string]: string | number | null | Array<number> }, k: keyof DriveFile): ODriveFile => {
+          (o: { [key: string]: string | number | null | Array<number> }, k: keyof DriveFile) => {
             const dateKeys = ['createdOn', 'createdTime', 'lastViewed'];
             const key = camelCase(k);
             o[key] =

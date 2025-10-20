@@ -1,4 +1,4 @@
-import React, { FormEvent, useCallback, useState, useMemo, useRef } from 'react';
+import React, { FormEvent, useCallback, useState, useMemo, useRef, PropsWithoutRef } from 'react';
 import dynamic from 'next/dynamic';
 import { IEventInfo, EditorProps } from '../../components/Editor';
 import format from 'date-fns/format';
@@ -8,7 +8,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Drawer from '../../components/Drawer';
 import Form from '../../components/Form';
-import Layout from '../../components/Layout';
+import {Layout} from '../../components/Layout';
 import handleResponse from '../../utils/handleResponse';
 
 type Interview = {
@@ -24,7 +24,12 @@ interface IInterviewProps {
 }
 
 export async function getServerSideProps(): Promise<{ props: IInterviewProps }> {
-  const response: Awaited<Promise<Response>> = await fetch('http://api:9000/api/interview');
+  return {
+    props: {
+      data: []
+    }
+  };
+  /* const response: Awaited<Promise<Response>> = await fetch('http://api:9000/api/interview');
   if (!response.ok) {
     return {
       props: {
@@ -35,15 +40,14 @@ export async function getServerSideProps(): Promise<{ props: IInterviewProps }> 
   const props = await response.json();
   return {
     props
-  };
+  }; */
 }
 
 const InterviewItem = (props: Interview) => {
   const interviewDate = useMemo(() => format(new Date(props.date), 'MM/dd/yyyy', { locale: enUS }), [props.date]);
-  console.log(typeof props.date);
   return (
     <>
-      <p>{props.date}</p>
+      <p>{interviewDate}</p>
       <div dangerouslySetInnerHTML={{ __html: props.retro }} />
       <button aria-label={`Update ${props.company}`} onClick={props.onClick} value={props.id}>
         Update {props.company}
@@ -54,7 +58,7 @@ const InterviewItem = (props: Interview) => {
 
 const defaultProps = { id: 0, company: '', date: new Date(Date.now()), retro: '' } as Interview;
 
-const Interview = (props: IInterviewProps): JSX.Element => {
+const Interview = (props: PropsWithoutRef<IInterviewProps>) => {
   const [updatedInt, updateInt] = useState(defaultProps);
   const Editor = useMemo(
     () => dynamic<EditorProps>(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
