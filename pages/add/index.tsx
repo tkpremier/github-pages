@@ -68,33 +68,33 @@ const AddPage = (props: AddProps) => {
         },
         body: JSON.stringify({ ...data, description: editorData })
       };
-      fetch('http://localhost:9000/api/experience', options)
+      fetch('http://localhost:8000/api/experience', options)
         .then(handleResponse)
         .then((res: ApiResponse) => setStatus({ status: 'experience success', ...res }))
         .catch(err => console.log('err: ', err));
     },
     [editorData]
   );
-  // const handleSubmitModel = useCallback(e => {
-  //   e.preventDefault();
-  //   const form = e.target;
-  //   const data = serialize(form, { hash: true });
-  //   fetch('/api/model', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json;charset=utf-8'
-  //     },
-  //     body: JSON.stringify(data)
-  //   })
-  //     .then(handleResponse)
-  //     .then(res => {
-  //       setStatus({ ...res, status: 'success' });
-  //     })
-  //     .catch(err => console.log('err: ', err));
-  // }, []);
-  // const handleAutoComplete = useCallback(e => {
-  //   console.log(e.type);
-  // }, []);
+  const handleSubmitModel = useCallback(e => {
+    e.preventDefault();
+    const form = e.target;
+    const data = serialize(form, { hash: true });
+    fetch('http://localhost:8000/api/model', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(handleResponse)
+      .then(res => {
+        setStatus({ ...res, status: 'success' });
+      })
+      .catch(err => console.log('err: ', err));
+  }, []);
+  const handleAutoComplete = useCallback(e => {
+    console.log(e.type);
+  }, []);
   const handleInterview: React.FormEventHandler<HTMLFormElement> = useCallback(e => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -107,7 +107,7 @@ const AddPage = (props: AddProps) => {
       },
       body: JSON.stringify({ ...data, date, retro: editorData })
     };
-    fetch('http://localhost:9000/api/interview', options)
+    fetch('http://localhost:8000/api/interview', options)
       .then(handleResponse)
       .then(res => {
         setStatus(res);
@@ -140,7 +140,7 @@ const AddPage = (props: AddProps) => {
             <input type="submit" value="Update" />
           </Form>
         </div>
-        {/* <div className={layoutStyles.card}>
+        <div className={layoutStyles.card}>
           <Form onSubmit={handleSubmitModel}>
             <h3>About TK the Philanthropist &rarr;</h3>
             <p>Add about your chariable donations, when, where, who, how long were these donations?</p>
@@ -168,7 +168,7 @@ const AddPage = (props: AddProps) => {
             </label>
             <input type="submit" value="Update" />
           </Form>
-        </div> */}
+        </div>
         <div className={layoutStyles.card}>
           <h3>About TK&lsquo;s interviews &#x1F935;</h3>
           <p>A retrospective...&#x1F5E3;</p>

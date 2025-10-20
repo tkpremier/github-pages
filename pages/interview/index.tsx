@@ -88,7 +88,7 @@ const Interview = (props: IInterviewProps): JSX.Element => {
           company: data.company
         })
       };
-      fetch('http://localhost:9000/api/interview', options)
+      fetch('http://localhost:8000/api/interview', options)
         .then(handleResponse)
         .then(res => {
           console.log('res: ', res);

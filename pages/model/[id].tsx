@@ -10,7 +10,7 @@ import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
-  const response = await fetch(`http://api:9000/api/model/${context.params.id}`);
+  const response = await fetch(`http://localhost:8000/api/model/${context.params.id}`);
   const { data } = await handleResponse(response);
   return {
     props: {
@@ -48,7 +48,7 @@ const Card = (props: CardProps) => {
   //   data: {}
   // });
   useEffect(() => {
-    fetch(`http://localhost:9000/api/drive-file/${contact.data.driveId}`)
+    fetch(`http://localhost:8000/api/drive-file/${contact.data.driveId}`)
       .then(handleResponse)
       .then(res => {
         if (res.data.thumbnailLink !== contact.data.thumbnailLink) {
@@ -75,7 +75,7 @@ const Card = (props: CardProps) => {
       },
       body: JSON.stringify(data)
     };
-    fetch(`http://localhost:9000/api/drive-list/${props.driveId}`, opt)
+    fetch(`http://localhost:8000/api/drive-list/${props.driveId}`, opt)
       .then(handleResponse)
       .then(response => {
         console.log(response);
@@ -153,7 +153,7 @@ const Model = (props: { data: Array<Data>; driveIds: Array<string>; id: number }
       return;
     }
     const data = ['drive_ids', newIds, props.id];
-    fetch(`http://localhost:9000/api/model/${props.id}`, {
+    fetch(`http://localhost:8000/api/model/${props.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'

@@ -88,9 +88,9 @@ const AddDrive = (props: IDriveWithModelList) => {
       e.preventDefault();
       const apiPromises = [];
       // if driveId isn't in contact's driveIds, add contact api promise
-      if (currModel.driveIds.indexOf(props.id) === -1) {
+      if (currModel.driveIds.indexOf(props.id) > -1) {
         apiPromises.push(
-          await fetch(`http://localhost:9000/api/model/${currModel.id}`, {
+          await fetch(`http://localhost:8000/api/model/${currModel.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -134,7 +134,7 @@ const AddDrive = (props: IDriveWithModelList) => {
           modelId: newModelIds
         };
         apiPromises.push(
-          await fetch('http://localhost:9000/api/drive-list', {
+          await fetch('http://localhost:8000/api/drive-list', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -150,7 +150,7 @@ const AddDrive = (props: IDriveWithModelList) => {
         .then(handleResponses)
         .then(values => {
           console.log('successful values: ', values);
-          // toggleButton(false);
+          toggleButton(false);
           // setDriveIds(arr => [...arr, props.id]);
           // setModelName(props.modelList.find(m => newModelId === m.id)?.name);
           // setModelIds([...modelId, newModelId]);
@@ -218,9 +218,9 @@ const AddDrive = (props: IDriveWithModelList) => {
 };
 
 const getDriveFromApi = async () => {
-  const response = await fetch('http://localhost:9000/api/drive-google');
+  const response = await fetch('http://localhost:8000/api/drive-google');
   const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(response);
-  const dbResponse: Awaited<Promise<Response>> = await fetch('http://localhost:9000/api/drive-list');
+  const dbResponse: Awaited<Promise<Response>> = await fetch('http://localhost:8000/api/drive-list');
   const { data: dbData } = await handleResponse(dbResponse);
   const { data: modelList } = await getModelList();
   const files: Array<MergedData> = data.files.map((f: GoogleDriveAPIResponse) => {
@@ -278,7 +278,7 @@ const Drive = (props: {
   const pageToken = useRef(props.nextPage);
   const [sortDir, sortBy] = useState('createdTime-desc');
   const handleGetMore = useCallback(async () => {
-    const response = await fetch(`http://localhost:9000/api/drive-google?nextPage=${pageToken.current}`);
+    const response = await fetch(`http://localhost:8000/api/drive-google?nextPage=${pageToken.current}`);
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
     const newData: Array<MergedData> = files.map((f: GoogleDriveAPIResponse) => {
       // return f;

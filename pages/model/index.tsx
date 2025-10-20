@@ -8,7 +8,7 @@ import handleResponse from '../../utils/handleResponse';
 import { getModelList } from '../../services/db';
 
 const getModelFromDatabase = async () => {
-  const response = await fetch('http://api:9000/api/model');
+  const response = await fetch('http://localhost:8000/api/model');
   const { data } = await handleResponse(response);
   return { data };
 };
