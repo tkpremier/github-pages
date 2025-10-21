@@ -13,7 +13,7 @@ import buttonStyles from '../../components/button.module.scss';
 import {Layout} from '../../components/Layout';
 import { getDrive } from '../../services/drive';
 import { getDriveFile, getModelList } from '../../services/db';
-import { getDuration } from '../../utils';
+import { getDuration, formatBytes } from '../../utils';
 import handleResponse, { handleResponses } from '../../utils/handleResponse';
 import { Contact } from '../../types';
 import serialize from 'form-serialize';
@@ -31,6 +31,8 @@ type GDriveApiOptional = Pick<
   | 'thumbnailLink'
   | 'videoMediaMetadata'
   | 'viewedByMeTime'
+  | 'description'
+  | 'size'
 >;
 
 type GoogleDriveAPIResponse = GDriveApiBase & GDriveApiOptional;
@@ -229,6 +231,8 @@ const getDriveFromApi = async () => {
     return typeof dbFile === 'undefined'
       ? {
           ...f,
+          ...(f.description && { description: f.description }),
+          ...(f.size && { size: formatBytes(f.size) }),
           id: f.id,
           name: f.name,
           driveId: f.id,
@@ -238,7 +242,7 @@ const getDriveFromApi = async () => {
           lastViewed:
             f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
           duration: null,
-          type: f.mimeType
+          type: f.mimeType,
         }
       : {
           ...dbFile,
@@ -339,6 +343,7 @@ const Drive = (props: {
     });
     return data.filter(d => d.mimeType.startsWith('video') || d.mimeType.startsWith('image'));
   }, [data, sortDir]);
+  console.log('sortedData: ', sortedData);
   return (
     <Layout title="Let's Drive | TKPremier">
       <h2>Welcome to the &#x1F608;</h2>
@@ -390,6 +395,8 @@ const Drive = (props: {
                   <p>
                     <strong>{drive.name}</strong>
                     <br />
+                    {drive.description && <strong>{drive.description}</strong>}
+                    <br />
                     <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
                   </p>
                   {drive.mimeType.startsWith('video') || drive.mimeType.startsWith('image') ? (
@@ -438,13 +445,20 @@ const Drive = (props: {
                   </a>
                   <p>
                     <strong>Id:</strong>&nbsp; {drive.id}
-                    <a href={drive.webViewLink}>{drive.webViewLink}</a>
+                    <br />
+                    {drive.description && <strong>{drive.description}</strong>}
+                    <br />
+                    <a href={drive.webViewLink}>Go to File</a>
                   </p>
                 </Fragment>
               ) : (
                 <p>
                   <strong>Id:</strong>&nbsp; {drive.id}
-                  <a href={drive.webViewLink}>{drive.webViewLink}</a>
+                  <br />
+                    {drive.description && <strong>{drive.description}</strong>}
+                    <br />
+                    
+                  <a href={drive.webViewLink}>Go to File</a>
                 </p>
               )}
               <p>
