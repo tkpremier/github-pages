@@ -242,7 +242,7 @@ const getDriveFromApi = async () => {
           lastViewed:
             f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
           duration: null,
-          type: f.mimeType,
+          type: f.mimeType
         }
       : {
           ...dbFile,
