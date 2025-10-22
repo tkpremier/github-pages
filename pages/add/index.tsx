@@ -3,9 +3,10 @@ import dynamic from 'next/dynamic';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
 import { GetServerSidePropsContext } from 'next';
+import { Editor as CKEditor } from 'ckeditor5';
 import { IEventInfo } from '../../components/Editor';
 import Form from '../../components/Form';
-import {Layout} from '../../components/Layout';
+import { Layout } from '../../components/Layout';
 import layoutStyles from '../../components/layout.module.scss';
 import handleResponse from '../../utils/handleResponse';
 import { getModelList } from '../../services/db';
@@ -48,7 +49,6 @@ const state: State = {
 const AddPage = (props: AddProps) => {
   const [response, setStatus] = useState(state);
   const [editorData, handleChange] = useState('');
-  const [autoCompleteList, updateAutoComplete] = useState('');
   const [interviewDate, setDate] = useState(new Date());
 
   const Editor = useMemo(
@@ -113,7 +113,7 @@ const AddPage = (props: AddProps) => {
       })
       .catch(err => console.log('err: ', err));
   }, []);
-  const handleEditorChange = (_eventInfo: IEventInfo, editor: any) => {
+  const handleEditorChange = (_eventInfo: IEventInfo, editor: CKEditor) => {
     handleChange(editor.getData());
   };
   return (

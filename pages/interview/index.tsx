@@ -9,6 +9,7 @@ import Drawer from '../../components/Drawer';
 import Form from '../../components/Form';
 import { Layout } from '../../components/Layout';
 import handleResponse from '../../utils/handleResponse';
+import { Editor as CKEditor } from 'ckeditor5';
 
 type Interview = {
   id: number;
@@ -102,7 +103,7 @@ const Interview = (props: PropsWithoutRef<IInterviewProps>) => {
     [updatedInt]
   );
   const handleEditor = useCallback(
-    (_eventInfo: IEventInfo, editor: any) => {
+    (_eventInfo: IEventInfo, editor: CKEditor) => {
       if (updatedInt.retro !== editor.getData()) {
         updateInt(ex => ({
           ...ex,

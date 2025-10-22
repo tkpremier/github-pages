@@ -1,5 +1,6 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
+import { Editor as CKEditor } from 'ckeditor5';
 
 export interface IEventInfo {
   name: string;
@@ -11,7 +12,7 @@ export interface EditorProps {
   id?: string;
   data: string;
   name: string;
-  onChange: (eventInfo: IEventInfo, editor: any) => any;
+  onChange: (eventInfo: IEventInfo, editor: CKEditor) => void;
 }
 
 const CKEditorComponent = dynamic(
