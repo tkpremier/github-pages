@@ -5,10 +5,9 @@ import format from 'date-fns/format';
 import { enUS } from 'date-fns/locale';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import Drawer from '../../components/Drawer';
 import Form from '../../components/Form';
-import {Layout} from '../../components/Layout';
+import { Layout } from '../../components/Layout';
 import handleResponse from '../../utils/handleResponse';
 
 type Interview = {
@@ -127,6 +126,7 @@ const Interview = (props: PropsWithoutRef<IInterviewProps>) => {
         <label key="interview-company" htmlFor="interview-company">
           Company
           <input
+            autoComplete="on"
             type="text"
             name="company"
             required
@@ -137,11 +137,11 @@ const Interview = (props: PropsWithoutRef<IInterviewProps>) => {
         </label>
         <label htmlFor="interview-date" key="interview-date">
           Date
-          <DatePicker selected={updatedInt.date} name="date" onChange={handleDateChange} />
+          <DatePicker id="interview-date" selected={updatedInt.date} name="date" onChange={handleDateChange} />
         </label>
         <label htmlFor="interview-retro" key="interview-retro">
           Retrospective
-          <Editor data={updatedInt.retro} onChange={handleEditor} name="retro" />
+          <Editor data={updatedInt.retro} id="interview-retro" onChange={handleEditor} name="retro" />
         </label>
         <input type="submit" value="Update" />
       </Form>

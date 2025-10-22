@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Link } from 'ckeditor5';
 
@@ -11,6 +11,7 @@ export interface IEventInfo {
 }
 
 export interface EditorProps {
+  id?: string;
   data: string;
   name: string;
   onChange: (eventInfo: IEventInfo, editor: any) => any;
@@ -26,6 +27,7 @@ const CKEditorComponent = (props: EditorProps) => {
 
   return (
     <CKEditor
+      id={props.id}
       editor={ClassicEditor}
       config={editorConfig}
       data={props.data}

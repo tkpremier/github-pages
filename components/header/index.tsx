@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import classNames from 'classnames';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './header.module.scss';
 import buttonStyles from '../button.module.scss';
 import utilStyles from '../../styles/utils.module.scss';
@@ -14,7 +15,7 @@ const Header = () => {
     <>
       <header
         className={styles.header}
-        // onMouseLeave={handleMouseLeaveHeader}
+      // onMouseLeave={handleMouseLeaveHeader}
       >
         <nav className={styles.headerNav}>
           <ul className={styles.headerWrapper}>
@@ -33,7 +34,7 @@ const Header = () => {
             </li>
             <li className={classNames(styles.headerNavItem, styles.headerNavItemName)}>
               <Link href="/">
-                  <h2 className={styles.logo}>TK Premier</h2>
+                <h2 className={styles.logo}>TK Premier</h2>
               </Link>
             </li>
             <li className={styles.headerNavItem}>
@@ -56,16 +57,21 @@ const Header = () => {
                 className={classNames(buttonStyles.card, { [buttonStyles.cardIsFlipped]: isOpen })}
                 onClick={handleToggle}
               >
-                <img
-                  className={classNames(utilStyles.iconBorderCircle, buttonStyles.cardItem, buttonStyles.cardItemBack)}
-                  src="/images/close_36.svg"
+                <Image
                   alt="Close button"
+                  className={classNames(utilStyles.iconBorderCircle, buttonStyles.cardItem, buttonStyles.cardItemBack)}
+                  height={36}
+                  priority={false}
+                  width={36}
+                  src="/images/close_36.svg"
                 />
-                <img
-                  src="/images/headshot_48px.jpg"
-                  srcSet="/images/headshot_96px.jpg 2x"
-                  className={classNames(utilStyles.borderCircle, styles.headerNavItemLogoImage, buttonStyles.cardItem)}
+                <Image
                   alt="TK Premier Update"
+                  className={classNames(utilStyles.borderCircle, styles.headerNavItemLogoImage, buttonStyles.cardItem)}
+                  height={48}
+                  priority={false}
+                  src="/images/headshot_48px.jpg"
+                  width={48}
                 />
               </button>
             </li>

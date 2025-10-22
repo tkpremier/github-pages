@@ -2,13 +2,12 @@ import React, { useCallback, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import serialize from 'form-serialize';
 import DatePicker from 'react-datepicker';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { IEventInfo } from '../../components/Editor';
 import Form from '../../components/Form';
 import {Layout} from '../../components/Layout';
 import layoutStyles from '../../components/layout.module.scss';
 import handleResponse from '../../utils/handleResponse';
-import 'react-datepicker/dist/react-datepicker.css';
 import { getModelList } from '../../services/db';
 
 type AddProps = {

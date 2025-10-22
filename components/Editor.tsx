@@ -8,6 +8,7 @@ export interface IEventInfo {
 }
 
 export interface EditorProps {
+  id?: string;
   data: string;
   name: string;
   onChange: (eventInfo: IEventInfo, editor: any) => any;
@@ -16,7 +17,7 @@ export interface EditorProps {
 const CKEditorComponent = dynamic(
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   () => Promise.resolve(require('./CKEditorComponent').default),
-  { 
+  {
     ssr: false,
     loading: () => <textarea defaultValue="Loading editor..." />
   }

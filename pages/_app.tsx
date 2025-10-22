@@ -1,5 +1,6 @@
-import React from 'react';
+import 'react';
 import '../styles/global.scss';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'ckeditor5/ckeditor5.css';
 
 interface Props {

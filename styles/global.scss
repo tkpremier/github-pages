@@ -13,6 +13,7 @@ body {
 * {
   box-sizing: border-box;
 }
+
 footer {
   width: 100%;
   border-top: 1px solid $textColor;
@@ -32,12 +33,13 @@ footer a {
 }
 
 main {
-  padding: 5rem 0;
+  padding: 8rem 0;
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
   align-items: center;
 }
+
 a {
   color: $textColor;
   text-decoration: none;
@@ -50,6 +52,7 @@ a:hover {
 img {
   max-width: 100%;
 }
+
 // ul.root
 .root {
   list-style: none;
@@ -59,6 +62,7 @@ img {
   flex-flow: column nowrap;
   align-items: flex-start;
 }
+
 code {
   background: #fafafa;
   border-radius: 5px;
@@ -67,10 +71,12 @@ code {
   font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New,
     monospace;
 }
-.root > li {
+
+.root>li {
   margin-top: 15px;
   max-width: 100%;
 }
-.root > li:first-child {
+
+.root>li:first-child {
   margin-top: 0;
 }
