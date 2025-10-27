@@ -1,6 +1,6 @@
-import React from 'react';
-import dynamic from 'next/dynamic';
 import { Editor as CKEditor } from 'ckeditor5';
+import dynamic from 'next/dynamic';
+import React from 'react';
 
 export interface IEventInfo {
   name: string;
@@ -17,13 +17,11 @@ export interface EditorProps {
 
 const CKEditorComponent = dynamic(
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  () => Promise.resolve(require('./CKEditorComponent').default),
+  () => Promise.resolve(require('./CKEditorComponent').CKEditorComponent),
   {
     ssr: false,
     loading: () => <textarea defaultValue="Loading editor..." />
   }
 ) as React.ComponentType<EditorProps>;
 
-const Editor = (props: EditorProps) => <CKEditorComponent {...props} />;
-
-export default Editor;
+export const Editor = (props: EditorProps) => <CKEditorComponent {...props} />;

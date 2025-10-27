@@ -6,7 +6,7 @@ import styles from './header.module.scss';
 import buttonStyles from '../button.module.scss';
 import utilStyles from '../../styles/utils.module.scss';
 
-const Header = () => {
+export const Header = () => {
   const [isOpen, toggleOffCanvas] = useState(false);
   const handleToggle = useCallback(() => {
     toggleOffCanvas(open => !open);
@@ -109,4 +109,3 @@ const Header = () => {
   );
 };
 
-export default Header;

@@ -1,6 +1,5 @@
-import React from 'react';
-import Drawer from '../../components/Drawer';
-import {Layout} from '../../components/Layout';
+import { Drawer } from '../../components/Drawer';
+import { Layout } from '../../components/Layout';
 
 export default function SoftSkills() {
   return (

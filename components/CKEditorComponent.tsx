@@ -1,8 +1,8 @@
 'use client';
 
-import 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Link } from 'ckeditor5';
+import { Bold, ClassicEditor, Essentials, Italic, Link, Paragraph } from 'ckeditor5';
+import 'react';
 
 export interface IEventInfo {
   name: string;
@@ -17,7 +17,7 @@ export interface EditorProps {
   onChange: (eventInfo: IEventInfo, editor: any) => any;
 }
 
-const CKEditorComponent = (props: EditorProps) => {
+export const CKEditorComponent = (props: EditorProps) => {
   const editorConfig = {
     licenseKey: 'GPL',
     plugins: [Essentials, Paragraph, Bold, Italic, Link],
@@ -37,5 +37,3 @@ const CKEditorComponent = (props: EditorProps) => {
     />
   );
 };
-
-export default CKEditorComponent;

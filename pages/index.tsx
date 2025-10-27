@@ -1,13 +1,7 @@
-import React from 'react';
 import Link from 'next/link';
-import {Layout} from '../components/Layout';
-import Slider from '../components/Slider';
+import { Layout } from '../components/Layout';
+import { Slider } from '../components/Slider';
 import styles from '../components/layout.module.scss';
-
-// interface UserMessage {
-//   name: string;
-//   message: string;
-// }
 
 export default function Home() {
   return (

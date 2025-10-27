@@ -1,15 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
-import serialize from 'form-serialize';
-import DatePicker from 'react-datepicker';
-import { GetServerSidePropsContext } from 'next';
 import { Editor as CKEditor } from 'ckeditor5';
+import serialize from 'form-serialize';
+import { GetServerSidePropsContext } from 'next';
+import dynamic from 'next/dynamic';
+import React, { useCallback, useMemo, useState } from 'react';
+import DatePicker from 'react-datepicker';
 import { IEventInfo } from '../../components/Editor';
-import Form from '../../components/Form';
+import { Form } from '../../components/Form';
 import { Layout } from '../../components/Layout';
 import layoutStyles from '../../components/layout.module.scss';
-import handleResponse from '../../utils/handleResponse';
 import { getModelList } from '../../services/db';
+import handleResponse from '../../utils/handleResponse';
 
 type AddProps = {
   modelData: Array<any>;
@@ -52,7 +52,7 @@ const AddPage = (props: AddProps) => {
   const [interviewDate, setDate] = useState(new Date());
 
   const Editor = useMemo(
-    () => dynamic(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
+    () => dynamic(() => import('../../components/Editor').then(mod => ({ default: mod.Editor })), { ssr: false }),
     []
   );
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(

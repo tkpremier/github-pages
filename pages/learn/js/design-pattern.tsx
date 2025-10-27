@@ -1,5 +1,4 @@
-import React from 'react';
-import Code from '../../../components/Code';
+import { Code } from '../../../components/Code';
 import { Layout } from '../../../components/Layout';
 
 const privateMethods = `

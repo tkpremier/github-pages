@@ -1,11 +1,10 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import serialize from 'form-serialize';
+import { isNull, trim } from 'lodash';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { isNull, trim } from 'lodash';
-import serialize from 'form-serialize';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Layout } from '../../components/Layout';
-import Slider from '../../components/Slider';
-import { getModel } from '../../services/db';
+import { Slider } from '../../components/Slider';
 import { getDuration } from '../../utils';
 import handleResponse from '../../utils/handleResponse';
 

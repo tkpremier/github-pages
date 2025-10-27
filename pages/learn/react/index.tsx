@@ -1,10 +1,10 @@
-import React, { Profiler } from 'react';
-import Code from '../../../components/Code';
-import Drawer from '../../../components/Drawer';
-import {Layout} from '../../../components/Layout';
-import Slider from '../../../components/Slider';
+import { Profiler } from 'react';
 import * as codeString from '../../../code-strings/react';
 import * as codeHooks from '../../../code-strings/react/hooks';
+import { Code } from '../../../components/Code';
+import { Drawer } from '../../../components/Drawer';
+import { Layout } from '../../../components/Layout';
+import { Slider } from '../../../components/Slider';
 
 const LearnReact = () => (
   <Layout title="Time to Learn React">

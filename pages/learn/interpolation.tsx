@@ -1,10 +1,10 @@
-import React, { FormEventHandler, FormEvent, useState, MouseEventHandler, MouseEvent } from 'react';
 import serialize from 'form-serialize';
-import Code from '../../components/Code';
-import { Layout } from '../../components/Layout';
+import { FormEvent, FormEventHandler, useState } from 'react';
 import { interpolationSearch } from '../../code-examples';
 import { interpolationSearch as interFunction } from '../../code-examples/search/iterativeSearch';
+import { Code } from '../../components/Code';
 import styles from '../../components/code.module.scss';
+import { Layout } from '../../components/Layout';
 
 interface ExtendedTarget extends EventTarget {
   value: string;

@@ -1,12 +1,11 @@
-import React from 'react';
-import Code from '../../../components/Code';
-import Drawer from '../../../components/Drawer';
-import { Layout } from '../../../components/Layout';
-import * as jsThis from '../../../code-strings/js/this';
 import * as jsClass from '../../../code-strings/js/class';
-import * as jsExCon from '../../../code-strings/js/execution-context';
-import * as jsEnv from '../../../code-strings/js/environment';
 import * as jsCon from '../../../code-strings/js/context';
+import * as jsEnv from '../../../code-strings/js/environment';
+import * as jsExCon from '../../../code-strings/js/execution-context';
+import * as jsThis from '../../../code-strings/js/this';
+import { Code } from '../../../components/Code';
+import { Drawer } from '../../../components/Drawer';
+import { Layout } from '../../../components/Layout';
 
 const LearnJavascript = () => (
   <Layout title="Learn Javascript">

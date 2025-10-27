@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from 'react';
-import Link from 'next/link';
 import serialize from 'form-serialize';
-import Code from '../../../components/Code';
-import { Layout } from '../../../components/Layout';
+import Link from 'next/link';
+import React, { useCallback, useState } from 'react';
 import { insertionSortCode } from '../../../code-examples';
 import { insertionSort } from '../../../code-examples/sort';
+import { Code } from '../../../components/Code';
+import { Layout } from '../../../components/Layout';
 
 type FormValue = {
   selectionSortArray: string;

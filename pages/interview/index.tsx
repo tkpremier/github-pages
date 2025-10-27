@@ -1,15 +1,15 @@
-import React, { FormEvent, useCallback, useState, useMemo, useRef, PropsWithoutRef } from 'react';
-import dynamic from 'next/dynamic';
-import { IEventInfo, EditorProps } from '../../components/Editor';
+import { Editor as CKEditor } from 'ckeditor5';
 import format from 'date-fns/format';
 import { enUS } from 'date-fns/locale';
 import serialize from 'form-serialize';
+import dynamic from 'next/dynamic';
+import React, { FormEvent, PropsWithoutRef, useCallback, useMemo, useState } from 'react';
 import DatePicker from 'react-datepicker';
-import Drawer from '../../components/Drawer';
-import Form from '../../components/Form';
+import { Drawer } from '../../components/Drawer';
+import { IEventInfo } from '../../components/Editor';
+import { Form } from '../../components/Form';
 import { Layout } from '../../components/Layout';
 import handleResponse from '../../utils/handleResponse';
-import { Editor as CKEditor } from 'ckeditor5';
 
 type Interview = {
   id: number;
@@ -61,7 +61,7 @@ const defaultProps = { id: 0, company: '', date: new Date(Date.now()), retro: ''
 const Interview = (props: PropsWithoutRef<IInterviewProps>) => {
   const [updatedInt, updateInt] = useState(defaultProps);
   const Editor = useMemo(
-    () => dynamic<EditorProps>(() => import('../../components/Editor', { ssr: false } as ImportCallOptions)),
+    () => dynamic(() => import('../../components/Editor').then(mod => ({ default: mod.Editor })), { ssr: false }),
     []
   );
   const handleDateChange = (date: Date) => {

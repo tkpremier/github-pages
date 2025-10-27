@@ -1,5 +1,5 @@
-import React, { useRef, useCallback, useEffect, useState, useMemo, Fragment, PropsWithChildren } from 'react';
 import classNames from 'classnames';
+import React, { Fragment, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './carousel.module.scss';
 
 type Sizes = {
@@ -63,7 +63,7 @@ const getMediaQueries = (): Map<DEVICE_WIDTH_TYPES, MediaQueryList> => {
   // });
 };
 
-const Slider = (props: PropsWithChildren<ISlider>) => {
+export const Slider = (props: PropsWithChildren<ISlider>) => {
   const carouselRef = useRef(null);
   const wrapperRef = useRef(null);
   const intervalRef = useRef(null);
@@ -311,4 +311,3 @@ const Slider = (props: PropsWithChildren<ISlider>) => {
 };
 
 Slider.defaultProps = defaultProps;
-export default Slider;

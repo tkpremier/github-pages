@@ -1,11 +1,11 @@
-import React, { FormEvent, useState } from 'react';
-import Link from 'next/link';
 import serialize from 'form-serialize';
-import Code from '../../components/Code';
-import { Layout } from '../../components/Layout';
-import Drawer from '../../components/Drawer';
-import * as sampleString from '../../code-strings/search/anagram'; // { countAnagrams, sherlockAndAnagram }
+import Link from 'next/link';
+import { FormEvent, useState } from 'react';
 import * as sample from '../../code-examples/search/anagram';
+import * as sampleString from '../../code-strings/search/anagram'; // { countAnagrams, sherlockAndAnagram }
+import { Code } from '../../components/Code';
+import { Drawer } from '../../components/Drawer';
+import { Layout } from '../../components/Layout';
 
 enum AnagramFuncNames {
   'countAnagramSubstring',

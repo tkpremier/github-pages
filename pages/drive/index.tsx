@@ -9,7 +9,7 @@ import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import buttonStyles from '../../components/button.module.scss';
-import Drawer from '../../components/Drawer';
+import { Drawer } from '../../components/Drawer';
 import styles from '../../components/grid.module.scss';
 import { Layout } from '../../components/Layout';
 import { getModelList } from '../../services/db';

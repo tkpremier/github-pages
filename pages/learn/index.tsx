@@ -1,9 +1,6 @@
-import React, { FormEvent, useCallback, useState } from 'react';
-import Link from 'next/link';
 import serialize from 'form-serialize';
-import Code from '../../components/Code';
-import Drawer from '../../components/Drawer';
-import { Layout } from '../../components/Layout';
+import Link from 'next/link';
+import { FormEvent, useCallback, useState } from 'react';
 import {
   binaryIterative,
   binaryRecursive,
@@ -12,6 +9,9 @@ import {
   selectionSortCode
 } from '../../code-examples';
 import { mergeSort } from '../../code-examples/sort';
+import { Code } from '../../components/Code';
+import { Drawer } from '../../components/Drawer';
+import { Layout } from '../../components/Layout';
 
 function Learn() {
   const [sortedList, sortList] = useState([]);

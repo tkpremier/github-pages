@@ -1,9 +1,7 @@
-import React from 'react';
 import Link from 'next/link';
-import Code from '../../components/Code';
-import { Layout } from '../../components/Layout';
-import utilStyles from '../../styles/utils.module.scss';
 import { pubSubClass } from '../../code-examples';
+import { Code } from '../../components/Code';
+import { Layout } from '../../components/Layout';
 
 const PubSub = () => (
   <Layout title="Pub Sub Implementation | TKPremier">

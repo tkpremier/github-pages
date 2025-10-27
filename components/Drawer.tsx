@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './drawer.module.scss';
 
 interface DrawerProps {
@@ -8,7 +8,7 @@ interface DrawerProps {
   header: string;
 }
 
-const Drawer = (props: React.PropsWithChildren<DrawerProps>) => {
+export const Drawer = (props: React.PropsWithChildren<DrawerProps>) => {
   const [closed, toggleEl] = useState(props.closed);
   const [maxHeight, setMaxHeight] = useState(props.closed ? 'none' : 'auto');
   const content = useRef(null);
@@ -54,5 +54,3 @@ const Drawer = (props: React.PropsWithChildren<DrawerProps>) => {
     </li>
   );
 };
-
-export default Drawer;
