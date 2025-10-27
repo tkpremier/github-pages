@@ -1,22 +1,22 @@
-import React, { Fragment, useCallback, useState, useMemo, useRef } from 'react';
-import { format } from 'date-fns';
-import { GetServerSideProps } from 'next';
-import { isNull } from 'lodash';
 import classNames from 'classnames';
+import { format } from 'date-fns';
+import serialize from 'form-serialize';
 import {
-  drive_v3 // For every service client, there is an exported namespace
+  drive_v3
 } from 'googleapis';
-// import Link from 'next/link';
+import { isNull } from 'lodash';
+import { GetServerSideProps } from 'next';
+import Image from 'next/image';
+import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import buttonStyles from '../../components/button.module.scss';
 import Drawer from '../../components/Drawer';
 import styles from '../../components/grid.module.scss';
-import buttonStyles from '../../components/button.module.scss';
-import {Layout} from '../../components/Layout';
-import { getDrive } from '../../services/drive';
-import { getDriveFile, getModelList } from '../../services/db';
-import { getDuration, formatBytes } from '../../utils';
-import handleResponse, { handleResponses } from '../../utils/handleResponse';
+import { Layout } from '../../components/Layout';
+import { getModelList } from '../../services/db';
 import { Contact } from '../../types';
-import serialize from 'form-serialize';
+import { formatBytes, getDuration } from '../../utils';
+import handleResponse, { handleResponses } from '../../utils/handleResponse';
+
 
 type GDriveApiBase = Required<
   Pick<drive_v3.Schema$File, 'kind' | 'id' | 'name' | 'createdTime' | 'mimeType' | 'webViewLink'>
@@ -343,7 +343,6 @@ const Drive = (props: {
     });
     return data.filter(d => d.mimeType.startsWith('video') || d.mimeType.startsWith('image'));
   }, [data, sortDir]);
-  console.log('sortedData: ', sortedData);
   return (
     <Layout title="Let's Drive | TKPremier">
       <h2>Welcome to the &#x1F608;</h2>
@@ -452,6 +451,15 @@ const Drive = (props: {
                   </p>
                 </Fragment>
               ) : (
+                <Fragment>
+                  <a href="/model/" target="_blank" rel="noreferrer nofollower">
+                    <Image
+                    src="/images/video_placeholder_165x103.svg"
+                      alt={`${drive.name} - Placeholder`}
+                      width={300}
+                      height={169}
+                    />
+                  </a>
                 <p>
                   <strong>Id:</strong>&nbsp; {drive.id}
                   <br />
@@ -460,6 +468,7 @@ const Drive = (props: {
                     
                   <a href={drive.webViewLink}>Go to File</a>
                 </p>
+                </Fragment>
               )}
               <p>
                 <strong>{drive.name}</strong>
