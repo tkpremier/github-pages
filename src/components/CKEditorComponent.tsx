@@ -3,19 +3,7 @@
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { Bold, ClassicEditor, Essentials, Italic, Link, Paragraph } from 'ckeditor5';
 import 'react';
-
-export interface IEventInfo {
-  name: string;
-  path: Array<any>;
-  source: any;
-}
-
-export interface EditorProps {
-  id?: string;
-  data: string;
-  name: string;
-  onChange: (eventInfo: IEventInfo, editor: any) => any;
-}
+import { EditorProps } from '../types';
 
 export const CKEditorComponent = (props: EditorProps) => {
   const editorConfig = {

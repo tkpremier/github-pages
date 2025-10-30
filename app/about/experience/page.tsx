@@ -8,16 +8,7 @@ import { getExp } from '../../../src/services/db';
 // import styles from '../../styles/experience.module.scss';
 // import buttonStyles from '../../components/button.module.scss';
 
-interface Exp {
-  id: number;
-  name: string;
-  description: string;
-}
-
 // const converter = new showdown.Converter();
-type AboutProps = {
-  data: Array<Exp>;
-};
 
 // const Form = () => {
 //   // const Editor = useMemo(

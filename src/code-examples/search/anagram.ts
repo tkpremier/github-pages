@@ -11,6 +11,9 @@ function areAnagram(s1: string, s2: string): boolean {
       m.set(s1[i], 1);
     } else {
       const cnt = m.get(s1[i]);
+      if (typeof cnt !== 'number') {
+        return false;
+      }
       m.delete(s1[i]);
       m.set(s1[i], cnt + 1);
     }
@@ -20,6 +23,9 @@ function areAnagram(s1: string, s2: string): boolean {
       return false;
     } else {
       const cnt = m.get(s2[j]);
+      if (typeof cnt !== 'number') {
+        return false;
+      }
       m.delete(s2[j]);
       m.set(s2[j], cnt - 1);
     }
@@ -40,10 +46,14 @@ export function countAnagramSubstring(s: string): number {
     let sb = '';
     for (let j = i; j < n; j++) {
       sb = (sb + s[j]).split('').sort().join('');
-      if (mp.has(sb)) mp.set(sb, mp.get(sb) + 1);
-      // increase count corresponding
-      // to this dict array
-      else mp.set(sb, 1);
+      const count = mp.get(sb);
+      if (mp.has(sb) && typeof count !== 'undefined') {
+        mp.set(sb, count + 1);
+        // increase count corresponding
+        // to this dict array
+      } else {
+        mp.set(sb, 1);
+      }
     }
   }
 

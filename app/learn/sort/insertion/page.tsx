@@ -5,10 +5,7 @@ import React, { useCallback, useState } from 'react';
 import { insertionSortCode } from '../../../../src/code-examples';
 import { insertionSort } from '../../../../src/code-examples/sort';
 import { Code } from '../../../../src/components/Code';
-
-type FormValue = {
-  selectionSortArray: string;
-};
+import { FormValue } from '../../../../src/types';
 
 const Insertion = () => {
   const [sortedList, sortList] = useState([] as number[] | string[]);

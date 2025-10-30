@@ -1,43 +1,8 @@
 'use client';
 import classNames from 'classnames';
 import React, { Fragment, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import { defaultSizes, DEVICE_WIDTH_TYPES, ISlider, MediaQuery, Sizes } from '../types';
 import styles from './carousel.module.scss';
-
-type Sizes = {
-  xl?: number;
-  lg: number;
-  md: number;
-  sm?: number;
-} & typeof defaultSizes;
-
-type ISlider = {
-  arrows?: boolean;
-  autoplay?: boolean;
-  carouselTitle?: string;
-  carouselDesc?: string;
-  classNames?: string;
-  interval?: number;
-  loop?: boolean;
-  pagination?: boolean;
-  children: React.ReactNode | React.ReactElement;
-  sizes?: Sizes;
-};
-
-const defaultSizes = {
-  lg: 3,
-  md: 2
-};
-
-enum DEVICE_WIDTH_TYPES {
-  SM = 'sm',
-  MD = 'md',
-  LG = 'lg',
-  XL = 'xl'
-}
-type MediaQuery = {
-  itemsPerSlide: number;
-  mql: MediaQueryList;
-};
 const getMediaQueries = (): Map<DEVICE_WIDTH_TYPES, MediaQueryList> => {
   const sizeQueries = new Map([
     ['sm', '(max-width: 479px)'],
@@ -243,19 +208,16 @@ export const Slider = (props: PropsWithChildren<ISlider>) => {
               >
                 {props.children[props.children.length - 1]}
               </li>
-              {props.children.map((child: React.ReactElement, i) => {
-                console.log(child.key);
-                return (
-                  <li
-                    key={child.key ?? `child-${i}`}
-                    style={{
-                      width: `${state.itemWidth}px`
-                    }}
-                  >
-                    {child}
-                  </li>
-                );
-              })}
+              {props.children.map((child: React.ReactElement, i) => (
+                <li
+                  key={child.key ?? `child-${i}`}
+                  style={{
+                    width: `${state.itemWidth}px`
+                  }}
+                >
+                  {child}
+                </li>
+              ))}
               <li
                 style={{
                   width: `${state.itemWidth}px`

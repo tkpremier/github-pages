@@ -1,10 +1,5 @@
-import React from 'react';
+import { IFormProps } from '../types';
 import styles from './form.module.scss';
-
-export declare interface IFormProps {
-  children: React.ReactNode;
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
-}
 
 export const Form = (props: IFormProps) => (
   <form className={styles.form} onSubmit={props.onSubmit}>

@@ -1,18 +1,11 @@
 'use client';
 import serialize from 'form-serialize';
-import { FormEvent, FormEventHandler, useState } from 'react';
+import { FormEventHandler, useState } from 'react';
 import { interpolationSearch } from '../../../src/code-examples';
 import { interpolationSearch as interFunction } from '../../../src/code-examples/search/iterativeSearch';
 import { Code } from '../../../src/components/Code';
 import styles from '../../../src/components/code.module.scss';
-
-interface ExtendedTarget extends EventTarget {
-  value: string;
-}
-
-interface ExtendedFormEvent extends FormEvent {
-  target: HTMLFormElement;
-}
+import { ExtendedFormEvent, ExtendedTarget } from '../../../src/types';
 
 export default function Interpolation() {
   const [exampleArray, runAndSet] = useState<number[]>([]);

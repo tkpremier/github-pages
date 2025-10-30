@@ -1,9 +1,13 @@
-import { Layout } from '../../app/layout';
-import { Drawer } from '../../components/Drawer';
+import { Metadata } from 'next';
+import { Drawer } from '../../../src/components/Drawer';
+
+export const metadata: Metadata = {
+  title: 'About Thomas Kim | Soft Skills | TK Premier'
+};
 
 export default function SoftSkills() {
   return (
-    <Layout title="About Thomas Kim | Soft Skills | TK Premier">
+    <>
       <h1 className="title">Soft Skills</h1>
       <p className="description">Why Me? Why you? What can I do for your company?</p>
       <h3>Soft Skills</h3>
@@ -319,6 +323,6 @@ export default function SoftSkills() {
           </ul>
         </Drawer>
       </ul>
-    </Layout>
+    </>
   );
 }

@@ -1,21 +1,10 @@
 import format from 'date-fns/format';
-import { isNull, camelCase, snakeCase } from 'lodash';
-import dbQuery from '../db/dev/dbQuery';
-import { isValidEmail, validatePassword, isEmpty } from '../utils/validations';
-import { errorMessage, successMessage, status } from '../utils/status';
+import { camelCase, isNull } from 'lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ContactDB, NextApiRequestWithQuery, DriveFile } from '../types';
-type DbResponse = {
-  rows: Array<any>;
-};
-
-type ErrorResponse = {
-  error: string;
-};
-
-type SuccessResponse = {
-  data: Array<any>;
-};
+import dbQuery from '../db/dev/dbQuery';
+import { ContactDB, DbResponse, DriveFile, ErrorResponse, NextApiRequestWithQuery } from '../types';
+import { status } from '../utils/status';
+import { isEmpty } from '../utils/validations';
 
 export const getExp = async () => {
   const getModelQuery = `SELECT * FROM
@@ -47,8 +36,7 @@ export const addExp = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(status.success).json({ data, status: 'success' });
   } catch (error) {
     console.log('db error: ', error);
-    let errorMessage: ErrorResponse;
-    errorMessage.error = 'Operation was not successful';
+    let errorMessage: ErrorResponse = { error: 'Operation was not successful' };
     return res.status(status.error).send(errorMessage);
   }
 };
@@ -56,14 +44,13 @@ export const addInterview = async (req: NextApiRequest, res: NextApiResponse) =>
   const { company, date, retro } = req.body;
   const createExpQuery = `INSERT INTO interview(company, retro, date) VALUES($1, $2, $3) returning *`;
   const values = [company, retro, date];
-  let errorMessage: ErrorResponse;
   try {
     const { rows } = (await dbQuery.query(createExpQuery, values)) as DbResponse;
     const data = rows[0];
     return res.status(status.success).json({ data, status: 'success' });
   } catch (error) {
     console.log('db error: ', error);
-    errorMessage.error = 'Operation was not successful';
+    let errorMessage: ErrorResponse = { error: 'Operation was not successful' };
     return res.status(status.error).send(errorMessage);
   }
 };
@@ -93,11 +80,10 @@ export const getInterview = async () => {
   }
 };
 export const createModel = async (req: NextApiRequest, res: NextApiResponse) => {
-  let errorMessage: ErrorResponse;
+  let errorMessage: ErrorResponse = { error: 'Name or platform cannot be empty' };
   const { driveIds, modelName, platform } = req.body;
   const createdOn = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
   if (isEmpty(modelName) || isEmpty(platform)) {
-    errorMessage.error = 'Name or platform cannot be empty';
     return res.status(status.bad).send(errorMessage);
   }
   const ids = driveIds.length > 0 ? driveIds.split(';').map((id: string) => id.trim()) : [];
@@ -182,29 +168,29 @@ export const getDriveFile = async () => {
       // return res.status(status.notfound).send(errorMessage);
     }
     return {
-      data: dbResponse.map((f: DriveFile) =>
-        Object.keys(f).reduce(
-          (o: { [key: string]: string | number | null | Array<number> }, k: keyof DriveFile) => {
+      data: dbResponse.map(
+        (f: DriveFile) =>
+          Object.keys(f).reduce((o: { [key: string]: string | number | null | Array<number> }, k: keyof DriveFile) => {
             const dateKeys = ['createdOn', 'createdTime', 'lastViewed'];
             const key = camelCase(k);
+            const value = f[k];
             o[key] =
               dateKeys.indexOf(key) > -1
                 ? key === 'createdOn' || key === 'createdTime'
-                  ? format(new Date(f[k] as DriveFile['createdOn'] | DriveFile['createdTime']), "MM/dd/yyyy' 'HH:mm:ss")
-                  : !isNull(f[k])
-                  ? format(new Date(f[k] as DriveFile['lastViewed']), "MM/dd/yyyy' 'HH:mm:ss")
-                  : f[k]
-                : f[k];
+                  ? format(
+                      new Date(value as DriveFile['createdOn'] | DriveFile['createdTime']),
+                      "MM/dd/yyyy' 'HH:mm:ss"
+                    )
+                  : !isNull(value) && typeof value !== 'undefined'
+                  ? format(new Date(value as string), "MM/dd/yyyy' 'HH:mm:ss")
+                  : value ?? null
+                : value ?? null;
             return o;
-          },
-          {}
-        )
+          }, {}) as DriveFile
       ) as Array<DriveFile>
     };
   } catch (error) {
     console.log('An error occurred', error);
-    // errorMessage.error = 'An error Occured';
-    // return res.status(status.error).send(errorMessage);
     return { data: [] };
   }
 };
@@ -212,7 +198,7 @@ export const getDriveFile = async () => {
 export const getDriveFileApi = async (_req: NextApiRequest, res: NextApiResponse) => {
   const getDriveFileQuery = `SELECT * FROM
   drive ORDER BY created_time DESC`;
-  let errorMessage: ErrorResponse;
+  let errorMessage: ErrorResponse = { error: 'There are no drive files' };
   try {
     const { rows } = (await dbQuery.query(getDriveFileQuery, [])) as DbResponse;
     const dbResponse = rows;
@@ -262,13 +248,11 @@ export const getModel = async (id: number) => {
 };
 
 export const getModelApi = async (req: NextApiRequestWithQuery, res: NextApiResponse) => {
-  let errorMessage: ErrorResponse;
+  let errorMessage: ErrorResponse = { error: 'That model does not exist' };
   try {
-    console.log(req);
     const { data } = await getModel(1);
     const dbResponse = data;
     if (dbResponse[0] === undefined) {
-      errorMessage.error = 'That model does not exist';
       return res.status(status.notfound).send(errorMessage);
     }
     return res.status(status.success).send({ data });
