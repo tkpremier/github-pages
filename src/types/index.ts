@@ -1,4 +1,5 @@
 import { Editor as CKEditor } from 'ckeditor5';
+import { drive_v3 } from 'googleapis';
 import { NextApiRequest } from 'next';
 import React from 'react';
 
@@ -141,3 +142,26 @@ export type ErrorResponse = {
 export type SuccessResponse = {
   data: Array<any>;
 };
+
+export type GDriveApiBase = Required<
+  Pick<drive_v3.Schema$File, 'kind' | 'id' | 'name' | 'createdTime' | 'mimeType' | 'webViewLink'>
+>;
+
+export type GDriveApiOptional = Pick<
+  drive_v3.Schema$File,
+  | 'parents'
+  | 'spaces'
+  | 'imageMediaMetadata'
+  | 'webContentLink'
+  | 'thumbnailLink'
+  | 'videoMediaMetadata'
+  | 'viewedByMeTime'
+  | 'description'
+  | 'size'
+>;
+
+export type GoogleDriveAPIResponse = GDriveApiBase & GDriveApiOptional;
+
+export interface IDriveWithModelList extends GoogleDriveAPIResponse {
+  modelId: Array<number>;
+}
