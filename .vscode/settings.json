@@ -2,9 +2,15 @@
   "prettier.prettierPath": "./node_modules/prettier",
   "prettier.printWidth": 120,
   "prettier.configPath": ".prettierrc",
-  "eslint.format.enable": true,
+  "eslint.format.enable": false,
   "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html", "vue", "markdown", "scss"],
   "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "explicit"
