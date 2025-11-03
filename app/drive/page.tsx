@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import type { drive_v3 } from 'googleapis';
 import isNull from 'lodash/isNull';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Drawer } from '../../src/components/Drawer';
 import AddDrive from '../../src/components/drive/add';
@@ -251,12 +252,13 @@ const Drive = () => {
                     <br />
                     {drive.description && <strong>{drive.description}</strong>}
                     <br />
+                    <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
                     <a href={drive.webViewLink}>Go to File</a>
                   </p>
                 </Fragment>
               ) : (
                 <Fragment>
-                  <a href="/model/" target="_blank" rel="noreferrer nofollower">
+                  <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
                     <Image
                       src="/images/video_placeholder_165x103.svg"
                       alt={`${drive.name} - Placeholder`}
