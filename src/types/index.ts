@@ -165,3 +165,49 @@ export type GoogleDriveAPIResponse = GDriveApiBase & GDriveApiOptional;
 export interface IDriveWithModelList extends GoogleDriveAPIResponse {
   modelId: Array<number>;
 }
+
+// Drive page types
+export type DBData = {
+  id: string;
+  driveId: string;
+  name: string;
+  type: string;
+  webViewLink: string;
+  webContentLink?: string;
+  thumbnailLink?: string;
+  createdTime: string;
+  lastViewed?: string | null;
+  createdOn: string;
+  duration?: number;
+  modelId: Array<number>;
+};
+
+export interface DBDataResponse {
+  data: Array<DBData>;
+}
+
+export type MergedData = GDriveApiBase &
+  GDriveApiOptional &
+  DBData & {
+    [key: string]:
+      | string
+      | number
+      | Array<string>
+      | Array<number>
+      | GDriveApiOptional['imageMediaMetadata']
+      | GDriveApiOptional['videoMediaMetadata']
+      | null;
+  };
+
+export enum SortOptions {
+  'createdTime',
+  'lastViewed'
+}
+
+export type SortOptionKeys = keyof typeof SortOptions;
+
+export interface DriveData {
+  dbData: Array<DBData>;
+  files: Array<MergedData>;
+  nextPageToken: string;
+}

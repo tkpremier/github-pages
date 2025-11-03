@@ -7,36 +7,9 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { Drawer } from '../../src/components/Drawer';
 import AddDrive from '../../src/components/drive/add';
 import styles from '../../src/styles/grid.module.scss';
-import { GDriveApiBase, GDriveApiOptional, GoogleDriveAPIResponse } from '../../src/types';
+import { DBData, DBDataResponse, DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
 import { formatBytes, getDuration } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
-
-type DBData = {
-  id: string;
-  driveId: string;
-  name: string;
-  type: string;
-  webViewLink: string;
-  webContentLink?: string;
-  thumbnailLink?: string;
-  createdTime: string;
-  lastViewed?: string | null;
-  createdOn: string;
-  duration?: number;
-  modelId: Array<number>;
-};
-type MergedData = GDriveApiBase &
-  GDriveApiOptional &
-  DBData & {
-    [key: string]:
-      | string
-      | number
-      | Array<string>
-      | Array<number>
-      | GDriveApiOptional['imageMediaMetadata']
-      | GDriveApiOptional['videoMediaMetadata']
-      | null;
-  };
 
 const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
@@ -46,92 +19,114 @@ const getImageLink = (link = '', endStr = 's220', split = 's220') => {
 const getDriveFromApi = async () => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google`);
   const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(response);
-
+  const dbResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-list`);
+  const dbData: Awaited<Promise<DBDataResponse>> = await handleResponse(dbResponse);
+  console.log('dbData: ', dbData);
   const files: Array<MergedData> = data.files
     .filter(
       (f: GoogleDriveAPIResponse) =>
         f.id != null && f.name != null && f.mimeType != null && f.webViewLink != null && f.createdTime != null
     )
     .map((f: GoogleDriveAPIResponse) => {
-      return {
-        ...f,
-        ...(f.description && { description: f.description }),
-        ...(f.size && { size: formatBytes(f.size) }),
-        ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
-        ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
-        id: f.id!,
-        name: f.name!,
-        driveId: f.id!,
-        webViewLink: f.webViewLink!,
-        modelId: [],
-        createdOn: format(new Date(), 'MM/dd/yyyy'),
-        createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
-        lastViewed:
-          f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
-        type: f.mimeType!
-      } as unknown as MergedData;
+      const dbFile = dbData.data.find((d: DBData) => d.id === f.id) as DBData;
+      console.log('dbFile: ', dbFile);
+      return typeof dbFile === 'undefined'
+        ? ({
+            ...f,
+            ...(f.description && { description: f.description }),
+            ...(f.size && { size: formatBytes(f.size) }),
+            ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
+            ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
+            id: f.id!,
+            name: f.name!,
+            driveId: f.id!,
+            webViewLink: f.webViewLink!,
+            modelId: [],
+            createdOn: format(new Date(), 'MM/dd/yyyy'),
+            createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
+            lastViewed:
+              f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
+            type: f.mimeType!
+          } as unknown as MergedData)
+        : ({
+            ...dbFile,
+            ...f,
+            id: dbFile.id,
+            name: dbFile.name,
+            driveId: dbFile.driveId,
+            webViewLink: dbFile.webViewLink,
+            modelId: dbFile.modelId,
+            createdOn: dbFile.createdOn,
+            createdTime: dbFile.createdTime,
+            lastViewed: dbFile.lastViewed,
+            type: dbFile.type
+          } as unknown as MergedData);
     });
-  console.log('data', data);
   return {
-    data: files,
-    nextPage: data.nextPageToken
+    dbData: dbData.data,
+    files,
+    nextPageToken: data.nextPageToken
   };
 };
 
-enum SortOptions {
-  'createdTime',
-  'lastViewed'
-}
-
-type SortOptionKeys = keyof typeof SortOptions;
-
-interface DriveData {
-  data: Array<MergedData>;
-  nextPage: string;
-}
-
 const Drive = () => {
-  const [data, setData] = useState<DriveData>({ data: [], nextPage: '' });
+  const [driveData, setDriveData] = useState<DriveData>({ dbData: [], files: [], nextPageToken: '' });
   const [sortDir, sortBy] = useState('createdTime-desc');
   useEffect(() => {
     getDriveFromApi().then(data => {
-      console.log(data);
-      setData(data);
+      setDriveData(data);
     });
   }, []);
   const handleGetMore = useCallback(async () => {
-    if (data.nextPage === '') return;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google?nextPage=${data.nextPage}`);
+    if (driveData.nextPageToken === '') return;
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google?nextPage=${driveData.nextPageToken}`
+    );
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
     const newData: Array<MergedData> =
       files?.map((f: GoogleDriveAPIResponse) => {
-        // return f;
-        return {
-          ...f,
-          ...(f.description && { description: f.description }),
-          ...(f.size && { size: formatBytes(f.size) }),
-          ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
-          ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
-          id: f.id!,
-          name: f.name!,
-          driveId: f.id!,
-          webViewLink: f.webViewLink!,
-          modelId: [],
-          createdOn: format(new Date(), 'MM/dd/yyyy'),
-          createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
-          lastViewed:
-            f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
-          type: f.mimeType!
-        } as unknown as MergedData;
+        const dbFile = driveData.dbData.find((d: DBData) => d.id === f.id) as DBData;
+
+        return typeof dbFile === 'undefined'
+          ? ({
+              ...f,
+              ...(f.description && { description: f.description }),
+              ...(f.size && { size: formatBytes(f.size) }),
+              ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
+              ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
+              id: f.id!,
+              name: f.name!,
+              driveId: f.id!,
+              webViewLink: f.webViewLink!,
+              modelId: [],
+              createdOn: format(new Date(), 'MM/dd/yyyy'),
+              createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
+              lastViewed:
+                f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
+              type: f.mimeType!
+            } as unknown as MergedData)
+          : ({
+              ...dbFile,
+              ...f,
+              id: dbFile.id,
+              name: dbFile.name,
+              driveId: dbFile.driveId,
+              webViewLink: dbFile.webViewLink,
+              modelId: dbFile.modelId,
+              createdOn: dbFile.createdOn,
+              createdTime: dbFile.createdTime,
+              lastViewed: dbFile.lastViewed,
+              type: dbFile.type
+            } as unknown as MergedData);
       }) ?? [];
-    setData({ data: newData, nextPage: nextPageToken ?? '' });
-  }, [data.nextPage]);
+    setDriveData(state => ({ ...state, files: newData, nextPageToken: nextPageToken ?? '' }));
+  }, [driveData.dbData, driveData.files, driveData.nextPageToken]);
   const handleSort = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => (e.target.value !== sortDir ? sortBy(e.target.value) : null),
     []
   );
   const sortedData = useMemo(() => {
-    data.data.sort((a, b): number => {
+    driveData.files.sort((a, b): number => {
       const [key, dir]: Array<SortOptionKeys | string> = sortDir.split('-');
       if (key === 'duration') {
         if (a.videoMediaMetadata && b.videoMediaMetadata) {
@@ -157,15 +152,14 @@ const Drive = () => {
       }
       return 0;
     });
-    return data.data.filter(d => d?.mimeType?.startsWith('video') || d?.mimeType?.startsWith('image'));
-  }, [data, sortDir]);
+    return driveData.files.filter(d => d?.mimeType?.startsWith('video') || d?.mimeType?.startsWith('image'));
+  }, [driveData.files, sortDir]);
   return (
     <>
-      <title>Let's Drive | TKPremier</title>
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here&apos;s what we&apos;ve been up to....</p>
       <fieldset className={styles.gridControls}>
-        <button type="button" onClick={handleGetMore}>{`Get More ${data.data.length}`}</button>
+        <button type="button" onClick={handleGetMore}>{`Get More ${driveData.files.length}`}</button>
         <select onChange={handleSort} defaultValue={sortDir}>
           <option value="">Choose Sort</option>
           <option value="createdTime-desc">Created - Latest</option>

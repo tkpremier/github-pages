@@ -16,7 +16,7 @@ export const Header = () => {
     <>
       <header
         className={styles.header}
-      // onMouseLeave={handleMouseLeaveHeader}
+        // onMouseLeave={handleMouseLeaveHeader}
       >
         <nav className={styles.headerNav}>
           <ul className={styles.headerWrapper}>
@@ -39,19 +39,16 @@ export const Header = () => {
               </Link>
             </li>
             <li className={styles.headerNavItem}>
-              <Link href="/about">
-                About
-              </Link>
+              <Link href="/about">About</Link>
             </li>
             <li className={styles.headerNavItem}>
-              <Link href="/learn">
-                Learn
-              </Link>
+              <Link href="/learn">Learn</Link>
             </li>
             <li className={styles.headerNavItem}>
-              <Link href="/interview">
-                Interviews
-              </Link>
+              <Link href="/interview">Interviews</Link>
+            </li>
+            <li className={styles.headerNavItem}>
+              <Link href={`${process.env.NEXT_PUBLIC_SERVERURL}/login`}>Login</Link>
             </li>
             <li className={classNames(styles.headerNavItem, styles.headerNavItemLogo)}>
               <button
@@ -90,23 +87,16 @@ export const Header = () => {
           })}
         >
           <li className={styles.offCanvasNavItem}>
-            <Link href="/about">
-              About
-            </Link>
+            <Link href="/about">About</Link>
           </li>
           <li className={styles.offCanvasNavItem}>
-            <Link href="/learn">
-              Learn
-            </Link>
+            <Link href="/learn">Learn</Link>
           </li>
           <li className={styles.offCanvasNavItem}>
-            <Link href="/interview">
-              Interviews
-            </Link>
+            <Link href="/interview">Interviews</Link>
           </li>
         </ul>
       </nav>
     </>
   );
 };
-
