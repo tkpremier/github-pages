@@ -10,9 +10,14 @@ export const getDuration = (milliseconds: number): string => {
   return duration;
 };
 
-export const formatBytes = (bytes) => {
+export const formatBytes = bytes => {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   if (bytes === 0) return '0 B';
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
+};
+
+export const getImageLink = (link = '', endStr = 's220', split = 's220') => {
+  const [base] = link.split(split);
+  return `${base}${endStr}`;
 };

@@ -1,20 +1,15 @@
 'use client';
 import { format } from 'date-fns';
-import { drive_v3 } from 'googleapis';
-import { isNull } from 'lodash';
+import type { drive_v3 } from 'googleapis';
+import isNull from 'lodash/isNull';
 import Image from 'next/image';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Drawer } from '../../src/components/Drawer';
 import AddDrive from '../../src/components/drive/add';
 import styles from '../../src/styles/grid.module.scss';
 import { DBData, DBDataResponse, DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
-import { formatBytes, getDuration } from '../../src/utils';
+import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
-
-const getImageLink = (link = '', endStr = 's220', split = 's220') => {
-  const [base] = link.split(split);
-  return `${base}${endStr}`;
-};
 
 const getDriveFromApi = async () => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google`);
