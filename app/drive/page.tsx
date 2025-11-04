@@ -17,15 +17,13 @@ const getDriveFromApi = async () => {
   const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(response);
   const dbResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-list`);
   const dbData: Awaited<Promise<DBDataResponse>> = await handleResponse(dbResponse);
-  console.log('dbData: ', dbData);
-  const files: Array<MergedData> = data.files
+  const files: Array<MergedData> = data?.files
     .filter(
       (f: GoogleDriveAPIResponse) =>
         f.id != null && f.name != null && f.mimeType != null && f.webViewLink != null && f.createdTime != null
     )
     .map((f: GoogleDriveAPIResponse) => {
-      const dbFile = dbData.data.find((d: DBData) => d.id === f.id) as DBData;
-      console.log('dbFile: ', dbFile);
+      const dbFile = dbData?.data?.find((d: DBData) => d.id === f.id) as DBData;
       return typeof dbFile === 'undefined'
         ? ({
             ...f,
@@ -81,7 +79,7 @@ const Drive = () => {
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
     const newData: Array<MergedData> =
       files?.map((f: GoogleDriveAPIResponse) => {
-        const dbFile = driveData.dbData.find((d: DBData) => d.id === f.id) as DBData;
+        const dbFile = driveData?.dbData?.find((d: DBData) => d.id === f.id) as DBData;
 
         return typeof dbFile === 'undefined'
           ? ({
