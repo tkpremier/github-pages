@@ -1,6 +1,7 @@
 const eslint = require('@eslint/js');
 const tseslint = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
+const nextConfig = require('eslint-config-next');
 const prettierConfig = require('eslint-config-prettier');
 const unusedImports = require('eslint-plugin-unused-imports');
 const prettierPlugin = require('eslint-plugin-prettier');
@@ -65,5 +66,6 @@ module.exports = [
       '@typescript-eslint/no-explicit-any': 'warn'
     }
   },
+  nextConfig,
   prettierConfig
 ];
