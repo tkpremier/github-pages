@@ -8,8 +8,13 @@ export const metadata: Metadata = {
 };
 
 const getExp = async () => {
-  const response = await handleResponse(await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/experience`));
-  return response;
+  try {
+    const response = await handleResponse(await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/experience`));
+    return response;
+  } catch (error) {
+    console.error('Experience error: ', error);
+    return { data: [] };
+  }
 };
 
 export default async function Experience() {

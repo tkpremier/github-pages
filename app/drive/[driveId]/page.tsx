@@ -1,15 +1,23 @@
+import isNull from 'lodash/isNull';
 import { getDuration, getImageLink } from '../../../src/utils';
+import handleResponse from '../../../src/utils/handleResponse';
 
 const getDriveFile = async (driveId: string) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-file/${driveId}`);
-  const data = await response.json();
-  return data;
+  try {
+    const response = await handleResponse(
+      await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-file/${driveId}`)
+    );
+    return response;
+  } catch (error) {
+    console.error('DriveFile error: ', error);
+    return { data: null };
+  }
 };
 
 const DriveFile = async ({ params }: PageProps<'/drive/[driveId]'>) => {
   const { driveId } = await params;
   const { data } = await getDriveFile(driveId);
-  return (
+  return !isNull(data) ? (
     <div>
       <h2>{data.name}</h2>
       <p>{data.description}</p>
@@ -28,6 +36,8 @@ const DriveFile = async ({ params }: PageProps<'/drive/[driveId]'>) => {
         </p>
       ) : null}
     </div>
+  ) : (
+    data
   );
 };
 
