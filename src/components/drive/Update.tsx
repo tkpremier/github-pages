@@ -1,4 +1,14 @@
-const AddDrive = () => {
+'use client';
+import { Editor as CKEditor } from 'ckeditor5';
+import { useState } from 'react';
+import { IEventInfo } from '../../types';
+import { Editor } from '../Editor';
+
+export const UpdateDrive = (props: { data: string; name: string }) => {
+  const [editorData, updateData] = useState(props.data);
+  const handleChange = (eventInfo: IEventInfo, editor: CKEditor) => {
+    updateData(editor.getData());
+  };
   // const [currDrive, setDriveFile] = useState(props);
   // const [currModel, setModel] = useState(
   //   props.modelList.find(m => m.driveIds.indexOf(props.id ?? '') > -1) || {
@@ -100,17 +110,5 @@ const AddDrive = () => {
   //     setModel(() => newModel);
   //   }
   // }, []);
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%'
-      }}
-    >
-      <p>File</p>
-    </div>
-  );
+  return <Editor id={props.name} data={editorData} name={props.name} onChange={handleChange} />;
 };
-
-export default AddDrive;

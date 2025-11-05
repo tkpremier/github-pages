@@ -50,6 +50,9 @@ export const Header = () => {
             <li className={styles.headerNavItem}>
               <Link href={`${process.env.NEXT_PUBLIC_SERVERURL}/login`}>Login</Link>
             </li>
+            <li className={styles.headerNavItem}>
+              <Link href={`${process.env.NEXT_PUBLIC_SERVERURL}/logout`}>Logout</Link>
+            </li>
             <li className={classNames(styles.headerNavItem, styles.headerNavItemLogo)}>
               <button
                 className={classNames(buttonStyles.card, { [buttonStyles.cardIsFlipped]: isOpen })}

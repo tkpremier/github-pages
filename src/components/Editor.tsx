@@ -1,4 +1,5 @@
-import { Editor as CKEditor } from 'ckeditor5';
+'use client';
+import 'ckeditor5/ckeditor5.css';
 import dynamic from 'next/dynamic';
 import React from 'react';
 import { EditorProps } from '../types';

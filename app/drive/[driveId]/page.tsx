@@ -1,4 +1,5 @@
 import isNull from 'lodash/isNull';
+import { UpdateDrive } from '../../../src/components/drive/Update';
 import { getDuration, getImageLink } from '../../../src/utils';
 import handleResponse from '../../../src/utils/handleResponse';
 
@@ -18,12 +19,12 @@ const DriveFile = async ({ params }: PageProps<'/drive/[driveId]'>) => {
   const { driveId } = await params;
   const { data } = await getDriveFile(driveId);
   return !isNull(data) ? (
-    <div>
+    <>
       <h2>{data.name}</h2>
       <p>{data.description}</p>
       <a href={data.webViewLink} target="_blank" rel="noreferrer nofollower">
         <img
-          src={getImageLink(data.thumbnailLink, 's1000', 's220')}
+          src={getImageLink(data.thumbnailLink, 's1200', 's220')}
           referrerPolicy="no-referrer"
           loading="lazy"
           title={`${data.name}`}
@@ -35,7 +36,8 @@ const DriveFile = async ({ params }: PageProps<'/drive/[driveId]'>) => {
           {getDuration(parseInt(data.videoMediaMetadata?.durationMillis ?? '0', 10))}
         </p>
       ) : null}
-    </div>
+      <UpdateDrive data={data.description} name="description" />
+    </>
   ) : (
     data
   );

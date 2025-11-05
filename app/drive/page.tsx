@@ -6,7 +6,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Drawer } from '../../src/components/Drawer';
-import AddDrive from '../../src/components/drive/add';
 import styles from '../../src/styles/grid.module.scss';
 import { DBData, DBDataResponse, DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
@@ -113,7 +112,7 @@ const Drive = () => {
               type: dbFile.type
             } as unknown as MergedData);
       }) ?? [];
-    setDriveData(state => ({ ...state, files: newData, nextPageToken: nextPageToken ?? '' }));
+    setDriveData(state => ({ ...state, files: state.files.concat(newData), nextPageToken: nextPageToken ?? '' }));
   }, [driveData.dbData, driveData.files, driveData.nextPageToken]);
   const handleSort = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => (e.target.value !== sortDir ? sortBy(e.target.value) : null),
@@ -178,13 +177,17 @@ const Drive = () => {
                   {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
                     <Fragment>
                       <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                        <img
-                          src={getImageLink(drive.thumbnailLink, 's330', 's220')}
+                        <Image
+                          src={getImageLink(drive.thumbnailLink, 's640', 's220')}
                           referrerPolicy="no-referrer"
                           loading="lazy"
                           title={`${drive.name}`}
+                          alt={`${drive.name} - Thumbnail`}
+                          width={300}
+                          height={168.75}
+                          placeholder="blur"
+                          blurDataURL="/images/video_placeholder_165x103.svg"
                         />
-                        {drive.webViewLink}
                       </a>
                       <p>
                         <strong>Id:</strong>&nbsp; {drive.id}
@@ -203,7 +206,6 @@ const Drive = () => {
                     <br />
                     <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
                   </p>
-                  {drive?.mimeType?.startsWith('video') || drive?.mimeType?.startsWith('image') ? <AddDrive /> : null}
                   <ul>
                     <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                       <p>{drive.type}</p>
@@ -238,14 +240,28 @@ const Drive = () => {
               {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
                 <Fragment>
                   <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                    <img
-                      src={getImageLink(drive.thumbnailLink, 's330', 's220')}
+                    <Image
+                      src={getImageLink(drive.thumbnailLink, 's640', 's220')}
                       referrerPolicy="no-referrer"
                       loading="lazy"
                       title={`${drive.name}`}
+                      alt={`${drive.name} - Thumbnail`}
+                      width={300}
+                      height={168.75}
+                      placeholder="blur"
+                      blurDataURL="/images/video_placeholder_165x103.svg"
                     />
                   </a>
                   <p>
+                    <strong>Thumbnail Link:</strong>&nbsp;{' '}
+                    <a
+                      href={getImageLink(drive.thumbnailLink, 's640', 's220')}
+                      target="_blank"
+                      rel="noreferrer nofollower"
+                    >
+                      Thumbnail
+                    </a>
+                    <br />
                     <strong>Id:</strong>&nbsp; {drive.id}
                     <br />
                     {drive.description && <strong>{drive.description}</strong>}
@@ -261,7 +277,7 @@ const Drive = () => {
                       src="/images/video_placeholder_165x103.svg"
                       alt={`${drive.name} - Placeholder`}
                       width={300}
-                      height={169}
+                      height={168.75}
                     />
                   </a>
                   <p>
@@ -278,7 +294,6 @@ const Drive = () => {
                 <br />
                 <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
               </p>
-              {drive?.mimeType?.startsWith('video') || drive?.mimeType?.startsWith('image') ? <AddDrive /> : null}
               <ul>
                 <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                   <p>{drive.type}</p>
