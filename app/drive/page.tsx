@@ -177,27 +177,41 @@ const Drive = () => {
                   {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
                     <Fragment>
                       <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                        <Image
-                          src={getImageLink(drive.thumbnailLink, 's640', 's220')}
-                          referrerPolicy="no-referrer"
-                          loading="lazy"
-                          title={`${drive.name}`}
-                          alt={`${drive.name} - Thumbnail`}
-                          width={300}
-                          height={168.75}
-                          placeholder="blur"
-                          blurDataURL="/images/video_placeholder_165x103.svg"
-                        />
+                        <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                          <Image
+                            src={getImageLink(drive.thumbnailLink, 's640', 's220')}
+                            referrerPolicy="no-referrer"
+                            loading="lazy"
+                            title={`${drive.name}`}
+                            alt={`${drive.name} - Thumbnail`}
+                            fill={true}
+                            objectFit="cover"
+                            placeholder="blur"
+                            blurDataURL="/images/video_placeholder_165x103.svg"
+                          />
+                        </div>
                       </a>
                       <p>
                         <strong>Id:</strong>&nbsp; {drive.id}
                       </p>
                     </Fragment>
                   ) : (
-                    <p>
-                      <strong>Id:</strong>&nbsp; {drive.id}
-                      <a href={drive.webViewLink}>{drive.webViewLink}</a>
-                    </p>
+                    <>
+                      <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+                        <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                          <Image
+                            src="/images/video_placeholder_165x103.svg"
+                            alt={`${drive.name} - Placeholder`}
+                            fill={true}
+                            objectFit="cover"
+                          />
+                        </div>
+                      </a>
+                      <p>
+                        <strong>Id:</strong>&nbsp; {drive.id}
+                        <a href={drive.webViewLink}>{drive.webViewLink}</a>
+                      </p>
+                    </>
                   )}
                   <p>
                     <strong>{drive.name}</strong>
@@ -240,28 +254,21 @@ const Drive = () => {
               {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
                 <Fragment>
                   <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                    <Image
-                      src={getImageLink(drive.thumbnailLink, 's640', 's220')}
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      title={`${drive.name}`}
-                      alt={`${drive.name} - Thumbnail`}
-                      width={300}
-                      height={168.75}
-                      placeholder="blur"
-                      blurDataURL="/images/video_placeholder_165x103.svg"
-                    />
+                    <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                      <Image
+                        src={getImageLink(drive.thumbnailLink, 's640', 's220')}
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        title={`${drive.name}`}
+                        alt={`${drive.name} - Thumbnail`}
+                        fill={true}
+                        objectFit="cover"
+                        placeholder="blur"
+                        blurDataURL="/images/video_placeholder_165x103.svg"
+                      />
+                    </div>
                   </a>
                   <p>
-                    <strong>Thumbnail Link:</strong>&nbsp;{' '}
-                    <a
-                      href={getImageLink(drive.thumbnailLink, 's640', 's220')}
-                      target="_blank"
-                      rel="noreferrer nofollower"
-                    >
-                      Thumbnail
-                    </a>
-                    <br />
                     <strong>Id:</strong>&nbsp; {drive.id}
                     <br />
                     {drive.description && <strong>{drive.description}</strong>}
@@ -273,12 +280,14 @@ const Drive = () => {
               ) : (
                 <Fragment>
                   <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                    <Image
-                      src="/images/video_placeholder_165x103.svg"
-                      alt={`${drive.name} - Placeholder`}
-                      width={300}
-                      height={168.75}
-                    />
+                    <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                      <Image
+                        src="/images/video_placeholder_165x103.svg"
+                        alt={`${drive.name} - Placeholder`}
+                        fill={true}
+                        objectFit="cover"
+                      />
+                    </div>
                   </a>
                   <p>
                     <strong>Id:</strong>&nbsp; {drive.id}
