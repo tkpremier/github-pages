@@ -12,54 +12,61 @@ import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
 
 const getDriveFromApi = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google`);
-  const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(response);
-  const dbResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-list`);
-  const dbData: Awaited<Promise<DBDataResponse>> = await handleResponse(dbResponse);
-  const files: Array<MergedData> = data?.files
-    .filter(
-      (f: GoogleDriveAPIResponse) =>
-        f.id != null && f.name != null && f.mimeType != null && f.webViewLink != null && f.createdTime != null
-    )
-    .map((f: GoogleDriveAPIResponse) => {
-      const dbFile = dbData?.data?.find((d: DBData) => d.id === f.id) as DBData;
-      return typeof dbFile === 'undefined'
-        ? ({
-            ...f,
-            ...(f.description && { description: f.description }),
-            ...(f.size && { size: formatBytes(f.size) }),
-            ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
-            ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
-            id: f.id!,
-            name: f.name!,
-            driveId: f.id!,
-            webViewLink: f.webViewLink!,
-            modelId: [],
-            createdOn: format(new Date(), 'MM/dd/yyyy'),
-            createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
-            lastViewed:
-              f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
-            type: f.mimeType!
-          } as unknown as MergedData)
-        : ({
-            ...dbFile,
-            ...f,
-            id: dbFile.id,
-            name: dbFile.name,
-            driveId: dbFile.driveId,
-            webViewLink: dbFile.webViewLink,
-            modelId: dbFile.modelId,
-            createdOn: dbFile.createdOn,
-            createdTime: dbFile.createdTime,
-            lastViewed: dbFile.lastViewed,
-            type: dbFile.type
-          } as unknown as MergedData);
-    });
-  return {
-    dbData: dbData.data,
-    files,
-    nextPageToken: data.nextPageToken
-  };
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google`, { credentials: 'include' });
+    const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(
+      response
+    );
+    const dbResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-list`);
+    const dbData: Awaited<Promise<DBDataResponse>> = await handleResponse(dbResponse);
+    const files: Array<MergedData> = data?.files
+      .filter(
+        (f: GoogleDriveAPIResponse) =>
+          f.id != null && f.name != null && f.mimeType != null && f.webViewLink != null && f.createdTime != null
+      )
+      .map((f: GoogleDriveAPIResponse) => {
+        const dbFile = dbData?.data?.find((d: DBData) => d.id === f.id) as DBData;
+        return typeof dbFile === 'undefined'
+          ? ({
+              ...f,
+              ...(f.description && { description: f.description }),
+              ...(f.size && { size: formatBytes(f.size) }),
+              ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
+              ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
+              id: f.id!,
+              name: f.name!,
+              driveId: f.id!,
+              webViewLink: f.webViewLink!,
+              modelId: [],
+              createdOn: format(new Date(), 'MM/dd/yyyy'),
+              createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
+              lastViewed:
+                f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
+              type: f.mimeType!
+            } as unknown as MergedData)
+          : ({
+              ...dbFile,
+              ...f,
+              id: dbFile.id,
+              name: dbFile.name,
+              driveId: dbFile.driveId,
+              webViewLink: dbFile.webViewLink,
+              modelId: dbFile.modelId,
+              createdOn: dbFile.createdOn,
+              createdTime: dbFile.createdTime,
+              lastViewed: dbFile.lastViewed,
+              type: dbFile.type
+            } as unknown as MergedData);
+      });
+    return {
+      dbData: dbData.data,
+      files,
+      nextPageToken: data.nextPageToken
+    };
+  } catch (error) {
+    console.error('error: ', error);
+    return { dbData: [], files: [], nextPageToken: '' };
+  }
 };
 
 const Drive = () => {
@@ -73,7 +80,8 @@ const Drive = () => {
   const handleGetMore = useCallback(async () => {
     if (driveData.nextPageToken === '') return;
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google?nextPage=${driveData.nextPageToken}`
+      `${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google?nextPage=${driveData.nextPageToken}`,
+      { credentials: 'include' }
     );
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
     const newData: Array<MergedData> =

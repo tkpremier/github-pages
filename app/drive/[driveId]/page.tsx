@@ -6,7 +6,7 @@ import handleResponse from '../../../src/utils/handleResponse';
 const getDriveFile = async (driveId: string) => {
   try {
     const response = await handleResponse(
-      await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-file/${driveId}`)
+      await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-file/${driveId}`, { credentials: 'include' })
     );
     return response;
   } catch (error) {
