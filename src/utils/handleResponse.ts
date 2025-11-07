@@ -1,6 +1,7 @@
 const handleResponse = async (response: Awaited<Promise<Response>>) => {
   try {
     if (!response.ok) {
+      console.error('response: ', response);
       throw new Error(response.statusText);
     }
     const data = await response.json();

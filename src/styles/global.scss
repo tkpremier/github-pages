@@ -33,7 +33,6 @@ footer a {
 }
 
 main {
-  padding: 8rem 0;
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
@@ -72,11 +71,11 @@ code {
     monospace;
 }
 
-.root>li {
+.root > li {
   margin-top: 15px;
   max-width: 100%;
 }
 
-.root>li:first-child {
+.root > li:first-child {
   margin-top: 0;
 }

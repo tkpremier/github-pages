@@ -8,6 +8,7 @@ const getDriveFile = async (driveId: string) => {
     const response = await handleResponse(
       await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-file/${driveId}`, { credentials: 'include' })
     );
+    console.log('response', response);
     return response;
   } catch (error) {
     console.error('DriveFile error: ', error);
@@ -18,7 +19,7 @@ const getDriveFile = async (driveId: string) => {
 const DriveFile = async ({ params }: PageProps<'/drive/[driveId]'>) => {
   const { driveId } = await params;
   const { data } = await getDriveFile(driveId);
-  return !isNull(data) ? (
+  return !isNull(data) && data ? (
     <>
       <h2>{data.name}</h2>
       <p>{data.description}</p>

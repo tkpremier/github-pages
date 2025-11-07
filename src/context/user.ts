@@ -3,6 +3,7 @@ import { createContext, Dispatch, SetStateAction } from 'react';
 export type User =
   | {
       sid: string;
+      name: string;
       email: string;
       email_verified: boolean;
       sub: string;
