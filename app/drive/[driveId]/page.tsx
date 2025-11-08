@@ -8,7 +8,6 @@ const getDriveFile = async (driveId: string) => {
     const response = await handleResponse(
       await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-file/${driveId}`, { credentials: 'include' })
     );
-    console.log('response', response);
     return response;
   } catch (error) {
     console.error('DriveFile error: ', error);

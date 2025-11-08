@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { PropsWithChildren } from 'react';
 import { Header } from '../src/components/header';
 import { Main } from '../src/components/Main';
 import '../src/styles/global.scss';
+
 export const metadata: Metadata = {
   title: 'TK Premier',
   icons: '/favicon.ico'
@@ -14,7 +16,7 @@ const Layout = ({ children }: PropsWithChildren<{}>) => (
       <Main>
         <Header />
         {children}
-        {/* <footer>
+        <footer>
           <Link href="/about" key="about">
             About
           </Link>
@@ -27,7 +29,7 @@ const Layout = ({ children }: PropsWithChildren<{}>) => (
           <Link href="/examples" key="examples">
             Examples
           </Link>
-        </footer> */}
+        </footer>
       </Main>
     </body>
   </html>
