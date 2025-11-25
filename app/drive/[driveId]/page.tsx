@@ -1,5 +1,5 @@
 import isNull from 'lodash/isNull';
-import { UpdateDrive } from '../../../src/components/drive/Update';
+import { HTMLEditor } from '../../../src/components/drive/Update';
 import { getDuration, getImageLink } from '../../../src/utils';
 import handleResponse from '../../../src/utils/handleResponse';
 
@@ -36,7 +36,7 @@ const DriveFile = async ({ params }: PageProps<'/drive/[driveId]'>) => {
           {getDuration(parseInt(data.videoMediaMetadata?.durationMillis ?? '0', 10))}
         </p>
       ) : null}
-      <UpdateDrive data={data.description} name="description" />
+      <HTMLEditor data={data.description} name="description" />
     </>
   ) : (
     data

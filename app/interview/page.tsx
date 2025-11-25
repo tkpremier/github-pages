@@ -1,19 +1,20 @@
 'use client';
-import React, { FormEvent, useCallback, useState, useMemo, useEffect } from 'react';
+import { Editor as CKEditor } from 'ckeditor5';
 import format from 'date-fns/format';
 import serialize from 'form-serialize';
+import React, { FormEvent, useCallback, useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { UpdateDrive } from '../../src/components/drive/Update';
 import { Drawer } from '../../src/components/Drawer';
+import { HTMLEditor } from '../../src/components/drive/Update';
 import { Form } from '../../src/components/Form';
-import handleResponse from '../../src/utils/handleResponse';
 import { Interview } from '../../src/types';
+import handleResponse from '../../src/utils/handleResponse';
 
 const getInterviews = async () => {
   try {
     const response = await handleResponse(
-      await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/interview`, { cache: 'no-store' })
+      await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/interview`, { cache: 'no-store', credentials: 'include' })
     );
     return response;
   } catch (error) {
@@ -25,10 +26,8 @@ const getInterviews = async () => {
 };
 
 const InterviewItem = (props: Interview) => {
-  const interviewDate = useMemo(() => format(new Date(props.date), 'MM/dd/yyyy'), [props.date]);
   return (
     <>
-      <p>{interviewDate}</p>
       <div dangerouslySetInnerHTML={{ __html: props.retro }} />
       <button aria-label={`Update ${props.company}`} onClick={props.onClick} value={props.id}>
         Update {props.company}
@@ -62,27 +61,33 @@ export default () => {
       updateInt({ ...selected, date: new Date(selected.date) });
     }
   };
+  const handleRetroChange = (_: any, editor: CKEditor) => {
+    updateInt(i => ({ ...i, retro: editor.getData() }));
+  };
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       const form = e.currentTarget;
       const data = serialize(form, { hash: true }) as any;
+
+      const interview = {
+        ...updatedInt,
+        interviewId: updatedInt.id,
+        ...data
+      };
       const options = {
-        method: 'PUT',
+        method: updatedInt.id === 0 ? 'POST' : 'PUT',
         headers: {
           'Content-Type': 'application/json;charset=utf-8'
         },
-        body: JSON.stringify({
-          ...updatedInt,
-          interviewId: updatedInt.id,
-          company: data.company
-        })
+        body: JSON.stringify(interview)
       };
       fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/interview`, options)
         .then(handleResponse)
         .then(res => {
-          console.log('res: ', res);
-          updateInt(defaultProps);
+          const updatedInterview = res.data[0] as Interview;
+          setInterviews(interviews.map(i => (i.id === updatedInterview.id ? updatedInterview : i)));
+          updateInt(updatedInterview as Interview);
         })
         .catch(err => console.log('err: ', err));
     },
@@ -93,7 +98,7 @@ export default () => {
     <>
       <ul className="root">
         {interviews.map((i: Interview) => (
-          <Drawer key={i.id} header={i.company} closed>
+          <Drawer key={i.id} header={`${i.company} - ${format(new Date(i.date), 'MM/dd/yyyy')}`} closed>
             <InterviewItem key={i.id} {...i} onClick={handleUpdate} />
           </Drawer>
         ))}
@@ -117,7 +122,7 @@ export default () => {
         </label>
         <label htmlFor="interview-retro" key="interview-retro">
           Retrospective
-          <UpdateDrive data={updatedInt.retro} name="retro" />
+          <HTMLEditor data={updatedInt.retro} name="retro" onChange={handleRetroChange} />
         </label>
         <input type="submit" value="Update" />
       </Form>

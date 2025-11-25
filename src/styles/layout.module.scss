@@ -36,10 +36,6 @@
   flex-flow: column nowrap;
   align-items: center;
   justify-content: center;
-  & > * {
-    text-align: center;
-    width: 100%;
-  }
 }
 .card {
   margin: 1rem 0;

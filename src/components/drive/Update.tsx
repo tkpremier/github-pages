@@ -1,13 +1,13 @@
 'use client';
 import { Editor as CKEditor } from 'ckeditor5';
-import { useState } from 'react';
-import { IEventInfo } from '../../types';
+import { EditorProps, IEventInfo } from '../../types';
 import { Editor } from '../Editor';
 
-export const UpdateDrive = (props: { data: string; name: string }) => {
-  const [editorData, updateData] = useState(props.data);
+export const HTMLEditor = (props: EditorProps) => {
   const handleChange = (eventInfo: IEventInfo, editor: CKEditor) => {
-    updateData(editor.getData());
+    if (props.onChange) {
+      props.onChange(eventInfo, editor);
+    }
   };
   // const [currDrive, setDriveFile] = useState(props);
   // const [currModel, setModel] = useState(
@@ -111,6 +111,6 @@ export const UpdateDrive = (props: { data: string; name: string }) => {
   //   }
   // }, []);
   return (
-    <Editor className="editor-container" id={props.name} data={editorData} name={props.name} onChange={handleChange} />
+    <Editor className="editor-container" id={props.name} data={props.data} name={props.name} onChange={handleChange} />
   );
 };

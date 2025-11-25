@@ -103,7 +103,7 @@ export interface EditorProps {
   className?: string;
   data: string;
   name: string;
-  onChange: (eventInfo: IEventInfo, editor: CKEditor) => void;
+  onChange?: (eventInfo: IEventInfo, editor: CKEditor) => void;
 }
 
 // Experience page types

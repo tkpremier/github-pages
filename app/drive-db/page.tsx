@@ -7,10 +7,14 @@ import { DBData } from '../../src/types';
 import { emptyArray, getDuration, getImageLink } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
 
+export const dynamic = 'force-dynamic';
+
 const getDriveFromDb = async () => {
   try {
     console.log('process.env.INTERNAL_API_URL: ', process.env.INTERNAL_API_URL);
-    const response = await handleResponse(await fetch(`${process.env.INTERNAL_API_URL}/api/drive-list`));
+    const response = await handleResponse(
+      await fetch(`${process.env.INTERNAL_API_URL}/api/drive-list`, { cache: 'no-store', credentials: 'include' })
+    );
     if (response instanceof Error) {
       throw response;
     }

@@ -50,12 +50,15 @@ export const Header = () => {
             <li className={styles.headerNavItem}>
               <Link href="/interview">Interviews</Link>
             </li>
-            <li className={styles.headerNavItem}>
-              <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/logout`}>Logout</Link>
-            </li>
-            <li className={styles.headerNavItem}>
-              <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/login`}>Login</Link>
-            </li>
+            {user ? (
+              <li className={styles.headerNavItem}>
+                <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/logout`}>Logout</Link>
+              </li>
+            ) : (
+              <li className={styles.headerNavItem}>
+                <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/login`}>Login</Link>
+              </li>
+            )}
             <li className={classNames(styles.headerNavItem, styles.headerNavItemLogo)}>
               <button
                 className={classNames(buttonStyles.card, { [buttonStyles.cardIsFlipped]: isOpen })}
@@ -69,6 +72,10 @@ export const Header = () => {
                   width={36}
                   src="/images/close_36.svg"
                 />
+              </button>
+            </li>
+            <li className={styles.headerNavItem}>
+              <Link href="/profile">
                 <Image
                   alt="TK Premier Update"
                   className={classNames(utilStyles.borderCircle, styles.headerNavItemLogoImage, buttonStyles.cardItem)}
@@ -77,7 +84,7 @@ export const Header = () => {
                   src="/images/headshot_48px.jpg"
                   width={48}
                 />
-              </button>
+              </Link>
             </li>
           </ul>
         </nav>
