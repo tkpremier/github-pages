@@ -110,5 +110,7 @@ export const UpdateDrive = (props: { data: string; name: string }) => {
   //     setModel(() => newModel);
   //   }
   // }, []);
-  return <Editor id={props.name} data={editorData} name={props.name} onChange={handleChange} />;
+  return (
+    <Editor className="editor-container" id={props.name} data={editorData} name={props.name} onChange={handleChange} />
+  );
 };

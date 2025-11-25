@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PropsWithChildren } from 'react';
 import { Header } from '../src/components/header';
-import { Main } from '../src/components/Main';
+import styles from '../src/styles/layout.module.scss';
+// import { Main } from '../src/components/Main';
 import '../src/styles/global.scss';
 
 export const metadata: Metadata = {
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
 const Layout = ({ children }: PropsWithChildren<{}>) => (
   <html>
     <body>
-      <Main>
+      <div className={styles.mainRoot}>
+        {/* <Main> */}
         <Header />
         {children}
         <footer>
@@ -30,7 +32,8 @@ const Layout = ({ children }: PropsWithChildren<{}>) => (
             Examples
           </Link>
         </footer>
-      </Main>
+        {/* </Main> */}
+      </div>
     </body>
   </html>
 );

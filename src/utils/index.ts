@@ -21,3 +21,7 @@ export const getImageLink = (link = '', endStr = 's220', split = 's220') => {
   const [base] = link.split(split);
   return `${base}${endStr}`;
 };
+
+const EMPTY_ARRAY = Object.freeze([]) as ReadonlyArray<never>;
+
+export const emptyArray = <T = never>(): T[] => EMPTY_ARRAY as unknown as T[];

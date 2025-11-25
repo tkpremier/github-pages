@@ -9,7 +9,7 @@ export const Main = ({ children }: PropsWithChildren<{}>) => {
   useEffect(() => {
     const checkUser = async () => {
       const response = await (
-        await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/authentication`, {
+        await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/authentication`, {
           credentials: 'include'
         })
       ).json();

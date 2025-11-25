@@ -50,15 +50,12 @@ export const Header = () => {
             <li className={styles.headerNavItem}>
               <Link href="/interview">Interviews</Link>
             </li>
-            {user ? (
-              <li className={styles.headerNavItem}>
-                <Link href={`${process.env.NEXT_PUBLIC_SERVERURL}/logout`}>Logout</Link>
-              </li>
-            ) : (
-              <li className={styles.headerNavItem}>
-                <Link href={`${process.env.NEXT_PUBLIC_SERVERURL}/login`}>Login</Link>
-              </li>
-            )}
+            <li className={styles.headerNavItem}>
+              <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/logout`}>Logout</Link>
+            </li>
+            <li className={styles.headerNavItem}>
+              <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/login`}>Login</Link>
+            </li>
             <li className={classNames(styles.headerNavItem, styles.headerNavItemLogo)}>
               <button
                 className={classNames(buttonStyles.card, { [buttonStyles.cardIsFlipped]: isOpen })}

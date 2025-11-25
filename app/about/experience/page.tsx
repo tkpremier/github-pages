@@ -6,10 +6,12 @@ export const metadata: Metadata = {
   title: 'Experience | TK Premier',
   description: "TK Premier's Experience"
 };
+export const dynamic = 'force-dynamic';
 
 const getExp = async () => {
   try {
-    const response = await handleResponse(await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/experience`));
+    const url = `${process.env.INTERNAL_API_URL}/api/experience`;
+    const response = await handleResponse(await fetch(url, { cache: 'no-store' }));
     return response;
   } catch (error) {
     console.error('Experience error: ', error);
@@ -22,7 +24,7 @@ export default async function Experience() {
   // const [updatedExp, updateExp] = useState({ id: 0, name: '', description: '' });
   return (
     <>
-      <h1 className="title">My Tech &#x1F305;</h1>
+      <h1 className="title">My Experience &#x1F305;</h1>
       <blockquote className="description">
         <figure>
           Tell me about your journey into tech.

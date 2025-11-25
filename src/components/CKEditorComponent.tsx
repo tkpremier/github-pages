@@ -14,14 +14,16 @@ export const CKEditorComponent = (props: EditorProps) => {
   };
 
   return (
-    <CKEditor
-      id={props.id}
-      editor={ClassicEditor}
-      config={editorConfig}
-      data={props.data}
-      onChange={(event, editor) => {
-        props.onChange({ name: 'change', path: [], source: editor }, editor);
-      }}
-    />
+    <div style={{ width: '100%', height: '100%' }}>
+      <CKEditor
+        id={props.id ?? ''}
+        editor={ClassicEditor}
+        config={editorConfig}
+        data={props.data}
+        onChange={(event, editor) => {
+          props.onChange({ name: 'change', path: [], source: editor }, editor);
+        }}
+      />
+    </div>
   );
 };

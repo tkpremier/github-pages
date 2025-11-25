@@ -12,7 +12,7 @@ const Profile = () => {
   ) : (
     <div>
       <h1>
-        <Link href={`${process.env.NEXT_PUBLIC_SERVERURL}/login`}>Please login</Link>
+        <Link href={`${process.env.INTERNAL_API_URL}/login`}>Please login</Link>
       </h1>
     </div>
   );

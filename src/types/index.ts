@@ -100,6 +100,7 @@ export interface IEventInfo {
 
 export interface EditorProps {
   id?: string;
+  className?: string;
   data: string;
   name: string;
   onChange: (eventInfo: IEventInfo, editor: CKEditor) => void;
@@ -201,13 +202,22 @@ export type MergedData = GDriveApiBase &
 
 export enum SortOptions {
   'createdTime',
-  'lastViewed'
+  'lastViewed',
+  'duration',
+  'size'
 }
 
 export type SortOptionKeys = keyof typeof SortOptions;
 
 export interface DriveData {
-  dbData: Array<DBData>;
   files: Array<MergedData>;
   nextPageToken: string;
 }
+
+export type Interview = {
+  id: number;
+  company: string;
+  date: Date;
+  retro: string;
+  onClick?: (event: React.PointerEvent<HTMLButtonElement>) => void;
+};

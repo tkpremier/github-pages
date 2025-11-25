@@ -7,59 +7,26 @@ import Link from 'next/link';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Drawer } from '../../src/components/Drawer';
 import styles from '../../src/styles/grid.module.scss';
-import { DBData, DBDataResponse, DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
+import { DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
 
 const getDriveFromApi = async () => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google`, { credentials: 'include' });
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google`, {
+      credentials: 'include',
+      cache: 'no-store'
+    });
     const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(
       response
     );
-    const dbResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-list`);
-    const dbData: Awaited<Promise<DBDataResponse>> = await handleResponse(dbResponse);
     const files: Array<MergedData> = data?.files
       .filter(
         (f: GoogleDriveAPIResponse) =>
           f.id != null && f.name != null && f.mimeType != null && f.webViewLink != null && f.createdTime != null
       )
-      .map((f: GoogleDriveAPIResponse) => {
-        const dbFile = dbData?.data?.find((d: DBData) => d.id === f.id) as DBData;
-        return typeof dbFile === 'undefined'
-          ? ({
-              ...f,
-              ...(f.description && { description: f.description }),
-              ...(f.size && { size: formatBytes(f.size) }),
-              ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
-              ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
-              id: f.id!,
-              name: f.name!,
-              driveId: f.id!,
-              webViewLink: f.webViewLink!,
-              modelId: [],
-              createdOn: format(new Date(), 'MM/dd/yyyy'),
-              createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
-              lastViewed:
-                f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
-              type: f.mimeType!
-            } as unknown as MergedData)
-          : ({
-              ...dbFile,
-              ...f,
-              id: dbFile.id,
-              name: dbFile.name,
-              driveId: dbFile.driveId,
-              webViewLink: dbFile.webViewLink,
-              modelId: dbFile.modelId,
-              createdOn: dbFile.createdOn,
-              createdTime: dbFile.createdTime,
-              lastViewed: dbFile.lastViewed,
-              type: dbFile.type
-            } as unknown as MergedData);
-      });
+      .map(f => f as unknown as MergedData);
     return {
-      dbData: dbData.data,
       files,
       nextPageToken: data.nextPageToken
     };
@@ -70,7 +37,7 @@ const getDriveFromApi = async () => {
 };
 
 const Drive = () => {
-  const [driveData, setDriveData] = useState<DriveData>({ dbData: [], files: [], nextPageToken: '' });
+  const [driveData, setDriveData] = useState<DriveData>({ files: [], nextPageToken: '' });
   const [sortDir, sortBy] = useState('createdTime-desc');
   useEffect(() => {
     getDriveFromApi().then(data => {
@@ -80,48 +47,31 @@ const Drive = () => {
   const handleGetMore = useCallback(async () => {
     if (driveData.nextPageToken === '') return;
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVERURL}/api/drive-google?nextPage=${driveData.nextPageToken}`,
-      { credentials: 'include' }
+      `${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google?nextPage=${driveData.nextPageToken}`
     );
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
     const newData: Array<MergedData> =
       files?.map((f: GoogleDriveAPIResponse) => {
-        const dbFile = driveData?.dbData?.find((d: DBData) => d.id === f.id) as DBData;
-
-        return typeof dbFile === 'undefined'
-          ? ({
-              ...f,
-              ...(f.description && { description: f.description }),
-              ...(f.size && { size: formatBytes(f.size) }),
-              ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
-              ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
-              id: f.id!,
-              name: f.name!,
-              driveId: f.id!,
-              webViewLink: f.webViewLink!,
-              modelId: [],
-              createdOn: format(new Date(), 'MM/dd/yyyy'),
-              createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
-              lastViewed:
-                f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
-              type: f.mimeType!
-            } as unknown as MergedData)
-          : ({
-              ...dbFile,
-              ...f,
-              id: dbFile.id,
-              name: dbFile.name,
-              driveId: dbFile.driveId,
-              webViewLink: dbFile.webViewLink,
-              modelId: dbFile.modelId,
-              createdOn: dbFile.createdOn,
-              createdTime: dbFile.createdTime,
-              lastViewed: dbFile.lastViewed,
-              type: dbFile.type
-            } as unknown as MergedData);
+        return {
+          ...f,
+          ...(f.description && { description: f.description }),
+          ...(f.size && { size: f.size }),
+          ...(f.webContentLink != null && { webContentLink: f.webContentLink }),
+          ...(f.thumbnailLink != null && { thumbnailLink: f.thumbnailLink }),
+          id: f.id!,
+          name: f.name!,
+          driveId: f.id!,
+          webViewLink: f.webViewLink!,
+          modelId: [],
+          createdOn: format(new Date(), 'MM/dd/yyyy'),
+          createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
+          lastViewed:
+            f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
+          type: f.mimeType!
+        } as unknown as MergedData;
       }) ?? [];
     setDriveData(state => ({ ...state, files: state.files.concat(newData), nextPageToken: nextPageToken ?? '' }));
-  }, [driveData.dbData, driveData.files, driveData.nextPageToken]);
+  }, [driveData.files, driveData.nextPageToken]);
   const handleSort = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => (e.target.value !== sortDir ? sortBy(e.target.value) : null),
     []
@@ -151,7 +101,7 @@ const Drive = () => {
         }
         return new Date(a[key] ?? '').getTime() - new Date(b[key] ?? '').getTime();
       }
-      return 0;
+      return dir === 'desc' ? Number(b[key] ?? 0) - Number(a[key] ?? 0) : Number(a[key] ?? 0) - Number(b[key] ?? 0);
     });
     return driveData.files.filter(d => d?.mimeType?.startsWith('video') || d?.mimeType?.startsWith('image'));
   }, [driveData.files, sortDir]);
@@ -169,168 +119,97 @@ const Drive = () => {
           <option value="lastViewed-asc">Viewed - Earliest</option>
           <option value="duration-desc">Duration - Longest</option>
           <option value="duration-asc">Duration - shortest</option>
+          <option value="size-desc">Size - Largest</option>
+          <option value="size-asc">Size - Smallest</option>
         </select>
       </fieldset>
-      <ul className="root">
-        <Drawer header="Catalogued" closed>
-          <h3>Catalogued</h3>
-          <ul className={styles.grid}>
-            {sortedData
-              .filter(drive => drive.modelId.length > 0)
-              .map(drive => (
-                <li className={styles.gridItem} key={drive.id}>
-                  {/**
-                   * https://stackoverflow.com/questions/30851685/google-drive-thumbnails-getting-403-rate-limit-exceeded
-                   */}
-                  {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
-                    <Fragment>
-                      <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                        <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-                          <Image
-                            src={getImageLink(drive.thumbnailLink, 's640', 's220')}
-                            referrerPolicy="no-referrer"
-                            loading="lazy"
-                            title={`${drive.name}`}
-                            alt={`${drive.name} - Thumbnail`}
-                            fill={true}
-                            objectFit="cover"
-                            placeholder="blur"
-                            blurDataURL="/images/video_placeholder_165x103.svg"
-                          />
-                        </div>
-                      </a>
-                      <p>
-                        <strong>Id:</strong>&nbsp; {drive.id}
-                      </p>
-                    </Fragment>
-                  ) : (
-                    <>
-                      <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                        <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-                          <Image
-                            src="/images/video_placeholder_165x103.svg"
-                            alt={`${drive.name} - Placeholder`}
-                            fill={true}
-                            objectFit="cover"
-                          />
-                        </div>
-                      </a>
-                      <p>
-                        <strong>Id:</strong>&nbsp; {drive.id}
-                        <a href={drive.webViewLink}>{drive.webViewLink}</a>
-                      </p>
-                    </>
-                  )}
-                  <p>
-                    <strong>{drive.name}</strong>
-                    <br />
-                    {drive.description && <strong>{drive.description}</strong>}
-                    <br />
-                    <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
-                  </p>
-                  <ul>
-                    <Drawer header={drive.name} key={`${drive.id}-drawer`}>
-                      <p>{drive.type}</p>
-                      {!isNull(drive.lastViewed) ? (
-                        <p>
-                          <strong>Last viewed:</strong>&nbsp;{drive.lastViewed}
-                        </p>
-                      ) : (
-                        drive.lastViewed
-                      )}
-                      {drive.videoMediaMetadata ? (
-                        <p>
-                          <strong>Duration: </strong>
-                          {getDuration(parseInt(drive.videoMediaMetadata?.durationMillis ?? '0', 10))}
-                        </p>
-                      ) : null}
-                    </Drawer>
-                  </ul>
-                </li>
-              ))}
-          </ul>
-        </Drawer>
-      </ul>
       <ul className={styles.grid}>
-        {sortedData
-          .filter(drive => drive.modelId.length === 0)
-          .map(drive => (
-            <li className={styles.gridItem} key={drive.id}>
-              {/**
-               * https://stackoverflow.com/questions/30851685/google-drive-thumbnails-getting-403-rate-limit-exceeded
-               */}
-              {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
-                <Fragment>
-                  <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                    <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-                      <Image
-                        src={getImageLink(drive.thumbnailLink, 's640', 's220')}
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        title={`${drive.name}`}
-                        alt={`${drive.name} - Thumbnail`}
-                        fill={true}
-                        objectFit="cover"
-                        placeholder="blur"
-                        blurDataURL="/images/video_placeholder_165x103.svg"
-                      />
-                    </div>
-                  </a>
+        {sortedData.map(drive => (
+          <li className={styles.gridItem} key={drive.id}>
+            {/**
+             * https://stackoverflow.com/questions/30851685/google-drive-thumbnails-getting-403-rate-limit-exceeded
+             */}
+            {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
+              <Fragment>
+                <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                    <Image
+                      src={getImageLink(drive.thumbnailLink, 's640', 's220')}
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      title={`${drive.name}`}
+                      alt={`${drive.name} - Thumbnail`}
+                      fill={true}
+                      objectFit="cover"
+                      placeholder="blur"
+                      blurDataURL="/images/video_placeholder_165x103.svg"
+                    />
+                  </div>
+                </a>
+                <p>
+                  <strong>Id:</strong>&nbsp; {drive.id}
+                  <br />
+                  {drive.description && <strong>{drive.description}</strong>}
+                  <br />
+                  <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
+                  <br />
+                  <a href={drive.webViewLink}>Go to File</a>
+                </p>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                    <Image
+                      src="/images/video_placeholder_165x103.svg"
+                      alt={`${drive.name} - Placeholder`}
+                      fill={true}
+                      objectFit="cover"
+                    />
+                  </div>
+                </a>
+                <p>
+                  <strong>Id:</strong>&nbsp; {drive.id}
+                  <br />
+                  {drive.description && <strong>{drive.description}</strong>}
+                  <br />
+                  <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
+                  <br />
+                  <a href={drive.webViewLink}>Go to File</a>
+                </p>
+              </Fragment>
+            )}
+            <p>
+              <strong>{drive.name}</strong>
+              <br />
+              <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
+            </p>
+            <ul>
+              <Drawer header={drive.name} key={`${drive.id}-drawer`}>
+                <p>{drive.type}</p>
+                {!isNull(drive.lastViewed) ? (
                   <p>
-                    <strong>Id:</strong>&nbsp; {drive.id}
-                    <br />
-                    {drive.description && <strong>{drive.description}</strong>}
-                    <br />
-                    <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
-                    <a href={drive.webViewLink}>Go to File</a>
+                    <strong>Last viewed:</strong>&nbsp;{drive.lastViewed}
                   </p>
-                </Fragment>
-              ) : (
-                <Fragment>
-                  <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
-                    <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-                      <Image
-                        src="/images/video_placeholder_165x103.svg"
-                        alt={`${drive.name} - Placeholder`}
-                        fill={true}
-                        objectFit="cover"
-                      />
-                    </div>
-                  </a>
+                ) : (
+                  drive.lastViewed
+                )}
+                {drive.videoMediaMetadata ? (
                   <p>
-                    <strong>Id:</strong>&nbsp; {drive.id}
-                    <br />
-                    {drive.description && <strong>{drive.description}</strong>}
-                    <br />
-                    <a href={drive.webViewLink}>Go to File</a>
+                    <strong>Duration: </strong>
+                    {getDuration(parseInt(drive.videoMediaMetadata?.durationMillis ?? '0', 10))}
                   </p>
-                </Fragment>
-              )}
-              <p>
-                <strong>{drive.name}</strong>
-                <br />
-                <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
-              </p>
-              <ul>
-                <Drawer header={drive.name} key={`${drive.id}-drawer`}>
-                  <p>{drive.type}</p>
-                  {!isNull(drive.lastViewed) ? (
-                    <p>
-                      <strong>Last viewed:</strong>&nbsp;{drive.lastViewed}
-                    </p>
-                  ) : (
-                    drive.lastViewed
-                  )}
-                  {drive.videoMediaMetadata ? (
-                    <p>
-                      <strong>Duration: </strong>
-                      {getDuration(parseInt(drive.videoMediaMetadata?.durationMillis ?? '0', 10))}
-                    </p>
-                  ) : null}
-                </Drawer>
-              </ul>
-            </li>
-          ))}
+                ) : null}
+                {drive.size && (
+                  <p>
+                    <strong>Size: </strong>
+                    {formatBytes(drive?.size ?? 0)}
+                  </p>
+                )}
+              </Drawer>
+            </ul>
+          </li>
+        ))}
       </ul>
     </>
   );
