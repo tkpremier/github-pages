@@ -14,8 +14,7 @@ import handleResponse from '../../src/utils/handleResponse';
 const getDriveFromApi = async () => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google`, {
-      credentials: 'include',
-      cache: 'no-store'
+      credentials: 'include'
     });
     const data: Awaited<{ files: Array<GoogleDriveAPIResponse>; nextPageToken: string }> = await handleResponse(
       response
@@ -25,7 +24,13 @@ const getDriveFromApi = async () => {
         (f: GoogleDriveAPIResponse) =>
           f.id != null && f.name != null && f.mimeType != null && f.webViewLink != null && f.createdTime != null
       )
-      .map(f => f as unknown as MergedData);
+      .map(f => {
+        return {
+          ...f,
+          createdTime: format(new Date(f.createdTime as string), 'MM/dd/yyyy, h:mm a'),
+          viewedByMeTime: f.viewedByMeTime ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy, h:mm a') : null
+        } as unknown as MergedData;
+      });
     return {
       files,
       nextPageToken: data.nextPageToken
@@ -47,7 +52,10 @@ const Drive = () => {
   const handleGetMore = useCallback(async () => {
     if (driveData.nextPageToken === '') return;
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google?nextPage=${driveData.nextPageToken}`
+      `${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google?nextPage=${driveData.nextPageToken}`,
+      {
+        credentials: 'include'
+      }
     );
     const { files, nextPageToken }: drive_v3.Schema$FileList = await response.json();
     const newData: Array<MergedData> =
@@ -63,10 +71,11 @@ const Drive = () => {
           driveId: f.id!,
           webViewLink: f.webViewLink!,
           modelId: [],
-          createdOn: format(new Date(), 'MM/dd/yyyy'),
-          createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy'),
-          lastViewed:
-            f.viewedByMeTime && !isNull(f.viewedByMeTime) ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy') : null,
+          createdTime: format(new Date(f.createdTime!), 'MM/dd/yyyy, h:mm a'),
+          viewedByMeTime:
+            f.viewedByMeTime && !isNull(f.viewedByMeTime)
+              ? format(new Date(f.viewedByMeTime), 'MM/dd/yyyy, h:mm a')
+              : null,
           type: f.mimeType!
         } as unknown as MergedData;
       }) ?? [];
@@ -95,7 +104,7 @@ const Drive = () => {
         }
         return 0;
       }
-      if (key === 'lastViewed' || key === 'createdTime') {
+      if (key === 'viewedByMeTime' || key === 'createdTime') {
         if (dir === 'desc') {
           return new Date(b[key] ?? '').getTime() - new Date(a[key] ?? '').getTime();
         }
@@ -115,8 +124,8 @@ const Drive = () => {
           <option value="">Choose Sort</option>
           <option value="createdTime-desc">Created - Latest</option>
           <option value="createdTime-asc">Created - Earliest</option>
-          <option value="lastViewed-desc">Viewed - Latest</option>
-          <option value="lastViewed-asc">Viewed - Earliest</option>
+          <option value="viewedByMeTime-desc">Viewed - Latest</option>
+          <option value="viewedByMeTime-asc">Viewed - Earliest</option>
           <option value="duration-desc">Duration - Longest</option>
           <option value="duration-asc">Duration - shortest</option>
           <option value="size-desc">Size - Largest</option>
@@ -187,12 +196,12 @@ const Drive = () => {
             <ul>
               <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                 <p>{drive.type}</p>
-                {!isNull(drive.lastViewed) ? (
+                {!isNull(drive.viewedByMeTime) ? (
                   <p>
-                    <strong>Last viewed:</strong>&nbsp;{drive.lastViewed}
+                    <strong>Last viewed:</strong>&nbsp;{drive.viewedByMeTime}
                   </p>
                 ) : (
-                  drive.lastViewed
+                  drive.viewedByMeTime
                 )}
                 {drive.videoMediaMetadata ? (
                   <p>

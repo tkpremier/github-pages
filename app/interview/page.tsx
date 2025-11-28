@@ -1,6 +1,6 @@
 'use client';
 import { Editor as CKEditor } from 'ckeditor5';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
 import serialize from 'form-serialize';
 import React, { FormEvent, useCallback, useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
@@ -85,7 +85,7 @@ export default () => {
       fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/interview`, options)
         .then(handleResponse)
         .then(res => {
-          const updatedInterview = res.data[0] as Interview;
+          const updatedInterview = res.data as Interview;
           setInterviews(interviews.map(i => (i.id === updatedInterview.id ? updatedInterview : i)));
           updateInt(updatedInterview as Interview);
         })

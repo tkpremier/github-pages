@@ -34,10 +34,12 @@ export type DriveFile = {
   webContentLink?: string;
   thumbnailLink?: string;
   createdTime: string;
-  lastViewed?: string | null;
+  viewedByMeTime?: string | null;
   createdOn: string;
   duration?: number;
   modelId: Array<number>;
+  description?: string;
+  size?: number;
 };
 
 // Slider types
@@ -202,7 +204,7 @@ export type MergedData = GDriveApiBase &
 
 export enum SortOptions {
   'createdTime',
-  'lastViewed',
+  'viewedByMeTime',
   'duration',
   'size'
 }

@@ -1,7 +1,6 @@
-import isNull from 'lodash/isNull';
-import { HTMLEditor } from '../../../src/components/drive/Update';
-import { getDuration, getImageLink } from '../../../src/utils';
+import { Suspense } from 'react';
 import handleResponse from '../../../src/utils/handleResponse';
+import { DriveFileView } from '../../../src/components/FileEditor';
 
 const getDriveFile = async (driveId: string) => {
   try {
@@ -18,28 +17,11 @@ const getDriveFile = async (driveId: string) => {
 const DriveFile = async ({ params }: PageProps<'/drive/[driveId]'>) => {
   const { driveId } = await params;
   const { data } = await getDriveFile(driveId);
-  return !isNull(data) && data ? (
-    <>
-      <h2>{data.name}</h2>
-      <p>{data.description}</p>
-      <a href={data.webViewLink} target="_blank" rel="noreferrer nofollower">
-        <img
-          src={getImageLink(data.thumbnailLink, 's1200', 's220')}
-          referrerPolicy="no-referrer"
-          loading="lazy"
-          title={`${data.name}`}
-        />
-      </a>
-      {data.videoMediaMetadata ? (
-        <p>
-          <strong>Duration: </strong>
-          {getDuration(parseInt(data.videoMediaMetadata?.durationMillis ?? '0', 10))}
-        </p>
-      ) : null}
-      <HTMLEditor data={data.description} name="description" />
-    </>
-  ) : (
-    data
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DriveFileView file={data} />
+    </Suspense>
   );
 };
 
