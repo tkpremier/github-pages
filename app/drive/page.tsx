@@ -6,10 +6,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Drawer } from '../../src/components/Drawer';
+import { DriveFileView } from '../../src/components/FileEditor';
 import styles from '../../src/styles/grid.module.scss';
 import { DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
+import { extractHashtags } from '../../src/utils/hashTags';
+import { Tags } from '../../src/components/drive/Tags';
 
 const getDriveFromApi = async () => {
   try {
@@ -44,6 +47,7 @@ const getDriveFromApi = async () => {
 const Drive = () => {
   const [driveData, setDriveData] = useState<DriveData>({ files: [], nextPageToken: '' });
   const [sortDir, sortBy] = useState('createdTime-desc');
+  const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(new Set());
   useEffect(() => {
     getDriveFromApi().then(data => {
       setDriveData(data);
@@ -86,7 +90,19 @@ const Drive = () => {
     []
   );
   const sortedData = useMemo(() => {
-    driveData.files.sort((a, b): number => {
+    const filtered = driveData.files.filter(d => d?.mimeType?.startsWith('video') || d?.mimeType?.startsWith('image'));
+
+    // Apply hashtag filter if any hashtags are selected
+    const hashtagFiltered =
+      selectedHashtags.size > 0
+        ? filtered.filter(file => {
+            const fileHashtags = extractHashtags(file.description);
+            // Show file if it contains ANY of the selected hashtags
+            return fileHashtags.some(tag => selectedHashtags.has(tag));
+          })
+        : filtered;
+
+    hashtagFiltered.sort((a, b): number => {
       const [key, dir]: Array<SortOptionKeys | string> = sortDir.split('-');
       if (key === 'duration') {
         if (a.videoMediaMetadata && b.videoMediaMetadata) {
@@ -112,14 +128,36 @@ const Drive = () => {
       }
       return dir === 'desc' ? Number(b[key] ?? 0) - Number(a[key] ?? 0) : Number(a[key] ?? 0) - Number(b[key] ?? 0);
     });
-    return driveData.files.filter(d => d?.mimeType?.startsWith('video') || d?.mimeType?.startsWith('image'));
-  }, [driveData.files, sortDir]);
+    return hashtagFiltered;
+  }, [driveData.files, sortDir, selectedHashtags]);
+
+  const handleHashtagClick = useCallback((tag: string) => {
+    setSelectedHashtags(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(tag)) {
+        newSet.delete(tag);
+      } else {
+        newSet.add(tag);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleClearHashtags = useCallback(() => {
+    setSelectedHashtags(new Set());
+  }, []);
   return (
     <>
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here&apos;s what we&apos;ve been up to....</p>
+      <Tags files={driveData.files} selectedHashtags={selectedHashtags} toggleHashtag={handleHashtagClick} />
       <fieldset className={styles.gridControls}>
         <button type="button" onClick={handleGetMore}>{`Get More ${driveData.files.length}`}</button>
+        {selectedHashtags.size > 0 && (
+          <button type="button" onClick={handleClearHashtags} style={{ marginLeft: '10px' }}>
+            Clear Hashtags ({selectedHashtags.size})
+          </button>
+        )}
         <select onChange={handleSort} defaultValue={sortDir}>
           <option value="">Choose Sort</option>
           <option value="createdTime-desc">Created - Latest</option>
@@ -138,9 +176,9 @@ const Drive = () => {
             {/**
              * https://stackoverflow.com/questions/30851685/google-drive-thumbnails-getting-403-rate-limit-exceeded
              */}
-            {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
-              <Fragment>
-                <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+            <Fragment>
+              <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+                {drive.thumbnailLink && !isNull(drive.thumbnailLink) ? (
                   <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
                     <Image
                       src={getImageLink(drive.thumbnailLink, 's640', 's220')}
@@ -154,20 +192,7 @@ const Drive = () => {
                       blurDataURL="/images/video_placeholder_165x103.svg"
                     />
                   </div>
-                </a>
-                <p>
-                  <strong>Id:</strong>&nbsp; {drive.id}
-                  <br />
-                  {drive.description && <strong>{drive.description}</strong>}
-                  <br />
-                  <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
-                  <br />
-                  <a href={drive.webViewLink}>Go to File</a>
-                </p>
-              </Fragment>
-            ) : (
-              <Fragment>
-                <a href={drive.webViewLink} target="_blank" rel="noreferrer nofollower">
+                ) : (
                   <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
                     <Image
                       src="/images/video_placeholder_165x103.svg"
@@ -176,33 +201,34 @@ const Drive = () => {
                       objectFit="cover"
                     />
                   </div>
-                </a>
-                <p>
-                  <strong>Id:</strong>&nbsp; {drive.id}
-                  <br />
-                  {drive.description && <strong>{drive.description}</strong>}
-                  <br />
-                  <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
-                  <br />
-                  <a href={drive.webViewLink}>Go to File</a>
-                </p>
-              </Fragment>
-            )}
+                )}
+              </a>
+              <p>
+                <strong>Id:</strong>&nbsp; {drive.id}
+                <br />
+                {drive.description && <strong>{drive.description}</strong>}
+                <br />
+                <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
+                <br />
+                <a href={drive.webViewLink}>Go to File</a>
+              </p>
+            </Fragment>
             <p>
               <strong>{drive.name}</strong>
               <br />
               <strong>Uploaded on:</strong>&nbsp;{drive.createdTime}
+              <br />
+              {!isNull(drive.viewedByMeTime) && (
+                <>
+                  <strong>Last viewed:</strong>&nbsp;{drive.viewedByMeTime}
+                </>
+              )}
             </p>
+
+            <DriveFileView file={drive} />
             <ul>
               <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                 <p>{drive.type}</p>
-                {!isNull(drive.viewedByMeTime) ? (
-                  <p>
-                    <strong>Last viewed:</strong>&nbsp;{drive.viewedByMeTime}
-                  </p>
-                ) : (
-                  drive.viewedByMeTime
-                )}
                 {drive.videoMediaMetadata ? (
                   <p>
                     <strong>Duration: </strong>
