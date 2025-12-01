@@ -12,6 +12,90 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Validate SSH Key
+        env:
+          SSH_KEY: ${{ secrets.DO_SSH_KEY }}
+          SSH_HOST: ${{ secrets.DO_HOST }}
+          SSH_USER: ${{ secrets.DO_USER }}
+        run: |
+          # Check if secrets are set
+          if [ -z "$SSH_KEY" ]; then
+            echo "❌ Error: DO_SSH_KEY secret is not set"
+            exit 1
+          fi
+
+          if [ -z "$SSH_HOST" ]; then
+            echo "❌ Error: DO_HOST secret is not set"
+            exit 1
+          fi
+
+          if [ -z "$SSH_USER" ]; then
+            echo "❌ Error: DO_USER secret is not set"
+            exit 1
+          fi
+
+          # Create temporary key file for validation
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/temp_key
+          chmod 600 ~/.ssh/temp_key
+
+          # Validate key format - check for BEGIN/END markers
+          if ! grep -q "BEGIN.*PRIVATE KEY" ~/.ssh/temp_key; then
+            echo "❌ Error: SSH key is missing BEGIN marker"
+            echo "Key should start with: -----BEGIN OPENSSH PRIVATE KEY----- or -----BEGIN RSA PRIVATE KEY-----"
+            exit 1
+          fi
+
+          if ! grep -q "END.*PRIVATE KEY" ~/.ssh/temp_key; then
+            echo "❌ Error: SSH key is missing END marker"
+            echo "Key should end with: -----END OPENSSH PRIVATE KEY----- or -----END RSA PRIVATE KEY-----"
+            exit 1
+          fi
+
+          # Validate key can be parsed by ssh-keygen
+          if ! ssh-keygen -l -f ~/.ssh/temp_key > /dev/null 2>&1; then
+            echo "❌ Error: SSH key format is invalid or corrupted"
+            echo "Please verify the key is complete and properly formatted"
+            exit 1
+          fi
+
+          # Get key fingerprint for verification
+          KEY_FINGERPRINT=$(ssh-keygen -l -f ~/.ssh/temp_key | awk '{print $2}')
+          KEY_TYPE=$(ssh-keygen -l -f ~/.ssh/temp_key | awk '{print $4}')
+
+          # Extract public key for verification
+          PUBLIC_KEY=$(ssh-keygen -y -f ~/.ssh/temp_key 2>/dev/null)
+          KEY_ENCRYPTED=false
+
+          if [ -z "$PUBLIC_KEY" ] || echo "$PUBLIC_KEY" | grep -q "Unable to extract"; then
+            KEY_ENCRYPTED=true
+            echo "⚠️  Warning: Unable to extract public key (key may be encrypted with passphrase)"
+            echo "   GitHub Actions cannot use password-protected keys"
+            echo "   Please use a key without a passphrase for CI/CD deployments"
+          fi
+
+          echo "✅ SSH key validation successful"
+          echo "   Key fingerprint: $KEY_FINGERPRINT"
+          echo "   Key type: $KEY_TYPE"
+          echo "   Host: $SSH_HOST"
+          echo "   User: $SSH_USER"
+
+          if [ "$KEY_ENCRYPTED" = "false" ] && [ -n "$PUBLIC_KEY" ]; then
+            echo ""
+            echo "📋 Public key (for verification on server):"
+            echo "$PUBLIC_KEY" | head -c 100
+            echo "..."
+            echo ""
+            echo "💡 To verify this key is on the server, run:"
+            PUBLIC_KEY_PART=$(echo "$PUBLIC_KEY" | cut -d' ' -f2)
+            if [ -n "$PUBLIC_KEY_PART" ]; then
+              echo "   ssh $SSH_USER@$SSH_HOST 'grep \"$PUBLIC_KEY_PART\" ~/.ssh/authorized_keys'"
+            fi
+          fi
+
+          # Clean up temp key
+          rm ~/.ssh/temp_key
+
       - name: Deploy Client to Digital Ocean
         env:
           SSH_KEY: ${{ secrets.DO_SSH_KEY }}
@@ -20,14 +104,39 @@ jobs:
         run: |
           # Setup SSH
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/deploy_key
+
+          # Write key file, ensuring proper formatting (remove any trailing newlines)
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          # Add server to known hosts
-          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+          # Verify key file was created correctly
+          echo "🔍 Verifying key file..."
+          if [ ! -f ~/.ssh/deploy_key ]; then
+            echo "❌ Error: Key file was not created"
+            exit 1
+          fi
 
-          # Test SSH connection
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo 'SSH connection successful'"
+          KEY_SIZE=$(stat -f%z ~/.ssh/deploy_key 2>/dev/null || stat -c%s ~/.ssh/deploy_key 2>/dev/null || echo "unknown")
+          echo "   Key file size: $KEY_SIZE bytes"
+
+          # Extract and display public key fingerprint for debugging
+          DEPLOY_KEY_FINGERPRINT=$(ssh-keygen -l -f ~/.ssh/deploy_key 2>/dev/null | awk '{print $2}' || echo "Unable to read")
+          echo "   Deploy key fingerprint: $DEPLOY_KEY_FINGERPRINT"
+
+          # Add server to known hosts
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Test SSH connection with verbose output for debugging
+          echo "🔌 Testing SSH connection..."
+          ssh -v -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
+            $SSH_USER@$SSH_HOST "echo 'SSH connection successful'" || {
+            echo "❌ SSH connection failed"
+            echo "💡 Troubleshooting steps:"
+            echo "   1. Verify the public key fingerprint matches what's on the server"
+            echo "   2. Check server logs: ssh $SSH_USER@$SSH_HOST 'tail -20 /var/log/auth.log'"
+            echo "   3. Verify key permissions and format"
+            exit 1
+          }
 
           # Sync only client folder
           rsync -avz --delete \
