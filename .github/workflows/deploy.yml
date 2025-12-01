@@ -23,16 +23,22 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           
+          # Add server to known hosts
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+          
+          # Test SSH connection
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo 'SSH connection successful'"
+          
           # Sync only client folder
           rsync -avz --delete \
             --exclude 'node_modules/' \
             --exclude '.next/' \
             --exclude '.git/' \
-            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             ./ $SSH_USER@$SSH_HOST:/opt/tkpremier/client/
           
           # Rebuild and restart containers
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key \
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             $SSH_USER@$SSH_HOST << 'EOF'
             cd /opt/tkpremier
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build client
