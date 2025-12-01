@@ -143,6 +143,10 @@ jobs:
             --exclude 'node_modules/' \
             --exclude '.next/' \
             --exclude '.git/' \
+            --exclude '.env.production' \
+            --exclude '.env.local' \
+            --exclude '.env.*' \
+            --exclude 'Dockerfile' \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             ./ $SSH_USER@$SSH_HOST:/opt/tkpremier/client/
 
