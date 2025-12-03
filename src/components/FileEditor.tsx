@@ -35,14 +35,11 @@ export const DriveFileView = ({ file }: { file: GoogleDriveAPIResponse }) => {
     [driveFile]
   );
   return !isNull(driveFile) && driveFile ? (
-    <>
-      <Form onSubmit={handleSubmit}>
-        <input type="text" name="name" defaultValue={driveFile.name ?? ''} />
-        <input type="text" name="description" defaultValue={driveFile.description ?? ''} />
-        <input type="submit" value="Update" />
-      </Form>
-    </>
-  ) : (
-    driveFile
-  );
+    <Form onSubmit={handleSubmit}>
+      <h4>Update Drive Info</h4>
+      <input type="text" name="name" defaultValue={driveFile.name ?? ''} />
+      <input type="text" name="description" defaultValue={driveFile.description ?? ''} />
+      <input type="submit" value="Update" />
+    </Form>
+  ) : null;
 };

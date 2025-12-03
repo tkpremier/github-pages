@@ -26,3 +26,22 @@
     // width: 50%;
   }
 }
+
+.checkbox {
+  &Wrapper {
+    width: 100%;
+    max-width: 100%; // Constrain to parent width
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    min-width: 0; // Allow shrinking below content size
+
+    // Constrain flex children to prevent expansion
+    > * {
+      flex-shrink: 0; // Prevent items from shrinking
+      min-width: 0; // Allow items to shrink if needed
+    }
+  }
+}

@@ -55,7 +55,13 @@ export const Tags = ({
     const hashtagSet = new Set<string>();
     // Only extract hashtags from video and image files
     files
-      .filter(file => file?.mimeType?.startsWith('video') || file?.mimeType?.startsWith('image'))
+      .filter(
+        file =>
+          file?.mimeType?.startsWith('video') ||
+          file?.mimeType?.startsWith('image') ||
+          file.type === 'video' ||
+          file.type === 'image'
+      )
       .forEach(file => {
         const hashtags = extractHashtags(file.description);
         hashtags.forEach(tag => hashtagSet.add(tag));
@@ -90,7 +96,11 @@ export const Tags = ({
       categorizedHashtags.others.length > 0) && (
       <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
         <h3 style={{ marginTop: 0, marginBottom: '15px', fontSize: '18px', fontWeight: 'bold' }}>Hashtags</h3>
-
+        {selectedHashtags.size > 0 && (
+          <button type="button" onClick={() => toggleHashtag('clear')} style={{ marginLeft: '10px' }}>
+            Clear Hashtags ({selectedHashtags.size})
+          </button>
+        )}
         {categorizedHashtags.dates.length > 0 && (
           <div style={{ marginBottom: '20px' }}>
             <h4 style={{ marginTop: 0, marginBottom: '10px', fontSize: '16px', fontWeight: '600' }}>Date</h4>

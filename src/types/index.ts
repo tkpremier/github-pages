@@ -173,8 +173,9 @@ export interface IDriveWithModelList extends GoogleDriveAPIResponse {
 export type DBData = {
   id: string;
   driveId: string;
-  name: string;
   type: string;
+  name: string;
+  description?: string;
   webViewLink: string;
   webContentLink?: string;
   thumbnailLink?: string;
@@ -183,6 +184,7 @@ export type DBData = {
   createdOn: string;
   duration?: number;
   modelId: Array<number>;
+  size?: number;
 };
 
 export interface DBDataResponse {
@@ -222,4 +224,12 @@ export type Interview = {
   date: Date;
   retro: string;
   onClick?: (event: React.PointerEvent<HTMLButtonElement>) => void;
+};
+
+export type Model = {
+  createdOn: string;
+  driveIds: Array<string>;
+  id: number;
+  name: string;
+  platform: string;
 };
