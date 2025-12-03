@@ -97,7 +97,9 @@ const GridCell = ({ columnIndex, rowIndex, style, data, columnCount, models }: G
         <br />
         <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
         <br />
-        <a href={drive.webViewLink}>Go to File</a>
+        <a target="_blank" rel="noreferrer nofollower" href={drive.webViewLink}>
+          Go to File
+        </a>
       </p>
       {drive.modelId.length > 0 && (
         <p>
