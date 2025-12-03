@@ -4,6 +4,7 @@ import { DBData, Model } from '../types';
 import { Form } from './Form';
 import serialize from 'form-serialize';
 import handleResponse from '../utils/handleResponse';
+import uniq from 'lodash/uniq';
 
 export const ModelForm = ({ drive, models }: { drive: DBData; models: Model[] }) => {
   const [message, setMessage] = useState<string>('');
@@ -28,7 +29,7 @@ export const ModelForm = ({ drive, models }: { drive: DBData; models: Model[] })
       },
       body: JSON.stringify({
         ...data,
-        driveIds: modelData ? [...modelData.driveIds, drive.id] : [drive.id]
+        driveIds: modelData ? uniq([...modelData.driveIds, drive.id]) : [drive.id]
       })
     };
     fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model${options.method === 'POST' ? '' : `/${modelId}`}`, options)
@@ -56,7 +57,7 @@ export const ModelForm = ({ drive, models }: { drive: DBData; models: Model[] })
       },
       body: JSON.stringify({
         ...drive,
-        modelId: [...drive.modelId, modelDrive?.id]
+        modelId: uniq([...drive.modelId, modelDrive?.id])
       })
     };
     fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list/${drive.id}`, options)
