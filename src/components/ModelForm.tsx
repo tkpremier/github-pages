@@ -51,9 +51,6 @@ export const ModelForm = ({
       .then(res => {
         if (!(res instanceof Error)) {
           const model = typeof res.data[0] === 'string' ? JSON.parse(res.data[0]) : res.data[0];
-          setMessage(
-            `${data.modelName} has been added successfully. ${drive.name} has been added successfully to the model.`
-          );
           updateDrive(model.id);
           setModelId(model.id);
           setModelName(model.name);

@@ -4,7 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { binaryRecursive } from '../../../src/code-examples';
 import { binaryRecursive as recursiveApproach } from '../../../src/code-examples/search/iterativeSearch';
 import { Code } from '../../../src/components/Code';
-import styles from '../../../src/components/code.module.scss';
+import styles from '../../../src/styles/code.module.scss';
 
 export default function Binary() {
   const [exampleArray, runAndSet] = useState<number[]>([]);

@@ -4,7 +4,7 @@ import { FormEventHandler, useState } from 'react';
 import { interpolationSearch } from '../../../src/code-examples';
 import { interpolationSearch as interFunction } from '../../../src/code-examples/search/iterativeSearch';
 import { Code } from '../../../src/components/Code';
-import styles from '../../../src/components/code.module.scss';
+import styles from '../../../src/styles/code.module.scss';
 import { ExtendedFormEvent, ExtendedTarget } from '../../../src/types';
 
 export default function Interpolation() {
