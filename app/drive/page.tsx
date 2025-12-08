@@ -7,6 +7,7 @@ import Link from 'next/link';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Drawer } from '../../src/components/Drawer';
 import { DriveFileView } from '../../src/components/FileEditor';
+import { FilterSidebarContent } from '../../src/components/drive/FilterSidebarContent';
 import { Tags } from '../../src/components/drive/Tags';
 import styles from '../../src/styles/grid.module.scss';
 import { DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
@@ -150,21 +151,59 @@ const Drive = () => {
     <>
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here&apos;s what we&apos;ve been up to....</p>
-      <Tags files={driveData.files} selectedHashtags={selectedHashtags} toggleHashtag={handleHashtagClick} />
-      <fieldset className={styles.gridControls}>
-        <button type="button" onClick={handleGetMore}>{`Get More ${driveData.files.length}`}</button>
-        <select onChange={handleSort} defaultValue={sortDir}>
-          <option value="">Choose Sort</option>
-          <option value="createdTime-desc">Created - Latest</option>
-          <option value="createdTime-asc">Created - Earliest</option>
-          <option value="viewedByMeTime-desc">Viewed - Latest</option>
-          <option value="viewedByMeTime-asc">Viewed - Earliest</option>
-          <option value="duration-desc">Duration - Longest</option>
-          <option value="duration-asc">Duration - shortest</option>
-          <option value="size-desc">Size - Largest</option>
-          <option value="size-asc">Size - Smallest</option>
-        </select>
-      </fieldset>
+
+      <FilterSidebarContent activeFilterCount={selectedHashtags.size}>
+        <div style={{ marginBottom: '20px' }}>
+          <label htmlFor="sort-select" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+            Sort By
+          </label>
+          <select
+            id="sort-select"
+            onChange={handleSort}
+            defaultValue={sortDir}
+            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px' }}
+          >
+            <option value="">Choose Sort</option>
+            <option value="createdTime-desc">Created - Latest</option>
+            <option value="createdTime-asc">Created - Earliest</option>
+            <option value="viewedByMeTime-desc">Viewed - Latest</option>
+            <option value="viewedByMeTime-asc">Viewed - Earliest</option>
+            <option value="duration-desc">Duration - Longest</option>
+            <option value="duration-asc">Duration - shortest</option>
+            <option value="size-desc">Size - Largest</option>
+            <option value="size-asc">Size - Smallest</option>
+          </select>
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <button
+            type="button"
+            onClick={handleGetMore}
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '16px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'background 0.2s ease'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#45a049';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#4CAF50';
+            }}
+          >
+            Get More ({driveData.files.length} files)
+          </button>
+        </div>
+
+        <Tags files={driveData.files} selectedHashtags={selectedHashtags} toggleHashtag={handleHashtagClick} />
+      </FilterSidebarContent>
       <ul className={styles.grid}>
         {sortedData.map(drive => (
           <li className={styles.gridItem} key={drive.id}>

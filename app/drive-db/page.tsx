@@ -2,18 +2,19 @@
 import isNull from 'lodash/isNull';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Grid, type CellComponentProps } from 'react-window';
+import { DriveFileView } from '../../src/components/FileEditor';
+import { ModelForm } from '../../src/components/ModelForm';
+import { FilterSidebarContent } from '../../src/components/drive/FilterSidebarContent';
+import { Tags } from '../../src/components/drive/Tags';
+import { DriveContext } from '../../src/context/drive';
+import { ModelContext } from '../../src/context/model';
 import styles from '../../src/styles/grid.module.scss';
 import utilsStyles from '../../src/styles/utils.module.scss';
 import { DBData, MergedData, Model } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
-import { Grid, type CellComponentProps } from 'react-window';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Tags } from '../../src/components/drive/Tags';
 import { extractHashtags } from '../../src/utils/hashTags';
-import { DriveFileView } from '../../src/components/FileEditor';
-import { ModelForm } from '../../src/components/ModelForm';
-import { DriveContext } from '../../src/context/drive';
-import { ModelContext } from '../../src/context/model';
 
 // Helper function to get column count based on window width
 const getColumnCount = (width: number): number => {
@@ -133,11 +134,10 @@ const DriveGrid = ({
   handleDrive: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
 }) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  console.log('DRiveGrid data: ', data.length);
   useEffect(() => {
     const updateDimensions = () => {
       setDimensions({
-        width: window.innerWidth,
+        width: window.innerWidth > 1200 ? 1200 : window.innerWidth,
         height: window.innerHeight
       });
     };
@@ -180,7 +180,6 @@ const DriveDb = () => {
   const [driveData, handleDrive] = useContext(DriveContext);
   const [allModels, handleModels] = useContext(ModelContext);
   const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(new Set());
-
   const [selectedModels, setSelectedModels] = useState<Set<number>>(new Set());
 
   useEffect(() => {
@@ -211,7 +210,6 @@ const DriveDb = () => {
       } else {
         newSet.add(modelId);
       }
-      console.log('newSet: ', newSet);
       return newSet;
     });
   }, []);
@@ -228,25 +226,71 @@ const DriveDb = () => {
   const sortedModels = useMemo(() => {
     return [...allModels].sort((a, b) => a.name.localeCompare(b.name));
   }, [allModels]);
+
+  const activeFilterCount = selectedHashtags.size + selectedModels.size;
+
   return (
     <>
-      <Tags
-        files={driveData as unknown as MergedData[]}
-        selectedHashtags={selectedHashtags}
-        toggleHashtag={handleHashtagClick}
-      />
-      <fieldset className={styles.checkboxWrapper}>
-        <legend>Filter by Model</legend>
-
-        {sortedModels.map(model => (
-          <div key={model.id}>
-            <label>
-              <input type="checkbox" name="model" value={model.id} onChange={handleToggleModel} />
-              {model.name}
-            </label>
-          </div>
-        ))}
-      </fieldset>
+      <FilterSidebarContent activeFilterCount={activeFilterCount}>
+        <Tags
+          files={driveData as unknown as MergedData[]}
+          selectedHashtags={selectedHashtags}
+          toggleHashtag={handleHashtagClick}
+        />
+        <div style={{ marginTop: '20px' }}>
+          <fieldset
+            className={styles.checkboxWrapper}
+            style={{
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              padding: '15px',
+              margin: 0
+            }}
+          >
+            <legend style={{ fontWeight: 600, padding: '0 8px' }}>Filter by Model</legend>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '12px',
+                maxHeight: '300px',
+                overflowY: 'auto',
+                padding: '10px 0'
+              }}
+            >
+              {sortedModels.map(model => (
+                <label
+                  key={model.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    transition: 'background 0.2s ease'
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = '#f5f5f5';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    name="model"
+                    value={model.id}
+                    onChange={handleToggleModel}
+                    checked={selectedModels.has(model.id)}
+                  />
+                  <span>{model.name}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+      </FilterSidebarContent>
       <DriveGrid data={filteredData} models={allModels} handleDrive={handleDrive} handleModels={handleModels} />
     </>
   );

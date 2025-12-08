@@ -17,10 +17,11 @@ export const ModelProvider = ({ children }: PropsWithChildren<{}>) => {
             reject(response);
           }
           if (options.method === 'PUT') {
-            setModels((prev: Model[]) =>
-              prev.map(m => (m.id === options.body?.id ? { ...(options.body as Model) } : m))
-            );
-            resolve({ data: options.body ? [options.body as Model] : [] });
+            setModels((prev: Model[]) => {
+              const updatedModel = response.data[0];
+              return prev.map(m => (m.id === updatedModel.id ? { ...(updatedModel as Model) } : m));
+            });
+            resolve({ data: response.data[0] ? response.data : [] });
             return;
           }
           if (options.method === 'POST') {

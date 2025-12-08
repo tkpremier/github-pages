@@ -18,7 +18,6 @@ export const DriveProvider = ({ children }: PropsWithChildren<{}>) => {
             reject(response);
             return;
           }
-          console.log('setDrive');
           if (options.method === 'PUT') {
             const updatedDrive = Object.keys(response.data[0]).reduce(
               (
