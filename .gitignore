@@ -33,9 +33,6 @@ yarn-error.log*
 .env.production
 .prettierrc
 
-/.vscode/
+.vscode
 Dockerfile*
 ./Dockerfile
-
-credentials.json
-token.json

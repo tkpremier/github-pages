@@ -3,17 +3,17 @@ import isNull from 'lodash/isNull';
 import { Form } from './Form';
 
 import serialize from 'form-serialize';
+import isEqual from 'lodash/isEqual';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { DBData, GoogleDriveAPIResponse } from '../types';
 import handleResponse from '../utils/handleResponse';
-import isEqual from 'lodash/isEqual';
 
 export const DriveFileView = ({
-  source,
+  source = 'drive-google',
   file,
   handleDrive
 }: {
-  source: 'drive-db' | 'drive-google';
+  source?: 'drive-db' | 'drive-google';
   file: GoogleDriveAPIResponse;
   handleDrive?: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
 }) => {
