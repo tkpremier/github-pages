@@ -7,6 +7,7 @@ import { Grid, type CellComponentProps } from 'react-window';
 import { DriveFileView } from '../../src/components/FileEditor';
 import { ModelForm } from '../../src/components/ModelForm';
 import { FilterSidebarContent } from '../../src/components/drive/FilterSidebarContent';
+import { MediaTypeFilter, type MediaType } from '../../src/components/drive/MediaTypeFilter';
 import { Tags } from '../../src/components/drive/Tags';
 import { DriveContext } from '../../src/context/drive';
 import { ModelContext } from '../../src/context/model';
@@ -181,6 +182,7 @@ const DriveDb = () => {
   const [allModels, handleModels] = useContext(ModelContext);
   const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(new Set());
   const [selectedModels, setSelectedModels] = useState<Set<number>>(new Set());
+  const [mediaType, setMediaType] = useState<MediaType>('all');
 
   useEffect(() => {
     handleModels(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model`);
@@ -215,23 +217,36 @@ const DriveDb = () => {
   }, []);
   const filteredData = useMemo(
     () =>
-      driveData.filter(
-        d =>
-          (d.type === 'video' || d.type === 'image') &&
-          (selectedHashtags.size > 0 ? extractHashtags(d.description).some(tag => selectedHashtags.has(tag)) : true) &&
-          (selectedModels.size > 0 ? d.modelId.some(modelId => selectedModels.has(modelId)) : true)
-      ),
-    [driveData, selectedHashtags, selectedModels]
+      driveData.filter(d => {
+        // Filter by media type
+        const matchesMediaType =
+          mediaType === 'all'
+            ? d.type === 'video' || d.type === 'image'
+            : mediaType === 'image'
+            ? d.type === 'image'
+            : d.type === 'video';
+
+        // Filter by hashtags
+        const matchesHashtags =
+          selectedHashtags.size === 0 || extractHashtags(d.description).some(tag => selectedHashtags.has(tag));
+
+        // Filter by models
+        const matchesModels = selectedModels.size === 0 || d.modelId.some(modelId => selectedModels.has(modelId));
+
+        return matchesMediaType && matchesHashtags && matchesModels;
+      }),
+    [driveData, selectedHashtags, selectedModels, mediaType]
   );
   const sortedModels = useMemo(() => {
     return [...allModels].sort((a, b) => a.name.localeCompare(b.name));
   }, [allModels]);
 
-  const activeFilterCount = selectedHashtags.size + selectedModels.size;
+  const activeFilterCount = selectedHashtags.size + selectedModels.size + (mediaType !== 'all' ? 1 : 0);
 
   return (
     <>
       <FilterSidebarContent activeFilterCount={activeFilterCount}>
+        <MediaTypeFilter selectedType={mediaType} onTypeChange={setMediaType} />
         <Tags
           files={driveData as unknown as MergedData[]}
           selectedHashtags={selectedHashtags}

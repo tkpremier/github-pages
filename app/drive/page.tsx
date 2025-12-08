@@ -8,6 +8,7 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { Drawer } from '../../src/components/Drawer';
 import { DriveFileView } from '../../src/components/FileEditor';
 import { FilterSidebarContent } from '../../src/components/drive/FilterSidebarContent';
+import { MediaTypeFilter, type MediaType } from '../../src/components/drive/MediaTypeFilter';
 import { Tags } from '../../src/components/drive/Tags';
 import styles from '../../src/styles/grid.module.scss';
 import { DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
@@ -49,6 +50,7 @@ const Drive = () => {
   const [driveData, setDriveData] = useState<DriveData>({ files: [], nextPageToken: '' });
   const [sortDir, sortBy] = useState('createdTime-desc');
   const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(new Set());
+  const [mediaType, setMediaType] = useState<MediaType>('all');
   useEffect(() => {
     getDriveFromApi().then(data => {
       setDriveData(data);
@@ -91,7 +93,17 @@ const Drive = () => {
     []
   );
   const sortedData = useMemo(() => {
-    const filtered = driveData.files.filter(d => d?.mimeType?.startsWith('video') || d?.mimeType?.startsWith('image'));
+    // First filter by media type
+    let filtered = driveData.files.filter(d => {
+      if (mediaType === 'all') {
+        return d?.mimeType?.startsWith('video') || d?.mimeType?.startsWith('image');
+      } else if (mediaType === 'image') {
+        return d?.mimeType?.startsWith('image');
+      } else if (mediaType === 'video') {
+        return d?.mimeType?.startsWith('video');
+      }
+      return false;
+    });
 
     // Apply hashtag filter if any hashtags are selected
     const hashtagFiltered =
@@ -130,7 +142,7 @@ const Drive = () => {
       return dir === 'desc' ? Number(b[key] ?? 0) - Number(a[key] ?? 0) : Number(a[key] ?? 0) - Number(b[key] ?? 0);
     });
     return hashtagFiltered;
-  }, [driveData.files, sortDir, selectedHashtags]);
+  }, [driveData.files, sortDir, selectedHashtags, mediaType]);
 
   const handleHashtagClick = useCallback((tag: string) => {
     setSelectedHashtags(prev => {
@@ -152,7 +164,8 @@ const Drive = () => {
       <h2>Welcome to the &#x1F608;</h2>
       <p>Here&apos;s what we&apos;ve been up to....</p>
 
-      <FilterSidebarContent activeFilterCount={selectedHashtags.size}>
+      <FilterSidebarContent activeFilterCount={selectedHashtags.size + (mediaType !== 'all' ? 1 : 0)}>
+        <MediaTypeFilter selectedType={mediaType} onTypeChange={setMediaType} />
         <div style={{ marginBottom: '20px' }}>
           <label htmlFor="sort-select" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>
             Sort By
