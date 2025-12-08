@@ -2,6 +2,8 @@
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { User, UserContext } from '../context/user';
 import styles from '../styles/layout.module.scss';
+import { DriveProvider } from '../context/drive';
+import { ModelProvider } from '../context/model';
 
 export const Main = ({ children }: PropsWithChildren<{}>) => {
   const [user, setUser] = useState<User>(undefined);
@@ -19,7 +21,11 @@ export const Main = ({ children }: PropsWithChildren<{}>) => {
   }, []);
   return (
     <UserContext.Provider value={[user, setUser]}>
-      <div className={styles.mainRoot}>{children}</div>
+      <DriveProvider>
+        <ModelProvider>
+          <div className={styles.mainRoot}>{children}</div>
+        </ModelProvider>
+      </DriveProvider>
     </UserContext.Provider>
   );
 };

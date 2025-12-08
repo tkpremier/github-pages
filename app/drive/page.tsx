@@ -225,7 +225,7 @@ const Drive = () => {
               )}
             </p>
 
-            <DriveFileView file={drive} />
+            <DriveFileView source="drive-google" file={drive} />
             <ul>
               <Drawer header={drive.name} key={`${drive.id}-drawer`}>
                 <p>{drive.type}</p>

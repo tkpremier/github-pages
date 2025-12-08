@@ -6,7 +6,17 @@ import serialize from 'form-serialize';
 import handleResponse from '../utils/handleResponse';
 import uniq from 'lodash/uniq';
 
-export const ModelForm = ({ drive, models }: { drive: DBData; models: Model[] }) => {
+export const ModelForm = ({
+  drive,
+  models,
+  handleDrive,
+  handleModels
+}: {
+  drive: DBData;
+  models: Model[];
+  handleModels: (url: string, options?: RequestInit & { body?: Model }) => Promise<{ data: Model[] } | Error>;
+  handleDrive: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
+}) => {
   const [message, setMessage] = useState<string>('');
   const [modelId, setModelId] = useState<number>(0);
   const [modelName, setModelName] = useState<string>('');
@@ -20,6 +30,8 @@ export const ModelForm = ({ drive, models }: { drive: DBData; models: Model[] })
       const { name, platform } = modelData;
       data.modelName = name;
       data.platform = platform;
+    } else {
+      data.modelName = data.name;
     }
     const options = {
       credentials: 'include' as RequestCredentials,
@@ -29,55 +41,67 @@ export const ModelForm = ({ drive, models }: { drive: DBData; models: Model[] })
       },
       body: JSON.stringify({
         ...data,
+        id: modelId,
         driveIds: modelData ? uniq([...modelData.driveIds, drive.id]) : [drive.id]
       })
     };
-    fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model${options.method === 'POST' ? '' : `/${modelId}`}`, options)
-      .then(handleResponse)
+    handleModels(
+      `${process.env.NEXT_PUBLIC_CLIENTURL}/api/model${options.method === 'POST' ? '' : `/${modelId}`}`,
+      options as unknown as RequestInit & { body?: Model | undefined }
+    )
       .then(res => {
-        setMessage(
-          `${res.data[0].name} has been added successfully. ${drive.name} has been added successfully to the model.`
-        );
+        console.log('res: ', res);
+        if (!(res instanceof Error)) {
+          console.log('data.modelName: ', data.modelName);
+          setMessage(
+            `${data.modelName} has been added successfully. ${drive.name} has been added successfully to the model.`
+          );
+          updateDrive(modelId);
+        }
       })
       .catch(err => console.log('err: ', err));
   };
   const modelDrive = models.find(model => model.driveIds.includes(drive.id));
-  console.log('modelDrive: ', modelDrive?.id);
-  const hasModel = drive.modelId.includes(modelDrive?.id ?? 0);
-  if (hasModel) {
-    console.log;
-    console.log('hasModel: ', hasModel);
-  }
-  const updateDrive = useCallback(() => {
-    const options = {
-      credentials: 'include' as RequestCredentials,
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify({
-        ...drive,
-        modelId: uniq([...drive.modelId, modelDrive?.id])
-      })
-    };
-    fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list/${drive.id}`, options)
-      .then(handleResponse)
-      .then(res => {
-        console.log('res: ', res);
-        setMessage(`Drive updated successfully`);
-      })
-      .catch(err => {
-        console.error('error: ', err);
-        setMessage(`Error updating drive`);
-      });
-  }, [modelDrive?.id, drive]);
+  const hasModel = drive.modelId.includes(modelDrive?.id ?? 0) || Boolean(modelDrive);
+  const updateDrive = useCallback(
+    (modelId: number) => {
+      const options = {
+        credentials: 'include' as RequestCredentials,
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+          ...drive,
+          modelId: uniq([...drive.modelId, modelId])
+        })
+      };
+      handleDrive(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list/${drive.id}`, options)
+        .then(res => {
+          console.log('res: ', res);
+          setMessage(`Drive updated successfully`);
+        })
+        .catch(err => console.log('err: ', err));
+      // fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list/${drive.id}`, options)
+      //   .then(handleResponse)
+      //   .then(res => {
+      //     console.log('res: ', res);
+      //     setMessage(`Drive updated successfully`);
+      //   })
+      //   .catch(err => {
+      //     console.error('error: ', err);
+      //     setMessage(`Error updating drive`);
+      //   });
+    },
+    [modelDrive, drive, handleDrive]
+  );
 
   return (
     <>
       {hasModel ? (
         <p>Model: {modelDrive?.name}</p>
       ) : modelDrive?.id && !hasModel ? (
-        <button onClick={updateDrive}>Update Drive with Model</button>
+        <button onClick={() => updateDrive(modelDrive?.id ?? 0)}>Update Drive with Model</button>
       ) : (
         <Form onSubmit={handleSubmit}>
           <h4>Add model for {drive.name}</h4>
@@ -104,7 +128,7 @@ export const ModelForm = ({ drive, models }: { drive: DBData; models: Model[] })
           </select>
           <input
             type="text"
-            name="modelName"
+            name="name"
             placeholder="Model Name"
             value={models.find(model => model.id === modelId)?.name ?? modelName}
             onChange={e => setModelName(e.target.value)}

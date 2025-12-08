@@ -5,46 +5,15 @@ import Link from 'next/link';
 import styles from '../../src/styles/grid.module.scss';
 import utilsStyles from '../../src/styles/utils.module.scss';
 import { DBData, MergedData, Model } from '../../src/types';
-import { emptyArray, formatBytes, getDuration, getImageLink } from '../../src/utils';
-import handleResponse from '../../src/utils/handleResponse';
+import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import { Grid, type CellComponentProps } from 'react-window';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Tags } from '../../src/components/drive/Tags';
 import { extractHashtags } from '../../src/utils/hashTags';
 import { DriveFileView } from '../../src/components/FileEditor';
 import { ModelForm } from '../../src/components/ModelForm';
-
-const getDriveFromDb = async () => {
-  try {
-    const response = await handleResponse(
-      await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list`, { cache: 'no-store', credentials: 'include' })
-    );
-    if (response instanceof Error) {
-      throw response;
-    }
-    console.log('response: ', response);
-    return response.data;
-  } catch (error) {
-    console.error('error: ', error);
-    return emptyArray<DBData>();
-  }
-};
-
-const getModelsFromDb = async () => {
-  try {
-    const response = await handleResponse(
-      await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model`, { cache: 'no-store', credentials: 'include' })
-    );
-    if (response instanceof Error) {
-      throw response;
-    }
-    console.log('response: ', response);
-    return response.data;
-  } catch (error) {
-    console.error('error: ', error);
-    return emptyArray();
-  }
-};
+import { DriveContext } from '../../src/context/drive';
+import { ModelContext } from '../../src/context/model';
 
 // Helper function to get column count based on window width
 const getColumnCount = (width: number): number => {
@@ -56,12 +25,26 @@ const getColumnCount = (width: number): number => {
 // Estimate row height - adjust based on your actual item height
 const ROW_HEIGHT = 1200;
 
-type GridCellProps = CellComponentProps<{ data: DBData[]; columnCount: number; models: Model[] }>;
+type GridCellProps = CellComponentProps<{
+  data: DBData[];
+  columnCount: number;
+  models: Model[];
+  handleModels: (url: string, options?: RequestInit & { body?: Model }) => Promise<{ data: Model[] } | Error>;
+  handleDrive: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
+}>;
 
-const GridCell = ({ columnIndex, rowIndex, style, data, columnCount, models }: GridCellProps) => {
+const GridCell = ({
+  columnIndex,
+  rowIndex,
+  style,
+  data,
+  columnCount,
+  models,
+  handleModels,
+  handleDrive
+}: GridCellProps) => {
   const index = rowIndex * columnCount + columnIndex;
   const drive = data[index];
-
   if (!drive) {
     return <div style={style}></div>;
   }
@@ -132,15 +115,25 @@ const GridCell = ({ columnIndex, rowIndex, style, data, columnCount, models }: G
           {getDuration(drive?.duration ?? 0)}
         </p>
       ) : null}
-      <ModelForm drive={drive} models={models} />
-      <DriveFileView file={drive as unknown as MergedData} />
+      <ModelForm drive={drive} models={models} handleModels={handleModels} handleDrive={handleDrive} />
+      <DriveFileView source="drive-db" file={drive as unknown as MergedData} handleDrive={handleDrive} />
     </div>
   );
 };
 
-const DriveGrid = ({ data, models }: { data: DBData[]; models: Model[] }) => {
+const DriveGrid = ({
+  data,
+  models,
+  handleModels,
+  handleDrive
+}: {
+  data: DBData[];
+  models: Model[];
+  handleModels: (url: string, options?: RequestInit & { body?: Model }) => Promise<{ data: Model[] } | Error>;
+  handleDrive: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
+}) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
+  console.log('DRiveGrid data: ', data.length);
   useEffect(() => {
     const updateDimensions = () => {
       setDimensions({
@@ -177,27 +170,23 @@ const DriveGrid = ({ data, models }: { data: DBData[]; models: Model[] }) => {
         rowCount={rowCount}
         rowHeight={ROW_HEIGHT}
         cellComponent={GridCell}
-        cellProps={{ data, columnCount, models }}
+        cellProps={{ data, columnCount, models, handleModels, handleDrive }}
       />
     </div>
   );
 };
 
 const DriveDb = () => {
-  const [data, setData] = useState<DBData[]>([]);
-  const [allModels, setAllModels] = useState<Model[]>([]);
+  const [driveData, handleDrive] = useContext(DriveContext);
+  const [allModels, handleModels] = useContext(ModelContext);
   const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(new Set());
 
   const [selectedModels, setSelectedModels] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    getModelsFromDb().then(models => {
-      setAllModels(models);
-    });
-    getDriveFromDb().then(data => {
-      setData(data);
-    });
-  }, []);
+    handleModels(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model`);
+    handleDrive(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list`);
+  }, [handleDrive, handleModels]);
   const handleHashtagClick = useCallback((tag: string) => {
     setSelectedHashtags(prev => {
       if (tag === 'clear') {
@@ -226,21 +215,23 @@ const DriveDb = () => {
       return newSet;
     });
   }, []);
-  const filteredData = useMemo(() => {
-    return data.filter(
-      d =>
-        (d.type === 'video' || d.type === 'image') &&
-        (selectedHashtags.size > 0 ? extractHashtags(d.description).some(tag => selectedHashtags.has(tag)) : true) &&
-        (selectedModels.size > 0 ? d.modelId.some(modelId => selectedModels.has(modelId)) : true)
-    );
-  }, [data, selectedHashtags, selectedModels]);
+  const filteredData = useMemo(
+    () =>
+      driveData.filter(
+        d =>
+          (d.type === 'video' || d.type === 'image') &&
+          (selectedHashtags.size > 0 ? extractHashtags(d.description).some(tag => selectedHashtags.has(tag)) : true) &&
+          (selectedModels.size > 0 ? d.modelId.some(modelId => selectedModels.has(modelId)) : true)
+      ),
+    [driveData, selectedHashtags, selectedModels]
+  );
   const sortedModels = useMemo(() => {
     return [...allModels].sort((a, b) => a.name.localeCompare(b.name));
   }, [allModels]);
   return (
     <>
       <Tags
-        files={data as unknown as MergedData[]}
+        files={driveData as unknown as MergedData[]}
         selectedHashtags={selectedHashtags}
         toggleHashtag={handleHashtagClick}
       />
@@ -256,7 +247,7 @@ const DriveDb = () => {
           </div>
         ))}
       </fieldset>
-      <DriveGrid data={filteredData} models={allModels} />
+      <DriveGrid data={filteredData} models={allModels} handleDrive={handleDrive} handleModels={handleModels} />
     </>
   );
 };
