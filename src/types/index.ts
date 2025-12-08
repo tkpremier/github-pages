@@ -233,3 +233,13 @@ export type Model = {
   name: string;
   platform: string;
 };
+
+export type User =
+  | {
+      sid: string;
+      name: string;
+      email: string;
+      email_verified: boolean;
+      sub: string;
+    }
+  | undefined;

@@ -1,9 +1,10 @@
 'use client';
 import { PropsWithChildren, useEffect, useState } from 'react';
-import { User, UserContext } from '../context/user';
-import styles from '../styles/layout.module.scss';
 import { DriveProvider } from '../context/drive';
 import { ModelProvider } from '../context/model';
+import { UserContext } from '../context/user';
+import styles from '../styles/layout.module.scss';
+import { User } from '../types';
 
 export const Main = ({ children }: PropsWithChildren<{}>) => {
   const [user, setUser] = useState<User>(undefined);

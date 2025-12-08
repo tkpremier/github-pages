@@ -1,13 +1,4 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
-
-export type User =
-  | {
-      sid: string;
-      name: string;
-      email: string;
-      email_verified: boolean;
-      sub: string;
-    }
-  | undefined;
+import { User } from '../types';
 
 export const UserContext = createContext<[User, Dispatch<SetStateAction<User>>]>([undefined, () => {}]);

@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useContext, useState } from 'react';
 import { UserContext } from '../../context/user';
+import buttonStyles from '../../styles/button.module.scss';
+import styles from '../../styles/header.module.scss';
 import utilStyles from '../../styles/utils.module.scss';
-import buttonStyles from '../button.module.scss';
-import styles from './header.module.scss';
 
 export const Header = () => {
   const [isOpen, toggleOffCanvas] = useState(false);

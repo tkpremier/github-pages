@@ -1,10 +1,9 @@
 'use client';
+import serialize from 'form-serialize';
+import uniq from 'lodash/uniq';
 import { useCallback, useState } from 'react';
 import { DBData, Model } from '../types';
 import { Form } from './Form';
-import serialize from 'form-serialize';
-import handleResponse from '../utils/handleResponse';
-import uniq from 'lodash/uniq';
 
 export const ModelForm = ({
   drive,

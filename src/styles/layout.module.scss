@@ -1,5 +1,7 @@
+@use 'vars' as *;
+
 .container {
-  max-width: 72rem;
+  max-width: $maxContainer;
   padding: 0 1rem;
   margin: 0 auto 6rem;
 }
@@ -11,7 +13,7 @@
   justify-items: center;
   align-items: center;
   flex-wrap: wrap;
-  max-width: 1280px;
+  max-width: $maxContainer;
   margin-top: 3rem;
 }
 
@@ -31,12 +33,16 @@
 }
 
 .mainRoot {
-  margin-top: 60px;
+  max-width: $maxContainer;
+  margin: 60px auto 0;
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
   justify-content: center;
   padding: 0 1rem;
+  @media screen and (min-width: calc($maxContainer + 2rem)) {
+    padding: 0;
+  }
 }
 .card {
   margin: 1rem 0;

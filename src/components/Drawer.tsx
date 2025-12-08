@@ -1,8 +1,8 @@
 'use client';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import styles from '../styles/drawer.module.scss';
 import { DrawerProps } from '../types';
-import styles from './drawer.module.scss';
 
 export const Drawer = (props: React.PropsWithChildren<DrawerProps>) => {
   const [closed, toggleEl] = useState(props.closed);

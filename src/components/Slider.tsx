@@ -1,8 +1,8 @@
 'use client';
 import classNames from 'classnames';
 import React, { Fragment, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
-import { defaultSizes, DEVICE_WIDTH_TYPES, ISlider, MediaQuery, Sizes } from '../types';
-import styles from './carousel.module.scss';
+import styles from '../styles/carousel.module.scss';
+import { DEVICE_WIDTH_TYPES, ISlider, MediaQuery, Sizes, defaultSizes } from '../types';
 const getMediaQueries = (): Map<DEVICE_WIDTH_TYPES, MediaQueryList> => {
   const sizeQueries = new Map([
     ['sm', '(max-width: 479px)'],

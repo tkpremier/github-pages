@@ -7,12 +7,12 @@ import Link from 'next/link';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Drawer } from '../../src/components/Drawer';
 import { DriveFileView } from '../../src/components/FileEditor';
+import { Tags } from '../../src/components/drive/Tags';
 import styles from '../../src/styles/grid.module.scss';
 import { DriveData, GoogleDriveAPIResponse, MergedData, SortOptionKeys } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
 import { extractHashtags } from '../../src/utils/hashTags';
-import { Tags } from '../../src/components/drive/Tags';
 
 const getDriveFromApi = async () => {
   try {
@@ -133,6 +133,9 @@ const Drive = () => {
 
   const handleHashtagClick = useCallback((tag: string) => {
     setSelectedHashtags(prev => {
+      if (tag === 'clear') {
+        return new Set();
+      }
       const newSet = new Set(prev);
       if (newSet.has(tag)) {
         newSet.delete(tag);
@@ -143,9 +146,6 @@ const Drive = () => {
     });
   }, []);
 
-  const handleClearHashtags = useCallback(() => {
-    setSelectedHashtags(new Set());
-  }, []);
   return (
     <>
       <h2>Welcome to the &#x1F608;</h2>
@@ -153,11 +153,6 @@ const Drive = () => {
       <Tags files={driveData.files} selectedHashtags={selectedHashtags} toggleHashtag={handleHashtagClick} />
       <fieldset className={styles.gridControls}>
         <button type="button" onClick={handleGetMore}>{`Get More ${driveData.files.length}`}</button>
-        {selectedHashtags.size > 0 && (
-          <button type="button" onClick={handleClearHashtags} style={{ marginLeft: '10px' }}>
-            Clear Hashtags ({selectedHashtags.size})
-          </button>
-        )}
         <select onChange={handleSort} defaultValue={sortDir}>
           <option value="">Choose Sort</option>
           <option value="createdTime-desc">Created - Latest</option>

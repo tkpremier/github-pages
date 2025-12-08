@@ -1,6 +1,6 @@
 'use client';
 import { CodeBlock } from 'react-code-blocks';
-import styles from './code.module.scss';
+import styles from '../styles/code.module.scss';
 
 export const Code = (props: { text: string }) => (
   <pre className={styles.codeRow}>
