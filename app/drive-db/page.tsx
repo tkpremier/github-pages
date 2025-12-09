@@ -80,7 +80,7 @@ const GridCell = ({
         <br />
         {drive.description && <strong>{drive.description}</strong>}
         <br />
-        <Link href={`/drive/${drive.id}`}>Go to File Page</Link>
+        <Link href={`/drive-db/${drive.id}`}>Go to File Page</Link>
         <br />
         <a target="_blank" rel="noreferrer nofollower" href={drive.webViewLink}>
           Go to File

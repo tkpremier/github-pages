@@ -105,7 +105,6 @@ export const DriveFileView = ({
       setDriveFile(file);
     }
   }, [file, driveFile]);
-  console.log('driveFile: ', driveFile);
   return !isNull(driveFile) && driveFile ? (
     <Form onSubmit={handleSubmit}>
       <h4>Update Drive Info</h4>

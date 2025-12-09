@@ -35,7 +35,7 @@ export const Slider = (props: PropsWithChildren<ISlider>) => {
     itemsPerSlide: 1,
     nextDisabled: React.Children.count(props.children) < 2,
     prevDisabled: React.Children.count(props.children) < 2,
-    wrapperWidth: 1110
+    wrapperWidth: 1200
   });
   useEffect(() => {
     if (carouselRef.current !== null) {
