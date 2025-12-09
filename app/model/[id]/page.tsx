@@ -18,11 +18,13 @@ const ModelPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   console.log('model data: ', data);
   const model = data[0];
   console.log('model: ', model);
+  const images = model.driveFiles.filter(file => file.type === 'image');
+  const videos = model.driveFiles.filter(file => file.type === 'video');
   return model ? (
     <div>
       <h2>{model.modelName}</h2>
-      <DriveDbSlider carouselTitle={`Images`} key="images" data={model.driveFiles} type="image" />
-      <DriveDbSlider carouselTitle={`Videos`} key="videos" data={model.driveFiles} type="video" />
+      {images.length > 0 && <DriveDbSlider carouselTitle={`Images`} key="images" data={images} type="image" />}
+      {videos.length > 0 && <DriveDbSlider carouselTitle={`Videos`} key="videos" data={videos} type="video" />}
     </div>
   ) : (
     <div>No model found</div>
