@@ -1,6 +1,6 @@
 'use client';
-import * as codeString from '../../../code-strings/react';
-import * as codeHooks from '../../../code-strings/react/hooks';
+import * as codeString from '../../../src/code-strings/react';
+import * as codeHooks from '../../../src/code-strings/react/hooks';
 import { Code } from '../../../src/components/Code';
 import { Drawer } from '../../../src/components/Drawer';
 import { Profiler } from '../../../src/components/Profiler';

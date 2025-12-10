@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import * as jsClass from '../../../code-strings/js/class';
-import * as jsCon from '../../../code-strings/js/context';
-import * as jsEnv from '../../../code-strings/js/environment';
-import * as jsExCon from '../../../code-strings/js/execution-context';
-import * as jsThis from '../../../code-strings/js/this';
+import * as jsClass from '../../../src/code-strings/js/class';
+import * as jsCon from '../../../src/code-strings/js/context';
+import * as jsEnv from '../../../src/code-strings/js/environment';
+import * as jsExCon from '../../../src/code-strings/js/execution-context';
+import * as jsThis from '../../../src/code-strings/js/this';
 import { Code } from '../../../src/components/Code';
 import { Drawer } from '../../../src/components/Drawer';
 

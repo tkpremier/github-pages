@@ -6,6 +6,9 @@ const getModel = async (id: string) => {
     const response = await handleResponse(
       await fetch(`${process.env.INTERNAL_API_URL}/api/model/${id}`, { credentials: 'include' })
     );
+    if (response instanceof Error) {
+      throw response;
+    }
     return response;
   } catch (error) {
     console.error('Model error: ', error);
@@ -15,9 +18,7 @@ const getModel = async (id: string) => {
 const ModelPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   const { data } = await getModel(id);
-  console.log('model data: ', data);
   const model = data[0];
-  console.log('model: ', model);
   const images = model.driveFiles.filter(file => file.type === 'image');
   const videos = model.driveFiles.filter(file => file.type === 'video');
   return model ? (
