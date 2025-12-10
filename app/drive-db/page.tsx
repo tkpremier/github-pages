@@ -15,6 +15,7 @@ import styles from '../../src/styles/grid.module.scss';
 import utilsStyles from '../../src/styles/utils.module.scss';
 import { DBData, MergedData, Model } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
+import handleResponse from '../../src/utils/handleResponse';
 import { extractHashtags } from '../../src/utils/hashTags';
 
 // Helper function to get column count based on window width
@@ -188,6 +189,17 @@ const DriveDb = () => {
     handleModels(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model`);
     handleDrive(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list`);
   }, [handleDrive, handleModels]);
+  const handleSyncDrive = async () => {
+    const response = await handleResponse(await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google-sync`));
+    if (response instanceof Error) {
+      console.error('error: ', response);
+    } else {
+      if (response.processed > 0 && response.errors === 0) {
+        console.log('response: ', response);
+        handleDrive(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list`);
+      }
+    }
+  };
   const handleHashtagClick = useCallback((tag: string) => {
     setSelectedHashtags(prev => {
       if (tag === 'clear') {
@@ -246,6 +258,7 @@ const DriveDb = () => {
   return (
     <>
       <FilterSidebarContent activeFilterCount={activeFilterCount}>
+        <button onClick={handleSyncDrive}>Sync Drive</button>
         <MediaTypeFilter selectedType={mediaType} onTypeChange={setMediaType} />
         <Tags
           files={driveData as unknown as MergedData[]}
