@@ -4,7 +4,7 @@ import { Form } from './Form';
 
 import serialize from 'form-serialize';
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react';
-import { DBData, GoogleDriveAPIResponse } from '../types';
+import { DBDataResponse, DriveHandler, DriveResponse, GoogleDriveAPIResponse } from '../types';
 import handleResponse from '../utils/handleResponse';
 
 const updateDriveFileApi = (
@@ -40,7 +40,7 @@ export const DriveFileView = ({
 }: {
   source?: 'drive-db' | 'drive-google';
   file: GoogleDriveAPIResponse;
-  handleDrive?: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
+  handleDrive?: DriveHandler<DriveResponse>;
 }) => {
   const [driveFile, setDriveFile] = useState<GoogleDriveAPIResponse>(file);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +91,10 @@ export const DriveFileView = ({
                 })
                 .catch(err => {
                   console.error('DB Updated successfully, but google API not updated successfully.  err: ', err);
-                  setDriveFile({ ...driveFile, ...res.data[0] } as unknown as GoogleDriveAPIResponse);
+                  setDriveFile({
+                    ...driveFile,
+                    ...(res as DBDataResponse).data[0]
+                  } as unknown as GoogleDriveAPIResponse);
                 });
             }
           })
