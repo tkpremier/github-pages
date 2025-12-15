@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Drawer } from '../../../src/components/Drawer';
 import handleResponse from '../../../src/utils/handleResponse';
+import { AddForm } from './AddForm';
 
 export const metadata: Metadata = {
   title: 'Experience | TK Premier',
@@ -19,7 +20,8 @@ const getExp = async () => {
   }
 };
 
-export default async function Experience() {
+export default async function Experience(props) {
+  console.log('props: ', props);
   const data = await getExp();
   // const [updatedExp, updateExp] = useState({ id: 0, name: '', description: '' });
   return (
@@ -44,6 +46,7 @@ export default async function Experience() {
           ))}
         </ul>
       ) : null}
+      <AddForm />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { Editor as CKEditor } from 'ckeditor5';
 import { drive_v3 } from 'googleapis';
 import { NextApiRequest } from 'next';
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 export type NextApiRequestWithQuery = NextApiRequest & {
   query?: {
@@ -250,5 +250,8 @@ export type User =
       email: string;
       email_verified: boolean;
       sub: string;
+      isAdmin: boolean;
     }
   | undefined;
+
+export type UserContextType = [User, Dispatch<SetStateAction<User>>];

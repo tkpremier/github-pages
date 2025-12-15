@@ -2,7 +2,8 @@
 import classNames from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useContext, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { UserContext } from '../../context/user';
 import buttonStyles from '../../styles/button.module.scss';
 import styles from '../../styles/header.module.scss';
@@ -11,9 +12,23 @@ import utilStyles from '../../styles/utils.module.scss';
 export const Header = () => {
   const [isOpen, toggleOffCanvas] = useState(false);
   const [user] = useContext(UserContext);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Construct the current URL for redirect
+  const currentUrl = useMemo(() => {
+    return pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+  }, [pathname, searchParams]);
+
+  const loginUrl = useMemo(() => {
+    return `${process.env.NEXT_PUBLIC_CLIENTURL}/login${
+      currentUrl ? `?returnTo=${encodeURIComponent(currentUrl)}` : ''
+    }`;
+  }, [currentUrl]);
+
   const handleToggle = useCallback(() => {
     toggleOffCanvas(open => !open);
-  }, [isOpen]);
+  }, []);
 
   return (
     <>
@@ -48,7 +63,7 @@ export const Header = () => {
               </li>
             ) : (
               <li className={styles.headerNavItem}>
-                <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/login`}>Login</Link>
+                <Link href={loginUrl}>Login</Link>
               </li>
             )}
             <li className={classNames(styles.headerNavItem, styles.headerNavItemLogo)}>
@@ -106,7 +121,7 @@ export const Header = () => {
             </li>
           ) : (
             <li className={styles.offCanvasNavItem}>
-              <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/login`}>Login</Link>
+              <Link href={loginUrl}>Login</Link>
             </li>
           )}
           <li className={styles.offCanvasNavItem}>

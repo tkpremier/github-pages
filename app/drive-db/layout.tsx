@@ -3,12 +3,10 @@ import { FilterSidebarProviderWrapper } from '../../src/components/drive/FilterS
 import { DriveProvider } from '../../src/context/drive';
 import { ModelProvider } from '../../src/context/model';
 
-const DriveDBLayout = ({ children }: PropsWithChildren<{}>) => (
+export default ({ children }: PropsWithChildren<{}>) => (
   <FilterSidebarProviderWrapper>
     <DriveProvider source="drive-db">
       <ModelProvider>{children}</ModelProvider>
     </DriveProvider>
   </FilterSidebarProviderWrapper>
 );
-
-export default DriveDBLayout;
