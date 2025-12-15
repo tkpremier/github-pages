@@ -1,4 +1,5 @@
-import { createContext, PropsWithChildren, useCallback, useState } from 'react';
+'use client';
+import { createContext, PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { Model } from '../types';
 import handleResponse from '../utils/handleResponse';
 
@@ -38,5 +39,8 @@ export const ModelProvider = ({ children }: PropsWithChildren<{}>) => {
     },
     [setModels]
   );
+  useEffect(() => {
+    handleModels(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model`);
+  }, []);
   return <ModelContext.Provider value={[models, handleModels]}>{children}</ModelContext.Provider>;
 };

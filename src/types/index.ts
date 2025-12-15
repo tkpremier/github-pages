@@ -187,9 +187,18 @@ export type DBData = {
   size?: number;
 };
 
+export type DriveAPIResponse = {
+  files: Array<GoogleDriveAPIResponse>;
+  nextPageToken: string;
+};
+
 export interface DBDataResponse {
   data: Array<DBData>;
 }
+
+export type DriveResponse = DriveAPIResponse | DBDataResponse;
+
+export type DriveHandler<T extends DriveResponse> = (url: string, options?: RequestInit) => Promise<T | Error>;
 
 export type MergedData = GDriveApiBase &
   GDriveApiOptional &

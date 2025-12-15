@@ -23,14 +23,6 @@ export const Header = () => {
       >
         <nav className={styles.headerNav}>
           <ul className={styles.headerWrapper}>
-            {/**
-             * Off Canvas Menu
-             */}
-            {/**
-             *  1) Hamburger Button
-             *  2) Name
-             *  3) Menu
-             */}
             <li className={classNames(styles.headerNavItem, styles.headerNavItemMenu)}>
               <button onClick={handleToggle} className={styles.hamBurger} type="button" aria-label="Toggle Button">
                 <img src="/images/hamburger.svg" width={36} height={36} alt="Hamburger" />
@@ -107,6 +99,18 @@ export const Header = () => {
           </li>
           <li className={styles.offCanvasNavItem}>
             <Link href="/interview">Interviews</Link>
+          </li>
+          {user ? (
+            <li className={styles.offCanvasNavItem}>
+              <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/logout`}>Logout</Link>
+            </li>
+          ) : (
+            <li className={styles.offCanvasNavItem}>
+              <Link href={`${process.env.NEXT_PUBLIC_CLIENTURL}/login`}>Login</Link>
+            </li>
+          )}
+          <li className={styles.offCanvasNavItem}>
+            <Link href="/profile">Profile</Link>
           </li>
         </ul>
       </nav>

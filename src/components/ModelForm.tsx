@@ -2,7 +2,7 @@
 import serialize from 'form-serialize';
 import uniq from 'lodash/uniq';
 import { useCallback, useState } from 'react';
-import { DBData, Model } from '../types';
+import { DBData, DriveHandler, DriveResponse, Model } from '../types';
 import { Form } from './Form';
 
 export const ModelForm = ({
@@ -14,7 +14,7 @@ export const ModelForm = ({
   drive: DBData;
   models: Model[];
   handleModels: (url: string, options?: RequestInit & { body?: Model }) => Promise<{ data: Model[] } | Error>;
-  handleDrive: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
+  handleDrive: DriveHandler<DriveResponse>;
 }) => {
   const [message, setMessage] = useState<string>('');
   const [modelId, setModelId] = useState<number>(0);

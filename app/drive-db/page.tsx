@@ -2,7 +2,7 @@
 import isNull from 'lodash/isNull';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, type CellComponentProps } from 'react-window';
 import { DriveFileView } from '../../src/components/FileEditor';
 import { ModelForm } from '../../src/components/ModelForm';
@@ -13,7 +13,7 @@ import { DriveContext } from '../../src/context/drive';
 import { ModelContext } from '../../src/context/model';
 import styles from '../../src/styles/grid.module.scss';
 import utilsStyles from '../../src/styles/utils.module.scss';
-import { DBData, MergedData, Model } from '../../src/types';
+import { DBData, DBDataResponse, DriveHandler, DriveResponse, MergedData, Model } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import handleResponse from '../../src/utils/handleResponse';
 import { extractHashtags } from '../../src/utils/hashTags';
@@ -33,7 +33,7 @@ type GridCellProps = CellComponentProps<{
   columnCount: number;
   models: Model[];
   handleModels: (url: string, options?: RequestInit & { body?: Model }) => Promise<{ data: Model[] } | Error>;
-  handleDrive: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
+  handleDrive: DriveHandler<DriveResponse>;
 }>;
 
 const GridCell = ({
@@ -133,7 +133,7 @@ const DriveGrid = ({
   data: DBData[];
   models: Model[];
   handleModels: (url: string, options?: RequestInit & { body?: Model }) => Promise<{ data: Model[] } | Error>;
-  handleDrive: (url: string, options: RequestInit) => Promise<{ data: DBData[] } | Error>;
+  handleDrive: DriveHandler<DriveResponse>;
 }) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   useEffect(() => {
@@ -179,16 +179,12 @@ const DriveGrid = ({
 };
 
 const DriveDb = () => {
-  const [driveData, handleDrive] = useContext(DriveContext);
-  const [allModels, handleModels] = useContext(ModelContext);
+  const [driveData, handleDrive] = use(DriveContext);
+  const [allModels, handleModels] = use(ModelContext);
   const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(new Set());
   const [selectedModels, setSelectedModels] = useState<Set<number>>(new Set());
   const [mediaType, setMediaType] = useState<MediaType>('all');
 
-  useEffect(() => {
-    handleModels(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model`);
-    handleDrive(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list`);
-  }, [handleDrive, handleModels]);
   const handleSyncDrive = async () => {
     const response = await handleResponse(await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google-sync`));
     if (response instanceof Error) {
@@ -229,7 +225,7 @@ const DriveDb = () => {
   }, []);
   const filteredData = useMemo(
     () =>
-      driveData.filter(d => {
+      (driveData as DBDataResponse).data.filter(d => {
         // Filter by media type
         const matchesMediaType =
           mediaType === 'all'
@@ -261,7 +257,7 @@ const DriveDb = () => {
         <button onClick={handleSyncDrive}>Sync Drive</button>
         <MediaTypeFilter selectedType={mediaType} onTypeChange={setMediaType} />
         <Tags
-          files={driveData as unknown as MergedData[]}
+          files={(driveData as DBDataResponse).data as unknown as MergedData[]}
           selectedHashtags={selectedHashtags}
           toggleHashtag={handleHashtagClick}
         />
