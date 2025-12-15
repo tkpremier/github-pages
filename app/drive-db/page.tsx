@@ -2,7 +2,8 @@
 import isNull from 'lodash/isNull';
 import Image from 'next/image';
 import Link from 'next/link';
-import { use, useCallback, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Grid, type CellComponentProps } from 'react-window';
 import { DriveFileView } from '../../src/components/FileEditor';
 import { ModelForm } from '../../src/components/ModelForm';
@@ -15,6 +16,7 @@ import styles from '../../src/styles/grid.module.scss';
 import utilsStyles from '../../src/styles/utils.module.scss';
 import { DBData, DBDataResponse, DriveHandler, DriveResponse, MergedData, Model } from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
+import { parseModelsFromURL, parseTagsFromURL } from '../../src/utils/drive-db';
 import handleResponse from '../../src/utils/handleResponse';
 import { extractHashtags } from '../../src/utils/hashTags';
 
@@ -179,11 +181,102 @@ const DriveGrid = ({
 };
 
 const DriveDb = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [driveData, handleDrive] = use(DriveContext);
   const [allModels, handleModels] = use(ModelContext);
-  const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(new Set());
-  const [selectedModels, setSelectedModels] = useState<Set<number>>(new Set());
-  const [mediaType, setMediaType] = useState<MediaType>('all');
+
+  // Initialize filter state from URL params
+  const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(() =>
+    parseTagsFromURL(searchParams.get('tags'))
+  );
+  const [selectedModels, setSelectedModels] = useState<Set<number>>(() =>
+    parseModelsFromURL(searchParams.get('models'))
+  );
+  const [mediaType, setMediaType] = useState<MediaType>(() => {
+    const urlMediaType = searchParams.get('mediaType');
+    return (urlMediaType === 'image' || urlMediaType === 'video' ? urlMediaType : 'all') as MediaType;
+  });
+
+  // Track if we're updating from URL to prevent infinite loops
+  const isUpdatingFromURL = useRef(false);
+  const isInitialMount = useRef(true);
+
+  // Sync filters to URL when filter state changes (user actions)
+  useEffect(() => {
+    // Skip on initial mount (state already initialized from URL)
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // Skip if we're updating from URL to prevent infinite loop
+    if (isUpdatingFromURL.current) {
+      return;
+    }
+
+    // Update URL with current filter state
+    const params = new URLSearchParams();
+    if (selectedHashtags.size > 0) {
+      params.set('tags', Array.from(selectedHashtags).join(','));
+    }
+    if (mediaType !== 'all') {
+      params.set('mediaType', mediaType);
+    }
+    if (selectedModels.size > 0) {
+      params.set('models', Array.from(selectedModels).join(','));
+    }
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+
+    // Only update URL if it's different from current URL
+    const currentUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+    if (newUrl !== currentUrl) {
+      router.push(newUrl);
+    }
+  }, [selectedHashtags, selectedModels, mediaType, pathname, router, searchParams]);
+
+  // Sync filters to URL when URL params change (e.g., back/forward navigation)
+  useEffect(() => {
+    const urlTags = parseTagsFromURL(searchParams.get('tags'));
+    const urlModels = parseModelsFromURL(searchParams.get('models'));
+    const urlMediaType = searchParams.get('mediaType');
+    const urlMediaTypeValue = (
+      urlMediaType === 'image' || urlMediaType === 'video' ? urlMediaType : 'all'
+    ) as MediaType;
+
+    // Compare URL params with current state
+    const currentTagsStr = Array.from(selectedHashtags).sort().join(',');
+    const urlTagsStr = Array.from(urlTags).sort().join(',');
+    const tagsChanged = currentTagsStr !== urlTagsStr;
+
+    const currentModelsStr = Array.from(selectedModels)
+      .sort((a, b) => a - b)
+      .join(',');
+    const urlModelsStr = Array.from(urlModels)
+      .sort((a, b) => a - b)
+      .join(',');
+    const modelsChanged = currentModelsStr !== urlModelsStr;
+
+    if (tagsChanged || modelsChanged || urlMediaTypeValue !== mediaType) {
+      isUpdatingFromURL.current = true;
+      if (tagsChanged) {
+        setSelectedHashtags(urlTags);
+      }
+      if (modelsChanged) {
+        setSelectedModels(urlModels);
+      }
+      if (urlMediaTypeValue !== mediaType) {
+        setMediaType(urlMediaTypeValue);
+      }
+      // Reset flag in next tick after state updates complete
+      requestAnimationFrame(() => {
+        isUpdatingFromURL.current = false;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()]);
 
   const handleSyncDrive = async () => {
     const response = await handleResponse(await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google-sync`));
