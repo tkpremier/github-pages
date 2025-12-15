@@ -3,7 +3,6 @@ import * as codeString from '../../../src/code-strings/react';
 import * as codeHooks from '../../../src/code-strings/react/hooks';
 import { Code } from '../../../src/components/Code';
 import { Drawer } from '../../../src/components/Drawer';
-import { Profiler } from '../../../src/components/Profiler';
 import { Slider } from '../../../src/components/Slider';
 
 export const metadata: Metadata = {
@@ -70,18 +69,6 @@ const LearnReact = () => (
             </Slider>
           </Drawer>
         </ul>
-      </Drawer>
-      <Drawer key="react-profiler" header="Profiler">
-        <Profiler id="slider" onRender={param => param}>
-          <Slider
-            carouselDesc="Shows developer CPU usage, re-rendering activity, such as unnecessary re-renders and memoization (
-            <pre>React.memo</pre>, useMemo, shouldComponentUpdate);"
-            carouselTitle="Relevant Code"
-          >
-            <Code text={codeString.profilerJsx} key="profiler-jsx" />
-            <Code text={codeString.onRenderCallbackString} key="render-callback" />
-          </Slider>
-        </Profiler>
       </Drawer>
       <Drawer key="react-recon" header="Reconciliation">
         <h4>Keys</h4>
@@ -212,7 +199,5 @@ const LearnReact = () => (
     </ul>
   </div>
 );
-
-// heuristics: (Relating to or using a problem-solving technique in which the most appropriate solution of several found by alternative methods is selected at successive stages of a program for use in the next step of the program.) (try to make the program better by learning what parts of the program progress to what)
 
 export default LearnReact;
