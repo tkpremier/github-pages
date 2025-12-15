@@ -1,4 +1,4 @@
-'use client';
+import { Metadata } from 'next';
 import * as codeString from '../../../src/code-strings/react';
 import * as codeHooks from '../../../src/code-strings/react/hooks';
 import { Code } from '../../../src/components/Code';
@@ -6,8 +6,11 @@ import { Drawer } from '../../../src/components/Drawer';
 import { Profiler } from '../../../src/components/Profiler';
 import { Slider } from '../../../src/components/Slider';
 
+export const metadata: Metadata = {
+  title: 'Learn React Guide | TK Premier'
+};
 const LearnReact = () => (
-  <>
+  <div className="root">
     <h1>Learn React Guide</h1>
     <ul className="root">
       <Drawer key="react-context" header="Context">
@@ -207,7 +210,7 @@ const LearnReact = () => (
         </ul>
       </Drawer>
     </ul>
-  </>
+  </div>
 );
 
 // heuristics: (Relating to or using a problem-solving technique in which the most appropriate solution of several found by alternative methods is selected at successive stages of a program for use in the next step of the program.) (try to make the program better by learning what parts of the program progress to what)
