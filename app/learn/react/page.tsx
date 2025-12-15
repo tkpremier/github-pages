@@ -37,6 +37,7 @@ const LearnReact = () => (
           </li>
           <Drawer key="react-hooks-two" header="Custom Hooks">
             <Slider
+              sizes={{ xl: 1, lg: 1, md: 1, sm: 1 }}
               carouselDesc="Let's walk through creating a custom hook and then using it"
               carouselTitle="useFriendStatus &amp; useReducer"
             >
@@ -55,7 +56,11 @@ const LearnReact = () => (
             </Slider>
           </Drawer>
           <Drawer key="react-hooks-three" header="useTransition">
-            <Slider carouselTitle="useTransition" carouselDesc="Useful to let React know which update are urgent">
+            <Slider
+              sizes={{ xl: 1, lg: 1, md: 1, sm: 1 }}
+              carouselTitle="useTransition"
+              carouselDesc="Useful to let React know which update are urgent"
+            >
               <Code text={codeHooks.useTransitionWrong} key="wrong" />
               <div key="heavy-updates">
                 <h3>Heavy UI updates as transitions</h3>
@@ -100,7 +105,7 @@ const LearnReact = () => (
             cause performance degradation and lost state in child components.
           </li>
         </ol>
-        <Slider>
+        <Slider sizes={{ xl: 1, lg: 1, md: 1, sm: 1 }}>
           <Code text={codeString.profilerJsx} key="profiler-jsx" />
           <Code text={codeString.onRenderCallbackString} key="render-callback" />
         </Slider>
