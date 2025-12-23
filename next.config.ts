@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
 const nextConfig: NextConfig = {
   images: {
@@ -51,6 +52,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ['ckeditor5', '@ckeditor/ckeditor5-react'],
   // Turbopack configuration for Next.js 16.0+
   turbopack: {
+    root: path.join(__dirname, '..'),
     rules: {
       // SVG handling for CKEditor icons
       '*.svg': {

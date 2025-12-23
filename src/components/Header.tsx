@@ -4,10 +4,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useContext, useMemo, useState } from 'react';
-import { UserContext } from '../../context/user';
-import buttonStyles from '../../styles/button.module.scss';
-import styles from '../../styles/header.module.scss';
-import utilStyles from '../../styles/utils.module.scss';
+import { UserContext } from '../context/user';
+import buttonStyles from '../styles/button.module.scss';
+import styles from '../styles/header.module.scss';
+import utilStyles from '../styles/utils.module.scss';
 
 export const Header = () => {
   const [isOpen, toggleOffCanvas] = useState(false);

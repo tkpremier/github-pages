@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 const getExp = async () => {
   try {
     const url = `${process.env.INTERNAL_API_URL}/api/experience`;
-    const response = await handleResponse(await fetch(url, { cache: 'no-store' }));
+    const response = await handleResponse(await fetch(url));
     return response;
   } catch (error) {
     console.error('Experience error: ', error);
@@ -21,7 +21,6 @@ const getExp = async () => {
 };
 
 export default async function Experience(props) {
-  console.log('props: ', props);
   const data = await getExp();
   // const [updatedExp, updateExp] = useState({ id: 0, name: '', description: '' });
   return (
