@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useContext, useMemo } from 'react';
+import { Suspense, useContext, useMemo } from 'react';
 import { UserContext } from '../../src/context/user';
 
 export const UnauthenticatedFallback = ({ loginUrl = '/' }: { loginUrl: string }) => (
@@ -22,7 +22,27 @@ const Profile = () => {
     }`;
   }, [pathname, searchParams]);
 
-  return <div>{user ? <h1>{user.name}</h1> : <UnauthenticatedFallback loginUrl={loginUrl} />}</div>;
+  return (
+    <Suspense
+      fallback={
+        <div>
+          <UnauthenticatedFallback loginUrl={loginUrl} />
+        </div>
+      }
+    >
+      <div>{user ? <h1>{user.name}</h1> : <UnauthenticatedFallback loginUrl={loginUrl} />}</div>
+    </Suspense>
+  );
 };
 
-export default Profile;
+export default () => (
+  <Suspense
+    fallback={
+      <div>
+        <UnauthenticatedFallback loginUrl="/" />
+      </div>
+    }
+  >
+    <Profile />
+  </Suspense>
+);

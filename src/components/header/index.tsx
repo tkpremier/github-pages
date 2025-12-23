@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { Suspense, useCallback, useContext, useMemo, useState } from 'react';
 import { UserContext } from '../../context/user';
 import buttonStyles from '../../styles/button.module.scss';
 import styles from '../../styles/header.module.scss';
@@ -31,7 +31,7 @@ export const Header = () => {
   }, []);
 
   return (
-    <>
+    <Suspense fallback={<header className={styles.header}>Header Loading...</header>}>
       <header
         className={styles.header}
         // onMouseLeave={handleMouseLeaveHeader}
@@ -129,6 +129,6 @@ export const Header = () => {
           </li>
         </ul>
       </nav>
-    </>
+    </Suspense>
   );
 };

@@ -3,7 +3,7 @@ import isNull from 'lodash/isNull';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Grid, type CellComponentProps } from 'react-window';
 import { DriveFileView } from '../../src/components/FileEditor';
 import { ModelForm } from '../../src/components/ModelForm';
@@ -413,4 +413,8 @@ const DriveDb = () => {
   );
 };
 
-export default DriveDb;
+export default () => (
+  <Suspense fallback={<div>Drive DB Loading...</div>}>
+    <DriveDb />
+  </Suspense>
+);
