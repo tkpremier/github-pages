@@ -1,6 +1,14 @@
+import { Metadata } from 'next';
 import { Interview } from '../../src/types';
 import handleResponse from '../../src/utils/handleResponse';
 import { Interviews } from './Drawers';
+
+export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Interviews | TK Premier',
+  description: "TK Premier's Interviews"
+};
 
 const getInterviews = async () => {
   try {
