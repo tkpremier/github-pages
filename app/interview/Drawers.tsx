@@ -2,14 +2,14 @@
 
 import { Editor as CKEditor } from 'ckeditor5';
 import serialize from 'form-serialize';
-import { FormEvent, useCallback, useState } from 'react';
+import { FormEvent, useCallback, useContext, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Drawer } from '../../src/components/Drawer';
 import { Form } from '../../src/components/Form';
 import { HTMLEditor } from '../../src/components/drive/Update';
+import { InterviewContext } from '../../src/context/interview';
 import { Interview } from '../../src/types';
-import handleResponse from '../../src/utils/handleResponse';
 
 const defaultProps = { id: 0, company: '', date: new Date(Date.now()), retro: '' } as Interview;
 
@@ -24,8 +24,8 @@ const InterviewItem = (props: Interview) => {
   );
 };
 
-export const Interviews = ({ data }: { data: Interview[] }) => {
-  const [interviews, setInterviews] = useState<Array<Interview>>(data);
+export const Interviews = () => {
+  const [interviews, handleInterviews] = useContext(InterviewContext);
   const [updatedInt, updateInt] = useState<Interview>(defaultProps);
 
   const handleDateChange = (date: Date) => {
@@ -37,7 +37,7 @@ export const Interviews = ({ data }: { data: Interview[] }) => {
     updateInt(i => ({ ...i, retro: editor.getData() }));
   };
   const handleSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       const form = e.currentTarget;
       const data = serialize(form, { hash: true }) as any;
@@ -54,16 +54,18 @@ export const Interviews = ({ data }: { data: Interview[] }) => {
         },
         body: JSON.stringify(interview)
       };
-      fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/interview`, options)
-        .then(handleResponse)
-        .then(res => {
-          const updatedInterview = res.data as Interview;
-          setInterviews(interviews.map(i => (i.id === updatedInterview.id ? updatedInterview : i)));
-          updateInt(updatedInterview as Interview);
-        })
-        .catch(err => console.log('err: ', err));
+      const response = await handleInterviews(
+        `${process.env.NEXT_PUBLIC_CLIENTURL}/api/interview`,
+        options as unknown as RequestInit & { body?: Interview }
+      );
+      if (response instanceof Error) {
+        console.error('handleSubmit error: ', response);
+        return;
+      }
+      const updatedInterview = response.data[0] as Interview;
+      updateInt(updatedInterview);
     },
-    [updatedInt]
+    [updatedInt, handleInterviews]
   );
   const handleUpdate = (e: React.PointerEvent<HTMLButtonElement>) => {
     const id = parseInt(e.currentTarget.value, 10);
