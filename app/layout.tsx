@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PropsWithChildren, Suspense } from 'react';
 import { Header } from '../src/components/Header';
-import { Main } from '../src/components/Main';
+import { UserProvider } from '../src/context/user';
 import '../src/styles/global.scss';
+import layoutStyles from '../src/styles/layout.module.scss';
 
 export const metadata: Metadata = {
   title: 'TK Premier',
@@ -13,23 +14,25 @@ export const metadata: Metadata = {
 const Layout = ({ children }: PropsWithChildren<{}>) => (
   <html>
     <body>
-      <Main>
-        <Suspense fallback={<header>Loading...</header>}>
-          <Header />
-        </Suspense>
-        {children}
-        <footer>
-          <Link href="/about" key="about">
-            About
-          </Link>
-          <Link href="/learn" key="learn">
-            Learn
-          </Link>
-          <Link href="/interview" key="interview">
-            Interviews
-          </Link>
-        </footer>
-      </Main>
+      <UserProvider>
+        <div className={layoutStyles.mainRoot}>
+          <Suspense fallback={<header>Loading...</header>}>
+            <Header />
+          </Suspense>
+          {children}
+          <footer>
+            <Link href="/about" key="about">
+              About
+            </Link>
+            <Link href="/learn" key="learn">
+              Learn
+            </Link>
+            <Link href="/interview" key="interview">
+              Interviews
+            </Link>
+          </footer>
+        </div>
+      </UserProvider>
     </body>
   </html>
 );

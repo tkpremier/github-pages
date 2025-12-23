@@ -22,7 +22,6 @@ const getExp = async () => {
 
 export default async function Experience(props) {
   const data = await getExp();
-  // const [updatedExp, updateExp] = useState({ id: 0, name: '', description: '' });
   return (
     <>
       <h1 className="title">My Experience &#x1F305;</h1>
