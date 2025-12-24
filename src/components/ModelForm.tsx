@@ -23,7 +23,7 @@ export const ModelForm = ({
   const [modelPlatform, setModelPlatform] = useState<string>('');
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = serialize(e.currentTarget, { hash: true });
+    const data = serialize(e.target as HTMLFormElement, { hash: true });
     console.log('data: ', data);
     const modelId = parseInt(data.id as string);
     const modelData = models.find(model => model.id === modelId);

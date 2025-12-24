@@ -1,4 +1,5 @@
 'use client';
+import isNull from 'lodash/isNull';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getImageLink } from '../../utils';
@@ -13,15 +14,20 @@ export const DriveDbSlider = ({
   carouselTitle: string;
   type: 'image' | 'video';
 }) => {
+  const sortedData = data.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
   return (
     <Slider carouselTitle={carouselTitle} sizes={{ md: 1, lg: 1 }}>
-      {data
+      {sortedData
         .filter(drive => drive.type === type)
         .map(drive => (
           <div key={drive.driveId}>
             <Link target="_blank" rel="noreferrer nofollower" href={`/drive-db/${drive.driveId}`}>
               <Image
-                src={getImageLink(drive.thumbnailLink, 's2400', 's220')}
+                src={
+                  drive.thumbnailLink && !isNull(drive.thumbnailLink)
+                    ? getImageLink(drive.thumbnailLink, 's2400', 's220')
+                    : drive.webViewLink || '/images/video_placeholder_165x103.svg'
+                }
                 referrerPolicy="no-referrer"
                 loading="lazy"
                 title={`${drive.name}`}

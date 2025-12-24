@@ -1,10 +1,10 @@
 'use client';
 import Link from 'next/link';
-import { useContext, useEffect } from 'react';
+import { use, useEffect } from 'react';
 import { ModelContext } from '../../src/context/model';
 import { Model } from '../../src/types';
 const ModelPage = () => {
-  const [models, setModels] = useContext(ModelContext);
+  const [models, setModels] = use(ModelContext);
   useEffect(() => {
     setModels(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/model`);
   }, []);
