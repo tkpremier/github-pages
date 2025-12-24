@@ -217,7 +217,8 @@ export enum SortOptions {
   'createdTime',
   'viewedByMeTime',
   'duration',
-  'size'
+  'size',
+  'lastViewed'
 }
 
 export type SortOptionKeys = keyof typeof SortOptions;

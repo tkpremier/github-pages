@@ -14,7 +14,15 @@ import { DriveContext } from '../../src/context/drive';
 import { ModelContext } from '../../src/context/model';
 import styles from '../../src/styles/grid.module.scss';
 import utilsStyles from '../../src/styles/utils.module.scss';
-import { DBData, DBDataResponse, DriveHandler, DriveResponse, MergedData, Model } from '../../src/types';
+import {
+  DBData,
+  DBDataResponse,
+  DriveHandler,
+  DriveResponse,
+  MergedData,
+  Model,
+  SortOptionKeys
+} from '../../src/types';
 import { formatBytes, getDuration, getImageLink } from '../../src/utils';
 import { parseModelsFromURL, parseTagsFromURL } from '../../src/utils/drive-db';
 import handleResponse from '../../src/utils/handleResponse';
@@ -92,7 +100,11 @@ const GridCell = ({
       {drive.modelId.length > 0 && (
         <p>
           <strong>Model: </strong>
-          {drive.modelId.map(modelId => models.find(model => model.id === modelId)?.name).join(', ')}
+          {drive.modelId.map(modelId => (
+            <Link key={modelId} href={`/model/${modelId}`}>
+              {models.find(model => model.id === modelId)?.name}
+            </Link>
+          ))}
         </p>
       )}
       <p>
@@ -188,6 +200,7 @@ const DriveDb = () => {
   const [allModels, handleModels] = use(ModelContext);
 
   // Initialize filter state from URL params
+  const [sortDir, sortBy] = useState('createdTime-desc');
   const [selectedHashtags, setSelectedHashtags] = useState<Set<string>>(() =>
     parseTagsFromURL(searchParams.get('tags'))
   );
@@ -277,7 +290,10 @@ const DriveDb = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.toString()]);
-
+  const handleSort = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => (e.target.value !== sortDir ? sortBy(e.target.value) : null),
+    []
+  );
   const handleSyncDrive = async () => {
     const response = await handleResponse(await fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-google-sync`));
     if (response instanceof Error) {
@@ -316,28 +332,36 @@ const DriveDb = () => {
       return newSet;
     });
   }, []);
-  const filteredData = useMemo(
-    () =>
-      (driveData as DBDataResponse).data.filter(d => {
-        // Filter by media type
-        const matchesMediaType =
-          mediaType === 'all'
-            ? d.type === 'video' || d.type === 'image'
-            : mediaType === 'image'
-            ? d.type === 'image'
-            : d.type === 'video';
+  const filteredData = useMemo(() => {
+    const filtered = (driveData as DBDataResponse).data.filter(d => {
+      // Filter by media type
+      const matchesMediaType =
+        mediaType === 'all'
+          ? d.type === 'video' || d.type === 'image'
+          : mediaType === 'image'
+          ? d.type === 'image'
+          : d.type === 'video';
 
-        // Filter by hashtags
-        const matchesHashtags =
-          selectedHashtags.size === 0 || extractHashtags(d.description).some(tag => selectedHashtags.has(tag));
+      // Filter by hashtags
+      const matchesHashtags =
+        selectedHashtags.size === 0 || extractHashtags(d.description).some(tag => selectedHashtags.has(tag));
 
-        // Filter by models
-        const matchesModels = selectedModels.size === 0 || d.modelId.some(modelId => selectedModels.has(modelId));
+      // Filter by models
+      const matchesModels = selectedModels.size === 0 || d.modelId.some(modelId => selectedModels.has(modelId));
 
-        return matchesMediaType && matchesHashtags && matchesModels;
-      }),
-    [driveData, selectedHashtags, selectedModels, mediaType]
-  );
+      return matchesMediaType && matchesHashtags && matchesModels;
+    });
+    filtered.sort((a, b) => {
+      const [key, dir]: Array<SortOptionKeys | string> = sortDir.split('-');
+      if (key === 'lastViewed' || key === 'createdTime') {
+        return dir === 'desc'
+          ? new Date(b[key] as unknown as string).getTime() - new Date(a[key] as unknown as string).getTime()
+          : new Date(a[key] as unknown as string).getTime() - new Date(b[key] as unknown as string).getTime();
+      }
+      return dir === 'desc' ? Number(b[key] ?? 0) - Number(a[key] ?? 0) : Number(a[key] ?? 0) - Number(b[key] ?? 0);
+    });
+    return filtered;
+  }, [driveData, selectedHashtags, selectedModels, mediaType, sortDir]);
   const sortedModels = useMemo(() => {
     return [...allModels].sort((a, b) => a.name.localeCompare(b.name));
   }, [allModels]);
@@ -349,6 +373,27 @@ const DriveDb = () => {
       <FilterSidebarContent activeFilterCount={activeFilterCount}>
         <button onClick={handleSyncDrive}>Sync Drive</button>
         <MediaTypeFilter selectedType={mediaType} onTypeChange={setMediaType} />
+        <div style={{ marginBottom: '20px' }}>
+          <label htmlFor="sort-select" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+            Sort By
+          </label>
+          <select
+            id="sort-select"
+            onChange={handleSort}
+            defaultValue={sortDir}
+            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px' }}
+          >
+            <option value="">Choose Sort</option>
+            <option value="createdTime-desc">Created - Latest</option>
+            <option value="createdTime-asc">Created - Earliest</option>
+            <option value="lastViewed-desc">Viewed - Latest</option>
+            <option value="lastViewed-asc">Viewed - Earliest</option>
+            <option value="duration-desc">Duration - Longest</option>
+            <option value="duration-asc">Duration - shortest</option>
+            <option value="size-desc">Size - Largest</option>
+            <option value="size-asc">Size - Smallest</option>
+          </select>
+        </div>
         <Tags
           files={(driveData as DBDataResponse).data as unknown as MergedData[]}
           selectedHashtags={selectedHashtags}
@@ -408,7 +453,7 @@ const DriveDb = () => {
           </fieldset>
         </div>
       </FilterSidebarContent>
-      <DriveGrid data={filteredData} models={allModels} handleDrive={handleDrive} handleModels={handleModels} />
+      <DriveGrid data={filteredData} models={sortedModels} handleDrive={handleDrive} handleModels={handleModels} />
     </>
   );
 };

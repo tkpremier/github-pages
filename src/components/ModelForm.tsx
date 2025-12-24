@@ -1,10 +1,11 @@
 'use client';
 import serialize from 'form-serialize';
+import omit from 'lodash/omit';
 import uniq from 'lodash/uniq';
+import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { DBData, DriveHandler, DriveResponse, Model } from '../types';
 import { Form } from './Form';
-
 export const ModelForm = ({
   drive,
   models,
@@ -23,6 +24,7 @@ export const ModelForm = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = serialize(e.currentTarget, { hash: true });
+    console.log('data: ', data);
     const modelId = parseInt(data.id as string);
     const modelData = models.find(model => model.id === modelId);
     if (modelData) {
@@ -32,18 +34,26 @@ export const ModelForm = ({
     } else {
       data.modelName = data.name;
     }
+    const body = omit(
+      {
+        ...data,
+        id: modelId,
+        driveIds: modelData ? uniq([...modelData.driveIds, data.driveId]) : [data.driveId]
+      },
+      'driveId'
+    );
     const options = {
       credentials: 'include' as RequestCredentials,
       method: modelId === 0 ? 'POST' : 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
       },
-      body: JSON.stringify({
-        ...data,
-        id: modelId,
-        driveIds: modelData ? uniq([...modelData.driveIds, drive.id]) : [drive.id]
-      })
+      body: JSON.stringify(body)
     };
+    // console.log('driveId: ', drive.id);
+    // console.log('data.driveId: ', data.driveId);
+    // updateDrive(modelId, data.driveId as string);
+
     handleModels(
       `${process.env.NEXT_PUBLIC_CLIENTURL}/api/model${options.method === 'POST' ? '' : `/${modelId}`}`,
       options as unknown as RequestInit & { body?: Model | undefined }
@@ -51,7 +61,7 @@ export const ModelForm = ({
       .then(res => {
         if (!(res instanceof Error)) {
           const model = typeof res.data[0] === 'string' ? JSON.parse(res.data[0]) : res.data[0];
-          updateDrive(model.id);
+          updateDrive(model.id, data.driveId as string);
           setModelId(model.id);
           setModelName(model.name);
           setModelPlatform(model.platform);
@@ -60,9 +70,9 @@ export const ModelForm = ({
       .catch(err => console.log('err: ', err));
   };
   const modelDrive = models.find(model => model.driveIds.includes(drive.id));
-  const hasModel = drive.modelId.includes(modelDrive?.id ?? 0) || Boolean(modelDrive);
+
   const updateDrive = useCallback(
-    (modelId: number) => {
+    (modelId: number, driveId: string = drive.id) => {
       const options = {
         credentials: 'include' as RequestCredentials,
         method: 'PUT',
@@ -74,30 +84,28 @@ export const ModelForm = ({
           modelId: uniq([...drive.modelId, modelId])
         })
       };
-      handleDrive(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list/${drive.id}`, options)
+
+      handleDrive(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list/${driveId}`, options)
         .then(res => {
+          console.log('data.driveId: ', driveId);
+          console.log('drive.id: ', drive.id);
           console.log('res: ', res);
           setMessage(`Drive updated successfully`);
         })
         .catch(err => console.log('err: ', err));
-      // fetch(`${process.env.NEXT_PUBLIC_CLIENTURL}/api/drive-list/${drive.id}`, options)
-      //   .then(handleResponse)
-      //   .then(res => {
-      //     console.log('res: ', res);
-      //     setMessage(`Drive updated successfully`);
-      //   })
-      //   .catch(err => {
-      //     console.error('error: ', err);
-      //     setMessage(`Error updating drive`);
-      //   });
     },
     [modelDrive, drive, handleDrive]
   );
-
+  const hasModel = drive.modelId.includes(modelDrive?.id ?? 0) || Boolean(modelDrive);
+  if (message === 'Drive updated successfully') {
+    console.log('ModelForm after handleSubmit:', drive, modelDrive);
+  }
   return (
     <>
       {hasModel ? (
-        <p>Model: {modelDrive?.name}</p>
+        <p>
+          Model: <Link href={`/model/${modelDrive?.id}`}>{modelDrive?.name}</Link>
+        </p>
       ) : modelDrive?.id && !hasModel ? (
         <button onClick={() => updateDrive(modelDrive?.id ?? 0)}>Update Drive with Model</button>
       ) : (
@@ -124,6 +132,7 @@ export const ModelForm = ({
               </option>
             ))}
           </select>
+          <input type="text" name="driveId" value={drive.id} readOnly />
           <input
             type="text"
             name="name"
