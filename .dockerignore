@@ -9,6 +9,7 @@ Dockerfile
 # --- Dependencies & Builds ---
 node_modules
 .next/
+next-env.d.ts
 
 # --- Security ---
 .env
