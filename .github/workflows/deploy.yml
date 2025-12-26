@@ -153,6 +153,6 @@ jobs:
           # Rebuild and restart containers
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             $SSH_USER@$SSH_HOST << 'EOF'
-            cd /home/tkpremier/tkpremier/client
+            cd /home/tkpremier/tkpremier
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build client
           EOF
