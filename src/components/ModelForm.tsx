@@ -24,7 +24,6 @@ export const ModelForm = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = serialize(e.target as HTMLFormElement, { hash: true });
-    console.log('data: ', data);
     const modelId = parseInt(data.id as string);
     const modelData = models.find(model => model.id === modelId);
     if (modelData) {
@@ -97,9 +96,6 @@ export const ModelForm = ({
     [modelDrive, drive, handleDrive]
   );
   const hasModel = drive.modelId.includes(modelDrive?.id ?? 0) || Boolean(modelDrive);
-  if (message === 'Drive updated successfully') {
-    console.log('ModelForm after handleSubmit:', drive, modelDrive);
-  }
   return (
     <>
       {hasModel ? (
