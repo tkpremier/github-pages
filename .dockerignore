@@ -1,8 +1,21 @@
+# --- Source Control & Config ---
 .git/
 .gitignore
-.next/                # Existing Next.js builds
-.dockerignore
+.github/
 .vscode/
-.storybook/
+.dockerignore
 Dockerfile
-node_modules/         # Installed inside container
+
+# --- Dependencies & Builds ---
+node_modules
+.next/
+
+# --- Security ---
+.env
+.env.local
+.env.*
+
+# --- System Files ---
+.DS_Store
+npm-debug.log
+yarn-error.log
