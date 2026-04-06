@@ -21,9 +21,8 @@ export const Header = () => {
   }, [pathname, searchParams]);
 
   const loginUrl = useMemo(() => {
-    return `${process.env.NEXT_PUBLIC_CLIENTURL}/login${
-      currentUrl ? `?returnTo=${encodeURIComponent(currentUrl)}` : ''
-    }`;
+    return `${process.env.NEXT_PUBLIC_CLIENTURL}/login${currentUrl ? `?returnTo=${encodeURIComponent(currentUrl)}` : ''
+      }`;
   }, [currentUrl]);
 
   const handleToggle = useCallback(() => {
@@ -34,7 +33,7 @@ export const Header = () => {
     <Suspense fallback={<header className={styles.header}>Header Loading...</header>}>
       <header
         className={styles.header}
-        // onMouseLeave={handleMouseLeaveHeader}
+      // onMouseLeave={handleMouseLeaveHeader}
       >
         <nav className={styles.headerNav}>
           <ul className={styles.headerWrapper}>
@@ -53,9 +52,6 @@ export const Header = () => {
             </li>
             <li className={styles.headerNavItem}>
               <Link href="/learn">Learn</Link>
-            </li>
-            <li className={styles.headerNavItem}>
-              <Link href="/interview">Interviews</Link>
             </li>
             {user ? (
               <li className={styles.headerNavItem}>
@@ -111,9 +107,6 @@ export const Header = () => {
           </li>
           <li className={styles.offCanvasNavItem}>
             <Link href="/learn">Learn</Link>
-          </li>
-          <li className={styles.offCanvasNavItem}>
-            <Link href="/interview">Interviews</Link>
           </li>
           {user ? (
             <li className={styles.offCanvasNavItem}>
