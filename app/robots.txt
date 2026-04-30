@@ -1,0 +1,5 @@
+User-Agent: *
+Disallow: /healthz/
+Disallow: /profile/
+ 
+Sitemap: https://tkpremier.com/sitemap.xml
